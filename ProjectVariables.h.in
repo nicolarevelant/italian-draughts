@@ -1,0 +1,5 @@
+// the configured options and settings for Tutorial
+#define PROJECT_NAME "@PROJECT_NAME@"
+#define PROJECT_VERSION "@Italian-Draughts_VERSION_MAJOR@.@Italian-Draughts_VERSION_MINOR@"
+#define SYSTEM_CFG_PATH "@SYSTEM_CFG_PATH@"
+#define USER_CFG_PATH "@USER_CFG_PATH@"
