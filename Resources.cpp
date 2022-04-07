@@ -47,7 +47,7 @@ bool StringResources::fillStringsMap(StringsMap &strings, const std::string& pat
     if (file.is_open()) {
         std::string line;
         while (std::getline(file, line)) {
-            if (line.empty() || line.starts_with('#')) continue;
+            if (line.empty() || line[0] == '#') continue;
 
             auto delimPos = line.find('=');
             if (delimPos == std::string::npos) continue;
@@ -70,7 +70,7 @@ bool ColorResources::fillColorsMap(ColorsMap &colors, const std::string& path, c
     if (file.is_open()) {
         std::string line;
         while (std::getline(file, line)) {
-            if (line.empty() || line.starts_with('#')) continue;
+            if (line.empty() || line[0] == '#') continue;
 
             auto delimPos = line.find('=');
             if (delimPos == std::string::npos) continue;

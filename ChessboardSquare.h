@@ -36,7 +36,7 @@ public:
 private:
     const int m_size;
     wxBitmap m_bitmap = wxNullBitmap;
-    const wxBrush m_transparentBrush = wxBrush(wxTransparentColour, wxTRANSPARENT);
+    const wxBrush m_transparentBrush = wxBrush(wxTransparentColour, wxBRUSHSTYLE_TRANSPARENT);
     wxPen m_border = wxNullPen;
 
     void Init();
