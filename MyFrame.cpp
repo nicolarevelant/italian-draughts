@@ -23,7 +23,9 @@ MyFrame::MyFrame(const std::string &locale, const std::string &theme)
     wxColour bgColor = colors.get("bg");
 
     wxFrame::SetMenuBar(createMenuBar());
-    wxFrame::CreateStatusBar()->SetBackgroundColour(bgColor);
+    wxStatusBar *statusBar = wxFrame::CreateStatusBar();
+    statusBar->SetBackgroundColour(bgColor);
+    statusBar->SetForegroundColour(*wxWHITE);
     updateStatusText();
 
     // window sizer
