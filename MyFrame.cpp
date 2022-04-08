@@ -22,9 +22,8 @@ MyFrame::MyFrame(const std::string &locale, const std::string &theme)
     wxFrame::SetTitle(strings.get("app.title", PROJECT_NAME));
     wxColour bgColor = colors.get("bg");
 
-    wxFrame::SetMenuBar(createMenuBar(bgColor));
-    /*if (bgColor == wxNullColour) wxFrame::CreateStatusBar();
-    else */wxFrame::CreateStatusBar()->SetBackgroundColour(bgColor);
+    wxFrame::SetMenuBar(createMenuBar());
+    wxFrame::CreateStatusBar()->SetBackgroundColour(bgColor);
     updateStatusText();
 
     // window sizer
@@ -45,7 +44,7 @@ MyFrame::MyFrame(const std::string &locale, const std::string &theme)
     Bind(wxEVT_MENU, &MyFrame::onThreadFinished, this, THREAD_FINISH);
 }
 
-wxMenuBar *MyFrame::createMenuBar(wxColour &bg) {
+wxMenuBar *MyFrame::createMenuBar() {
     auto *menuFile = new wxMenu;
     menuFile->Append(NEW_MATCH, strings["app.menu.new_match"]);
     menuFile->AppendSeparator();
@@ -67,7 +66,6 @@ wxMenuBar *MyFrame::createMenuBar(wxColour &bg) {
     menuBar->Bind(wxEVT_MENU, &MyFrame::closeFrame, this, wxID_EXIT);
     menuBar->Bind(wxEVT_MENU, &MyFrame::changeDifficultClicked, this, CHANGE_GD);
     menuBar->Bind(wxEVT_MENU, &MyFrame::aboutClicked, this, wxID_ABOUT);
-    menuBar->SetBackgroundColour(bg);
 
     return menuBar;
 }

@@ -31,7 +31,7 @@ private:
     Chessboard board{};
     Chessboard::MoveList moves; // list of moves the player can do
 
-    wxMenuBar *createMenuBar(wxColour &bg = wxNullColour);
+    wxMenuBar *createMenuBar();
 
     void newMatchClicked(wxCommandEvent &);
     void closeFrame(wxCommandEvent &);
