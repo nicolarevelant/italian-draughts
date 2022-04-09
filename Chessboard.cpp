@@ -5,8 +5,8 @@ Chessboard::Chessboard() = default;
 Chessboard::~Chessboard() = default;
 
 Chessboard::PieceType *Chessboard::copyMatrix(const PieceType *from) {
-    auto to = new PieceType[64];
-    memcpy(to, from, sizeof(PieceType) * 64);
+    auto to = new PieceType[CHESSBOARD_SIZE * CHESSBOARD_SIZE];
+    memcpy(to, from, sizeof(PieceType) * CHESSBOARD_SIZE * CHESSBOARD_SIZE);
     return to;
 }
 
@@ -18,9 +18,9 @@ Chessboard::MoveList Chessboard::findMoves(const PieceType *mat, bool pcTurn) {
     MoveList moves;
 
     if (pcTurn) {
-        for (int row = 0, col; row < 8; row++) {
-            for (col = 0; col < 8; col++) {
-                switch (mat[row * 8 + col]) {
+        for (int row = 0, col; row < CHESSBOARD_SIZE; row++) {
+            for (col = 0; col < CHESSBOARD_SIZE; col++) {
+                switch (mat[row * CHESSBOARD_SIZE + col]) {
                     case PC_DAME:
                         addStepUpSx(moves, mat, row, col, 0);
                         addStepUpDx(moves, mat, row, col, 0);
@@ -39,9 +39,9 @@ Chessboard::MoveList Chessboard::findMoves(const PieceType *mat, bool pcTurn) {
             }
         }
     } else {
-        for (int row = 0, col; row < 8; row++) {
-            for (col = 0; col < 8; col++) {
-                switch (mat[row * 8 + col]) {
+        for (int row = 0, col; row < CHESSBOARD_SIZE; row++) {
+            for (col = 0; col < CHESSBOARD_SIZE; col++) {
+                switch (mat[row * CHESSBOARD_SIZE + col]) {
                     case PL_DAME:
                         addStepDownSx(moves, mat, row, col, 0);
                         addStepDownDx(moves, mat, row, col, 0);
@@ -81,28 +81,28 @@ Chessboard::MoveList Chessboard::findMoves(const PieceType *mat, bool pcTurn) {
 }
 
 bool Chessboard::addStepDownSx(MoveList &moves, const PieceType *mat, int s_row, int s_col, int score) {
-    if (s_row == 7 || s_col == 0)
+    if (s_row == CHESSBOARD_SIZE - 1 || s_col == 0)
         return false;
 
     int row = s_row + 1, col = s_col - 1;
-    PieceType s_value = mat[s_row * 8 + s_col];
+    PieceType s_value = mat[s_row * CHESSBOARD_SIZE + s_col];
     PieceType *copy;
     bool isValid = true;
 
-    int mid_value = mat[row * 8 + col];
+    int mid_value = mat[row * CHESSBOARD_SIZE + col];
     if (mid_value == EMPTY) {
         // move without jump
         if (score == 0) {
             copy = Chessboard::copyMatrix(mat);
-            copy[s_row * 8 + s_col] = EMPTY;
-            copy[row * 8 + col] = row == 7 && s_value == PC_PAWN ? PC_DAME : s_value;
+            copy[s_row * CHESSBOARD_SIZE + s_col] = EMPTY;
+            copy[row * CHESSBOARD_SIZE + col] = row == CHESSBOARD_SIZE - 1 && s_value == PC_PAWN ? PC_DAME : s_value;
             moves.push_back(new Move(copy, false, 0));
             return true;
         }
         return false;
     }
 
-    if (row == 7 || col == 0) {
+    if (row == CHESSBOARD_SIZE - 1 || col == 0) {
         return false;
     }
 
@@ -111,15 +111,15 @@ bool Chessboard::addStepDownSx(MoveList &moves, const PieceType *mat, int s_row,
             return false; // white man only eat black man
         row++;
         col--;
-        if (mat[row * 8 + col] != EMPTY) {
+        if (mat[row * CHESSBOARD_SIZE + col] != EMPTY) {
             return false;
         }
 
         // possible jump, check only downSx and downDx
         copy = Chessboard::copyMatrix(mat);
-        copy[s_row * 8 + s_col] = EMPTY;
-        copy[row * 8 + col - 7] = EMPTY;
-        copy[row * 8 + col] = row == 7 ? PC_DAME : PC_PAWN;
+        copy[s_row * CHESSBOARD_SIZE + s_col] = EMPTY;
+        copy[row * CHESSBOARD_SIZE + col - CHESSBOARD_SIZE + 1] = EMPTY;
+        copy[row * CHESSBOARD_SIZE + col] = row == CHESSBOARD_SIZE - 1 ? PC_DAME : PC_PAWN;
         score++;
 
         if (addStepDownSx(moves, copy, row, col, score))
@@ -146,15 +146,15 @@ bool Chessboard::addStepDownSx(MoveList &moves, const PieceType *mat, int s_row,
 
     row++;
     col--;
-    if (mat[row * 8 + col] != EMPTY) {
+    if (mat[row * CHESSBOARD_SIZE + col] != EMPTY) {
         return false;
     }
 
     // possible jump
     copy = Chessboard::copyMatrix(mat);
-    copy[s_row * 8 + s_col] = EMPTY;
-    copy[row * 8 + col - 7] = EMPTY;
-    copy[row * 8 + col] = s_value;
+    copy[s_row * CHESSBOARD_SIZE + s_col] = EMPTY;
+    copy[row * CHESSBOARD_SIZE + col - CHESSBOARD_SIZE + 1] = EMPTY;
+    copy[row * CHESSBOARD_SIZE + col] = s_value;
     score += 2;
 
     if (addStepDownSx(moves, copy, row, col, score))
@@ -178,26 +178,26 @@ bool Chessboard::addStepDownSx(MoveList &moves, const PieceType *mat, int s_row,
 }
 
 bool Chessboard::addStepDownDx(MoveList &moves, const PieceType *mat, int s_row, int s_col, int score) {
-    if (s_row == 7 || s_col == 7)
+    if (s_row == CHESSBOARD_SIZE - 1 || s_col == CHESSBOARD_SIZE - 1)
         return false;
     int row = s_row + 1, col = s_col + 1;
-    PieceType s_value = mat[s_row * 8 + s_col];
+    PieceType s_value = mat[s_row * CHESSBOARD_SIZE + s_col];
     PieceType *copy;
     bool isValid = true;
 
-    int mid_value = mat[row * 8 + col];
+    int mid_value = mat[row * CHESSBOARD_SIZE + col];
     if (mid_value == EMPTY) {
         if (score == 0) {
             copy = Chessboard::copyMatrix(mat);
-            copy[s_row * 8 + s_col] = EMPTY;
-            copy[row * 8 + col] = row == 7 && s_value == PC_PAWN ? PC_DAME : s_value;
+            copy[s_row * CHESSBOARD_SIZE + s_col] = EMPTY;
+            copy[row * CHESSBOARD_SIZE + col] = row == CHESSBOARD_SIZE - 1 && s_value == PC_PAWN ? PC_DAME : s_value;
             moves.push_back(new Move(copy, false, 0));
             return true;
         }
         return false;
     }
 
-    if (row == 7 || col == 7) {
+    if (row == CHESSBOARD_SIZE - 1 || col == CHESSBOARD_SIZE - 1) {
         return false;
     }
 
@@ -206,14 +206,14 @@ bool Chessboard::addStepDownDx(MoveList &moves, const PieceType *mat, int s_row,
             return false;
         row++;
         col++;
-        if (mat[row * 8 + col] != EMPTY) {
+        if (mat[row * CHESSBOARD_SIZE + col] != EMPTY) {
             return false;
         }
 
         copy = Chessboard::copyMatrix(mat);
-        copy[s_row * 8 + s_col] = EMPTY;
-        copy[row * 8 + col - 9] = EMPTY;
-        copy[row * 8 + col] = row == 7 ? PC_DAME : PC_PAWN;
+        copy[s_row * CHESSBOARD_SIZE + s_col] = EMPTY;
+        copy[row * CHESSBOARD_SIZE + col - CHESSBOARD_SIZE - 1] = EMPTY;
+        copy[row * CHESSBOARD_SIZE + col] = row == CHESSBOARD_SIZE - 1 ? PC_DAME : PC_PAWN;
         score++;
 
         if (addStepDownSx(moves, copy, row, col, score))
@@ -240,14 +240,14 @@ bool Chessboard::addStepDownDx(MoveList &moves, const PieceType *mat, int s_row,
 
     row++;
     col++;
-    if (mat[row * 8 + col] != EMPTY) {
+    if (mat[row * CHESSBOARD_SIZE + col] != EMPTY) {
         return false;
     }
 
     copy = Chessboard::copyMatrix(mat);
-    copy[s_row * 8 + s_col] = EMPTY;
-    copy[row * 8 + col - 9] = EMPTY;
-    copy[row * 8 + col] = s_value;
+    copy[s_row * CHESSBOARD_SIZE + s_col] = EMPTY;
+    copy[row * CHESSBOARD_SIZE + col - CHESSBOARD_SIZE - 1] = EMPTY;
+    copy[row * CHESSBOARD_SIZE + col] = s_value;
     score += 2;
 
     if (addStepDownSx(moves, copy, row, col, score))
@@ -274,16 +274,16 @@ bool Chessboard::addStepUpSx(MoveList &moves, const PieceType *mat, int s_row, i
     if (s_row == 0 || s_col == 0)
         return false;
     int row = s_row - 1, col = s_col - 1;
-    PieceType s_value = mat[s_row * 8 + s_col];
+    PieceType s_value = mat[s_row * CHESSBOARD_SIZE + s_col];
     PieceType *copy;
     bool isValid = true;
 
-    int mid_value = mat[row * 8 + col];
+    int mid_value = mat[row * CHESSBOARD_SIZE + col];
     if (mid_value == EMPTY) {
         if (score == 0) {
             copy = Chessboard::copyMatrix(mat);
-            copy[s_row * 8 + s_col] = EMPTY;
-            copy[row * 8 + col] = row == 0 && s_value == PL_PAWN ? PL_DAME : s_value;
+            copy[s_row * CHESSBOARD_SIZE + s_col] = EMPTY;
+            copy[row * CHESSBOARD_SIZE + col] = row == 0 && s_value == PL_PAWN ? PL_DAME : s_value;
             moves.push_back(new Move(copy, false, 0));
             return true;
         }
@@ -299,14 +299,14 @@ bool Chessboard::addStepUpSx(MoveList &moves, const PieceType *mat, int s_row, i
             return false;
         row--;
         col--;
-        if (mat[row * 8 + col] != EMPTY) {
+        if (mat[row * CHESSBOARD_SIZE + col] != EMPTY) {
             return false;
         }
 
         copy = Chessboard::copyMatrix(mat);
-        copy[s_row * 8 + s_col] = EMPTY;
-        copy[row * 8 + col + 9] = EMPTY;
-        copy[row * 8 + col] = row == 0 ? PL_DAME : PL_PAWN;
+        copy[s_row * CHESSBOARD_SIZE + s_col] = EMPTY;
+        copy[row * CHESSBOARD_SIZE + col + CHESSBOARD_SIZE + 1] = EMPTY;
+        copy[row * CHESSBOARD_SIZE + col] = row == 0 ? PL_DAME : PL_PAWN;
         score++;
 
         if (addStepUpSx(moves, copy, row, col, score))
@@ -333,14 +333,14 @@ bool Chessboard::addStepUpSx(MoveList &moves, const PieceType *mat, int s_row, i
 
     row--;
     col--;
-    if (mat[row * 8 + col] != EMPTY) {
+    if (mat[row * CHESSBOARD_SIZE + col] != EMPTY) {
         return false;
     }
 
     copy = Chessboard::copyMatrix(mat);
-    copy[s_row * 8 + s_col] = EMPTY;
-    copy[row * 8 + col + 9] = EMPTY;
-    copy[row * 8 + col] = s_value;
+    copy[s_row * CHESSBOARD_SIZE + s_col] = EMPTY;
+    copy[row * CHESSBOARD_SIZE + col + CHESSBOARD_SIZE + 1] = EMPTY;
+    copy[row * CHESSBOARD_SIZE + col] = s_value;
     score += 2;
 
     if (addStepUpSx(moves, copy, row, col, score))
@@ -364,26 +364,26 @@ bool Chessboard::addStepUpSx(MoveList &moves, const PieceType *mat, int s_row, i
 }
 
 bool Chessboard::addStepUpDx(MoveList &moves, const PieceType *mat, int s_row, int s_col, int score) {
-    if (s_row == 0 || s_col == 7)
+    if (s_row == 0 || s_col == CHESSBOARD_SIZE - 1)
         return false;
     int row = s_row - 1, col = s_col + 1;
-    PieceType s_value = mat[s_row * 8 + s_col];
+    PieceType s_value = mat[s_row * CHESSBOARD_SIZE + s_col];
     PieceType *copy;
     bool isValid = true;
 
-    int mid_value = mat[row * 8 + col];
+    int mid_value = mat[row * CHESSBOARD_SIZE + col];
     if (mid_value == EMPTY) {
         if (score == 0) {
             copy = Chessboard::copyMatrix(mat);
-            copy[s_row * 8 + s_col] = EMPTY;
-            copy[row * 8 + col] = row == 0 && s_value == PL_PAWN ? PL_DAME : s_value;
+            copy[s_row * CHESSBOARD_SIZE + s_col] = EMPTY;
+            copy[row * CHESSBOARD_SIZE + col] = row == 0 && s_value == PL_PAWN ? PL_DAME : s_value;
             moves.push_back(new Move(copy, false, 0));
             return true;
         }
         return false;
     }
 
-    if (row == 0 || col == 7) {
+    if (row == 0 || col == CHESSBOARD_SIZE - 1) {
         return false;
     }
 
@@ -392,14 +392,14 @@ bool Chessboard::addStepUpDx(MoveList &moves, const PieceType *mat, int s_row, i
             return false;
         row--;
         col++;
-        if (mat[row * 8 + col] != EMPTY) {
+        if (mat[row * CHESSBOARD_SIZE + col] != EMPTY) {
             return false;
         }
 
         copy = Chessboard::copyMatrix(mat);
-        copy[s_row * 8 + s_col] = EMPTY;
-        copy[row * 8 + col + 7] = EMPTY;
-        copy[row * 8 + col] = row == 0 ? PL_DAME : PL_PAWN;
+        copy[s_row * CHESSBOARD_SIZE + s_col] = EMPTY;
+        copy[row * CHESSBOARD_SIZE + col + CHESSBOARD_SIZE - 1] = EMPTY;
+        copy[row * CHESSBOARD_SIZE + col] = row == 0 ? PL_DAME : PL_PAWN;
         score++;
 
         if (addStepUpSx(moves, copy, row, col, score))
@@ -426,14 +426,14 @@ bool Chessboard::addStepUpDx(MoveList &moves, const PieceType *mat, int s_row, i
 
     row--;
     col++;
-    if (mat[row * 8 + col] != EMPTY) {
+    if (mat[row * CHESSBOARD_SIZE + col] != EMPTY) {
         return false;
     }
 
     copy = Chessboard::copyMatrix(mat);
-    copy[s_row * 8 + s_col] = EMPTY;
-    copy[row * 8 + col + 7] = EMPTY;
-    copy[row * 8 + col] = s_value;
+    copy[s_row * CHESSBOARD_SIZE + s_col] = EMPTY;
+    copy[row * CHESSBOARD_SIZE + col + CHESSBOARD_SIZE - 1] = EMPTY;
+    copy[row * CHESSBOARD_SIZE + col] = s_value;
     score += 2;
 
     if (addStepDownSx(moves, copy, row, col, score))
@@ -464,7 +464,7 @@ void Chessboard::updateBoard(Move *move) {
     if (move == nullptr) {
         setDefaultLayout();
     } else {
-        for (int i = 0; i < 64; i++) {
+        for (int i = 0; i < CHESSBOARD_SIZE * CHESSBOARD_SIZE; i++) {
             m_mat[i] = move->m_mat[i];
         }
     }
@@ -474,11 +474,11 @@ void Chessboard::updateBoard(Move *move) {
  * Resets the initial pieces disposition
  */
 void Chessboard::setDefaultLayout() {
-    for (int i = 0; i < 64; i++) {
-        if ((i / 8) % 2 == i % 2) {
-            if (i < 24) {
+    for (int i = 0; i < CHESSBOARD_SIZE * CHESSBOARD_SIZE; i++) {
+        if ((i / CHESSBOARD_SIZE) % 2 == i % 2) {
+            if (i < CHESSBOARD_SIZE * 3) {
                 m_mat[i] = PC_PAWN;
-            } else if (i >= 40) {
+            } else if (i >= CHESSBOARD_SIZE * 5) {
                 m_mat[i] = PL_PAWN;
             } else {
                 m_mat[i] = EMPTY;

@@ -3,6 +3,8 @@
 
 #include <bits/stdc++.h>
 
+#define CHESSBOARD_SIZE 8
+
 class Chessboard {
 public:
     Chessboard();
@@ -35,7 +37,7 @@ public:
     static MoveList findMoves(Move *start_move, bool pcTurn);
 
 private:
-    PieceType m_mat[64]{};
+    PieceType m_mat[CHESSBOARD_SIZE * CHESSBOARD_SIZE]{};
     void setDefaultLayout();
 
     static bool addStepDownSx(MoveList &moves, const PieceType *mat, int s_row, int s_col, int score);

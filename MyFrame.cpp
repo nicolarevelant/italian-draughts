@@ -8,8 +8,8 @@ enum MenuItems {
 
 MyFrame::MyFrame(const std::string &locale, const std::string &theme)
 : wxFrame(nullptr, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(
-        squareSize * 8 + border * 2 + padding * 2 + 160,
-        squareSize * 8 + border * 2 + padding * 2 + 51)),
+        squareSize * CHESSBOARD_SIZE + border * 2 + padding * 2 + 160,
+        squareSize * CHESSBOARD_SIZE + border * 2 + padding * 2 + 51)),
         strings(locale), colors(theme),
 
         // colors and borders
@@ -73,7 +73,7 @@ wxMenuBar *MyFrame::createMenuBar() {
 }
 
 wxPanel *MyFrame::createChessboard(wxWindow *parent) {
-    int gridSize = squareSize * 8;
+    int gridSize = squareSize * CHESSBOARD_SIZE;
     auto *chessboardPanel = new wxPanel(parent, wxID_ANY, wxDefaultPosition,
                                         wxSize(gridSize + border * 2, gridSize + border * 2));
     chessboardPanel->SetBackgroundColour(colors["border"]);
@@ -84,7 +84,7 @@ wxPanel *MyFrame::createChessboard(wxWindow *parent) {
 }
 
 wxPanel *MyFrame::createChessboardGrid(wxWindow *parent, const wxPoint &pos, const wxSize &size) {
-    auto *gridSizer = new wxGridSizer(8, 8, 0, 0);
+    auto *gridSizer = new wxGridSizer(CHESSBOARD_SIZE, CHESSBOARD_SIZE, 0, 0);
     auto *chessboardGrid = new wxPanel(parent, wxID_ANY, pos, size);
     chessboardGrid->SetSizer(gridSizer);
 
@@ -93,8 +93,8 @@ wxPanel *MyFrame::createChessboardGrid(wxWindow *parent, const wxPoint &pos, con
     chessboardGrid->SetBackgroundColour(lightColor);
 
     ChessboardSquare *square;
-    for (int row = 0, i = 0, col; row < 8; row++) {
-        for (col = 0; col < 8; col++, i++) {
+    for (int row = 0, i = 0, col; row < CHESSBOARD_SIZE; row++) {
+        for (col = 0; col < CHESSBOARD_SIZE; col++, i++) {
             square = new ChessboardSquare(chessboardGrid, i);
             if (row % 2 == col % 2) {
                 square->Bind(wxEVT_ENTER_WINDOW, &MyFrame::OnItemMouseEntered, this);
@@ -187,7 +187,7 @@ void MyFrame::updateStatusText(const wxString &text) {
 
 void MyFrame::updateBoardAndIcons(Chessboard::Move *move) {
     board.updateBoard(move);
-    for (int i = 0; i < 64; i++) {
+    for (int i = 0; i < CHESSBOARD_SIZE * CHESSBOARD_SIZE; i++) {
         // update icons
         switch (board.get(i)) {
             case Chessboard::EMPTY:
@@ -271,7 +271,7 @@ void MyFrame::OnItemMouseClicked(wxMouseEvent &event) {
     }
 
     // white square, illegal move
-    if ((currentPos / 8) % 2 != currentPos % 2) {
+    if ((currentPos / CHESSBOARD_SIZE) % 2 != currentPos % 2) {
         chessboard[selectedPos]->SetBorder(wxNullPen);
         selectedPos = selectedNone;
         Refresh();
