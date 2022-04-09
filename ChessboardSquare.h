@@ -1,7 +1,3 @@
-//
-// Created by nicola
-//
-
 #ifndef ITALIAN_DRAUGHTS_CHESSBOARD_SQUARE_H
 #define ITALIAN_DRAUGHTS_CHESSBOARD_SQUARE_H
 

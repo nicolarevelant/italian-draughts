@@ -1,7 +1,3 @@
-//
-// Created by nicola
-//
-
 #ifndef ITALIAN_DRAUGHTS_MYFRAME_H
 #define ITALIAN_DRAUGHTS_MYFRAME_H
 
