@@ -15,6 +15,7 @@ MyFrame::MyFrame(const std::string &locale, const std::string &theme)
         // colors and borders
         focusBorder(colors.get("focus-border", *wxWHITE), 3),
         hoverBorder(colors.get("hover-border", wxTransparentColour), 3),
+        possibleMoveBorder(colors.get("possible-move-border", *wxRED), 3),
 
         // bitmaps
         pcPawn(SYSTEM_CFG_PATH"images/pcPawn.png"), pcDame(SYSTEM_CFG_PATH"images/pcDame.png"),
@@ -40,8 +41,7 @@ MyFrame::MyFrame(const std::string &locale, const std::string &theme)
     mainSizer->Add(chessboardPanel, 0, wxALL, 20);
     mainSizer->AddStretchSpacer();
 
-    updateBoardAndIcons();
-    moves = board.findMoves(false);
+    updateChessboard();
 
     Bind(wxEVT_MENU, &MyFrame::onThreadFinished, this, THREAD_FINISH);
 }
@@ -125,8 +125,8 @@ void MyFrame::newMatchClicked(wxCommandEvent &) {
     }
 
     m_isEnd = false;
-    updateBoardAndIcons();
-    moves = board.findMoves(false);
+
+    updateChessboard();
     updateStatusText();
 
     Refresh();
@@ -157,8 +157,8 @@ void MyFrame::changeDifficultClicked(wxCommandEvent &) {
             m_isPlaying = false;
             m_isEnd = false;
             gameDifficult = (int) value;
-            updateBoardAndIcons();
-            moves = board.findMoves(false);
+
+            updateChessboard();
             updateStatusText();
 
             Refresh();
@@ -211,6 +211,39 @@ void MyFrame::updateBoardAndIcons(Chessboard::Move *move) {
     Refresh();
 }
 
+void MyFrame::updateChessboard(Chessboard::Move *move) {
+    updateBoardAndIcons(move);
+    delete move;
+
+    deleteMoves();
+    moves = board.findMoves(false);
+}
+
+void MyFrame::updateSelection(int newSelection) {
+    for (auto &i : chessboard) {
+        i->SetBorder(wxNullPen);
+    }
+    chessboard[newSelection]->SetBorder(focusBorder);
+
+    // highlight the possible moves
+    Chessboard::PieceType oldValue;
+    for (Chessboard::Move *move : moves) {
+        oldValue = move->m_mat[newSelection];
+        if (oldValue != Chessboard::EMPTY) {
+            continue; // this Chessboard::Move doesn't move the current selected piece
+        }
+
+        // highlight the unique empty checker in the current disposition that is filled in 'move'
+        for (int i = 0; i < 64; i++) {
+            if (board.get(i) == Chessboard::EMPTY && move->m_mat[i] != Chessboard::EMPTY) {
+                chessboard[i]->SetBorder(possibleMoveBorder);
+            }
+        }
+    }
+
+    selectedPos = newSelection;
+}
+
 void MyFrame::OnItemMouseEntered(wxMouseEvent &event) {
     if (m_isEnd) return;
     int square_id = event.GetId();
@@ -218,13 +251,13 @@ void MyFrame::OnItemMouseEntered(wxMouseEvent &event) {
 
     Chessboard::PieceType value = board.get(square_id);
     if (selectedPos == selectedNone) {
+        // if not selected --> only if player piece
         if (value == Chessboard::PL_PAWN || value == Chessboard::PL_DAME) {
-            // if not selected --> only if player piece
             chessboard[square_id]->SetBorder(hoverBorder);
             Refresh();
         }
     } else if (value == Chessboard::EMPTY) {
-        // if selected --> only if empty
+        // else (if selected) --> only if empty
         chessboard[square_id]->SetBorder(hoverBorder);
         Refresh();
     }
@@ -246,15 +279,14 @@ void MyFrame::OnItemMouseClicked(wxMouseEvent &event) {
     }
     int x, y;
     event.GetPosition(&x, &y);
-    if (x < 0 || y < 0 || x >= squareSize || y >= squareSize) return; // clicked in another square
+    if (x < 0 || y < 0 || x >= squareSize || y >= squareSize) return; // illegal position
 
     int currentPos = event.GetId();
 
     if (selectedPos == selectedNone) {
         Chessboard::PieceType value = board.get(currentPos);
         if (value == Chessboard::PL_PAWN || value == Chessboard::PL_DAME) {
-            chessboard[currentPos]->SetBorder(focusBorder);
-            selectedPos = currentPos;
+            updateSelection(currentPos);
             Refresh();
         }
         return;
@@ -262,41 +294,28 @@ void MyFrame::OnItemMouseClicked(wxMouseEvent &event) {
 
     // already selected
 
-    // same square
-    if (currentPos == selectedPos) {
-        chessboard[currentPos]->SetBorder(wxNullPen);
-        selectedPos = selectedNone;
+    // same square or white square, illegal move
+    if (currentPos == selectedPos || (currentPos / 8) % 2 != currentPos % 2) {
+        updateSelection(); // it removes also the possible move borders
         Refresh();
-        return;
-    }
-
-    // white square, illegal move
-    if ((currentPos / 8) % 2 != currentPos % 2) {
-        chessboard[selectedPos]->SetBorder(wxNullPen);
-        selectedPos = selectedNone;
-        Refresh();
-        return;
+        return; // no move
     }
 
     Chessboard::PieceType value = board.get(currentPos);
     if (value != Chessboard::EMPTY) {
         if (value == Chessboard::PL_PAWN || value == Chessboard::PL_DAME) {
             // change selected position
-            chessboard[selectedPos]->SetBorder(wxNullPen);
-            selectedPos = currentPos;
-            chessboard[currentPos]->SetBorder(focusBorder);
+            updateSelection(currentPos);
         } else {
-            chessboard[selectedPos]->SetBorder(wxNullPen);
-            selectedPos = selectedNone;
+            updateSelection();
         }
         Refresh();
-        return; // place not available
+        return; // no move
     }
 
-    chessboard[selectedPos]->SetBorder(wxNullPen);
-    chessboard[currentPos]->SetBorder(wxNullPen);
-    Chessboard::Move *playerMove = findPlayerMove(selectedPos, currentPos);
-    selectedPos = selectedNone;
+    int oldSelection = selectedPos;
+    updateSelection();
+    Chessboard::Move *playerMove = findPlayerMove(oldSelection, currentPos);
     if (playerMove == nullptr) {
         Refresh();
         return; // illegal move
@@ -330,11 +349,8 @@ void MyFrame::onThreadFinished(wxCommandEvent &event) {
         return;
     }
 
-    updateBoardAndIcons(pcMove);
-    delete pcMove;
+    updateChessboard(pcMove);
 
-    deleteMoves();
-    moves = board.findMoves(false);
     if (moves.empty()) {
         m_isEnd = true;
         m_isPlaying = false;
@@ -352,7 +368,7 @@ Chessboard::Move *MyFrame::findPlayerMove(int oldIndex, int newIndex) {
     for (Chessboard::Move *move: moves) {
         oldValue = move->m_mat[oldIndex];
         if (oldValue != Chessboard::EMPTY)
-            continue;
+            continue; // this is not the correct move
 
         // here only if this move change the old position that becomes empty
         newValue = move->m_mat[newIndex];

@@ -17,7 +17,7 @@ public:
 private:
     const StringResources strings;
     const ColorResources colors;
-    const wxPen focusBorder, hoverBorder;
+    const wxPen focusBorder, hoverBorder, possibleMoveBorder;
     const wxBitmap pcPawn, pcDame, plPawn, plDame;
     const wxArrayString developers = wxArrayString(1, {"Nicola Revelant <nicolarevelant44@gmail.com>"});
 
@@ -41,6 +41,8 @@ private:
 
     void updateStatusText(const wxString& text = wxEmptyString);
     void updateBoardAndIcons(Chessboard::Move *move = nullptr);
+    void updateChessboard(Chessboard::Move *move = nullptr);
+    void updateSelection(int newSelection = selectedNone);
 
     // events
     void OnItemMouseEntered(wxMouseEvent &);
