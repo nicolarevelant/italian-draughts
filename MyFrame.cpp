@@ -215,6 +215,8 @@ void MyFrame::updateChessboard(Chessboard::Move *move) {
     updateBoardAndIcons(move);
     delete move;
 
+    updateSelection();
+
     deleteMoves();
     moves = board.findMoves(false);
 }
@@ -223,20 +225,23 @@ void MyFrame::updateSelection(int newSelection) {
     for (auto &i : chessboard) {
         i->SetBorder(wxNullPen);
     }
-    chessboard[newSelection]->SetBorder(focusBorder);
 
-    // highlight the possible moves
-    Chessboard::PieceType oldValue;
-    for (Chessboard::Move *move : moves) {
-        oldValue = move->m_mat[newSelection];
-        if (oldValue != Chessboard::EMPTY) {
-            continue; // this Chessboard::Move doesn't move the current selected piece
-        }
+    if (newSelection != selectedNone) {
+        chessboard[newSelection]->SetBorder(focusBorder);
 
-        // highlight the unique empty checker in the current disposition that is filled in 'move'
-        for (int i = 0; i < 64; i++) {
-            if (board.get(i) == Chessboard::EMPTY && move->m_mat[i] != Chessboard::EMPTY) {
-                chessboard[i]->SetBorder(possibleMoveBorder);
+        // highlight the possible moves
+        Chessboard::PieceType oldValue;
+        for (Chessboard::Move *move: moves) {
+            oldValue = move->m_mat[newSelection];
+            if (oldValue != Chessboard::EMPTY) {
+                continue; // this Chessboard::Move doesn't move the current selected piece
+            }
+
+            // highlight the unique empty checker in the current disposition that is filled in 'move'
+            for (int i = 0; i < 64; i++) {
+                if (board.get(i) == Chessboard::EMPTY && move->m_mat[i] != Chessboard::EMPTY) {
+                    chessboard[i]->SetBorder(possibleMoveBorder);
+                }
             }
         }
     }
@@ -245,28 +250,20 @@ void MyFrame::updateSelection(int newSelection) {
 }
 
 void MyFrame::OnItemMouseEntered(wxMouseEvent &event) {
-    if (m_isEnd) return;
-    int square_id = event.GetId();
-    if (selectedPos == square_id) return;
+    if (m_isEnd || selectedPos != selectedNone) return;
+    int pos = event.GetId();
 
-    Chessboard::PieceType value = board.get(square_id);
-    if (selectedPos == selectedNone) {
-        // if not selected --> only if player piece
-        if (value == Chessboard::PL_PAWN || value == Chessboard::PL_DAME) {
-            chessboard[square_id]->SetBorder(hoverBorder);
-            Refresh();
-        }
-    } else if (value == Chessboard::EMPTY) {
-        // else (if selected) --> only if empty
-        chessboard[square_id]->SetBorder(hoverBorder);
+    Chessboard::PieceType value = board.get(pos);
+    if (value == Chessboard::PL_PAWN || value == Chessboard::PL_DAME) {
+        chessboard[pos]->SetBorder(hoverBorder);
         Refresh();
     }
 }
 
 void MyFrame::OnItemMouseExited(wxMouseEvent &event) {
-    int square_id = event.GetId();
-    if (selectedPos == square_id) return;
-    chessboard[square_id]->SetBorder(wxNullPen);
+    int pos = event.GetId();
+    if (selectedPos == selectedNone)
+        chessboard[pos]->SetBorder(wxNullPen);
     Refresh();
 }
 

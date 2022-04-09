@@ -29,6 +29,10 @@ void ChessboardSquare::OnPaint(wxPaintEvent &) {
         dc.DrawBitmap(m_bitmap, 0, 0);
 }
 
+wxPen &ChessboardSquare::GetBorder() {
+    return m_border;
+}
+
 void ChessboardSquare::SetBorder(const wxPen &brd) {
     m_border = brd;
 }
