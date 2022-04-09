@@ -14,10 +14,10 @@ public:
 
     enum PieceType {
         EMPTY = 0, // no piece
-        PC_PAWN,   // white pawn
-        PC_DAME,   // white dame
-        PL_PAWN,   // black pawn
-        PL_DAME    // black dame
+        PC_PAWN,   // pc pawn
+        PC_DAME,   // pc dame
+        PL_PAWN,   // player pawn
+        PL_DAME    // player dame
     };
 
     struct Move {

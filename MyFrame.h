@@ -19,8 +19,8 @@ public:
     ~MyFrame() override;
 
 private:
-    const StringResources strings; // the i18n UI m_resources
-    const ColorResources colors; // the i18n UI m_resources
+    const StringResources strings;
+    const ColorResources colors;
     const wxPen focusBorder, hoverBorder;
     const wxBitmap pcPawn, pcDame, plPawn, plDame;
     const wxArrayString developers = wxArrayString(1, {"Nicola Revelant <nicolarevelant44@gmail.com>"});
@@ -46,6 +46,7 @@ private:
     void updateStatusText(const wxString& text = wxEmptyString);
     void updateBoardAndIcons(Chessboard::Move *move = nullptr);
 
+    // events
     void OnItemMouseEntered(wxMouseEvent &);
     void OnItemMouseExited(wxMouseEvent &);
     void OnItemMouseClicked(wxMouseEvent &);
