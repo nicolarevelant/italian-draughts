@@ -22,6 +22,9 @@ game.turn.pc=Turno dell'avversario
 game.leave=Sei sicuro di voler abbandonare la partita?
 game.new=Nuova partita
 
+game.invalid-move=Selezione non valida
+game.invalid-move.text=Non puoi fare alcuna mossa con questo pezzo
+
 game.diff=Difficoltà di gioco
 game.diff.text=Scegli la difficoltà tra 1 e 10
 

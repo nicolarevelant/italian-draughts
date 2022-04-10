@@ -42,11 +42,8 @@ private:
     void updateStatusText(const wxString& text = wxEmptyString);
     void updateBoardAndIcons(Chessboard::Move *move = nullptr);
     void updateChessboard(Chessboard::Move *move = nullptr);
-    void updateSelection(int newSelection = selectedNone);
+    void checkUpdateSelection(int newSelection = selectedNone);
 
-    // events
-    void OnItemMouseEntered(wxMouseEvent &);
-    void OnItemMouseExited(wxMouseEvent &);
     void OnItemMouseClicked(wxMouseEvent &);
     void onThreadFinished(wxCommandEvent &event);
 

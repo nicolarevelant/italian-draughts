@@ -23,6 +23,9 @@ game.turn.pc=Opponent's turn
 game.leave=Are you sure you want to leave the game?
 game.new=New match
 
+game.invalid-move=Invalid selection
+game.invalid-move.text=You can't make any moves with this piece
+
 game.diff=Game difficulty
 game.diff.text=Choose game difficulty from 1 to 10
 
