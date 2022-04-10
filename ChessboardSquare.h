@@ -26,7 +26,6 @@ public:
                 const wxBitmap &bitmap = wxNullBitmap);
 
     void SetBorder(const wxPen &border);
-
     void SetBitmap(const wxBitmap &bitmap);
 
 private:
