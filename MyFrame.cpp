@@ -289,17 +289,6 @@ void MyFrame::OnItemMouseClicked(wxMouseEvent &event) {
     int currentPos = event.GetId();
 
     if (selectedPos == selectedNone) {
-        //Chessboard::PieceType value = board.get(currentPos);
-        /*if (value == Chessboard::PL_PAWN || value == Chessboard::PL_DAME) {
-            for (auto &move : moves) {
-                if (move->m_mat[currentPos] == Chessboard::EMPTY) {
-                    // there is at least 1 move with this piece
-                    checkUpdateSelection(currentPos);
-                    Refresh();
-                    return;
-                }
-            }
-        }*/
         checkUpdateSelection(currentPos);
         return;
     }
@@ -309,19 +298,11 @@ void MyFrame::OnItemMouseClicked(wxMouseEvent &event) {
     // same square or white square, illegal move
     if (currentPos == selectedPos || (currentPos / 8) % 2 != currentPos % 2) {
         checkUpdateSelection(); // it removes also the possible move borders
-        //Refresh();
         return; // no move
     }
 
     Chessboard::PieceType value = board.get(currentPos);
     if (value != Chessboard::EMPTY) {
-        /*if (value == Chessboard::PL_PAWN || value == Chessboard::PL_DAME) {
-            // change selected position
-            updateSelection(currentPos);
-        } else {
-            checkUpdateSelection();
-        }
-        Refresh();*/
         checkUpdateSelection(currentPos);
         return; // no move
     }
