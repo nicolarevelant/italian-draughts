@@ -87,7 +87,7 @@ void Frame::OnItemMouseClicked(wxMouseEvent &event) {
     // already selected
 
     // same square or white square, illegal move
-    if (currentPos == selectedPos || (currentPos / 8) % 2 != currentPos % 2) {
+    if (currentPos == selectedPos || (currentPos / CHESSBOARD_SIZE) % 2 != currentPos % 2) {
         checkUpdateSelection(); // it removes also the possible move borders
         return; // no move
     }

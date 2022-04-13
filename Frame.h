@@ -29,7 +29,7 @@ private:
     const wxBitmap pcPawn, pcDame, plPawn, plDame;
     const wxArrayString developers = wxArrayString(1, {"Nicola Revelant <nicolarevelant44@gmail.com>"});
 
-    ChessboardSquare *chessboard[64]{};
+    ChessboardSquare *chessboard[CHESSBOARD_SIZE * CHESSBOARD_SIZE]{};
     int selectedPos = selectedNone, gameDifficult = minGD;
     bool m_isPlaying = false, m_isEnd = false, m_pcTurn = false;
     Chessboard board{};

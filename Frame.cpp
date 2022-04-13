@@ -186,7 +186,7 @@ void Frame::checkUpdateSelection(int newSelection) {
             }
 
             // highlight the empty squares in the current disposition that are filled in 'move'
-            for (int i = 0; i < 64; i++) {
+            for (int i = 0; i < CHESSBOARD_SIZE * CHESSBOARD_SIZE; i++) {
                 if (board.get(i) == Chessboard::EMPTY && move->m_mat[i] != Chessboard::EMPTY) {
                     chessboard[i]->SetBorder(possibleMoveBorder);
                 }
