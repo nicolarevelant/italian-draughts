@@ -21,7 +21,7 @@ include_directories(SYSTEM /usr/lib/wx/include/gtk3-unicode-3.0 /usr/include/wx-
 set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS __WXGTK__)
 
 add_executable(${PROJECT_NAME} main.cpp Chessboard.cpp ChessboardSquare.cpp
-        GameLogic.cpp MinimaxThread.cpp MyFrame.cpp Resources.cpp)
+        GameLogic.cpp MinimaxThread.cpp Frame.cpp Resources.cpp FrameEvents.cpp)
 
 target_include_directories(${PROJECT_NAME} PRIVATE "${PROJECT_BINARY_DIR}")
 target_link_libraries(${PROJECT_NAME} PRIVATE "-pthread -lwx_gtk3u_core-3.0 -lwx_baseu-3.0 -lwx_gtk3u_adv-3.0")

@@ -1,5 +1,5 @@
 #include <getopt.h>
-#include "MyFrame.h"
+#include "Frame.h"
 
 static option longOptions[] = {
         {"locale", required_argument, nullptr, 'l'},
@@ -33,7 +33,7 @@ public:
         }
 
         if (locale.empty()) locale = std::setlocale(LC_ALL, "");
-        auto *frame = new MyFrame(locale, theme);
+        auto *frame = new Frame(locale, theme);
         frame->Show(true);
         return true;
     }

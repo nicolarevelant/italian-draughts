@@ -1,12 +1,6 @@
-#include "MyFrame.h"
+#include "Frame.h"
 
-enum MenuItems {
-    NEW_MATCH = 1,
-    CHANGE_GD,
-    THREAD_FINISH
-};
-
-MyFrame::MyFrame(const std::string &locale, const std::string &theme)
+Frame::Frame(const std::string &locale, const std::string &theme)
 : wxFrame(nullptr, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(
         squareSize * CHESSBOARD_SIZE + border * 2 + padding * 2 + 160,
         squareSize * CHESSBOARD_SIZE + border * 2 + padding * 2 + 51)),
@@ -42,10 +36,10 @@ MyFrame::MyFrame(const std::string &locale, const std::string &theme)
 
     updateChessboard();
 
-    Bind(wxEVT_MENU, &MyFrame::onThreadFinished, this, THREAD_FINISH);
+    Bind(wxEVT_MENU, &Frame::onThreadFinished, this, THREAD_FINISH);
 }
 
-wxMenuBar *MyFrame::createMenuBar() {
+wxMenuBar *Frame::createMenuBar() {
     auto *menuFile = new wxMenu;
     menuFile->Append(NEW_MATCH, strings["app.menu.new_match"]);
     menuFile->AppendSeparator();
@@ -63,15 +57,15 @@ wxMenuBar *MyFrame::createMenuBar() {
     menuBar->Append(menuSettings, strings["app.menu.settings"]);
     menuBar->Append(menuHelp, strings["app.menu.help"]);
 
-    menuBar->Bind(wxEVT_MENU, &MyFrame::newMatchClicked, this, NEW_MATCH);
-    menuBar->Bind(wxEVT_MENU, &MyFrame::closeFrame, this, wxID_EXIT);
-    menuBar->Bind(wxEVT_MENU, &MyFrame::changeDifficultClicked, this, CHANGE_GD);
-    menuBar->Bind(wxEVT_MENU, &MyFrame::aboutClicked, this, wxID_ABOUT);
+    menuBar->Bind(wxEVT_MENU, &Frame::newMatchClicked, this, NEW_MATCH);
+    menuBar->Bind(wxEVT_MENU, &Frame::closeFrame, this, wxID_EXIT);
+    menuBar->Bind(wxEVT_MENU, &Frame::changeDifficultClicked, this, CHANGE_GD);
+    menuBar->Bind(wxEVT_MENU, &Frame::aboutClicked, this, wxID_ABOUT);
 
     return menuBar;
 }
 
-wxPanel *MyFrame::createChessboard(wxWindow *parent) {
+wxPanel *Frame::createChessboard(wxWindow *parent) {
     int gridSize = squareSize * CHESSBOARD_SIZE;
     auto *chessboardPanel = new wxPanel(parent, wxID_ANY, wxDefaultPosition,
                                         wxSize(gridSize + border * 2, gridSize + border * 2));
@@ -82,7 +76,7 @@ wxPanel *MyFrame::createChessboard(wxWindow *parent) {
     return chessboardPanel;
 }
 
-wxPanel *MyFrame::createChessboardGrid(wxWindow *parent, const wxPoint &pos, const wxSize &size) {
+wxPanel *Frame::createChessboardGrid(wxWindow *parent, const wxPoint &pos, const wxSize &size) {
     auto *gridSizer = new wxGridSizer(CHESSBOARD_SIZE, CHESSBOARD_SIZE, 0, 0);
     auto *chessboardGrid = new wxPanel(parent, wxID_ANY, pos, size);
     chessboardGrid->SetSizer(gridSizer);
@@ -100,7 +94,7 @@ wxPanel *MyFrame::createChessboardGrid(wxWindow *parent, const wxPoint &pos, con
             } else {
                 square->SetBackgroundColour(lightColor);
             }
-            square->Bind(wxEVT_LEFT_UP, &MyFrame::OnItemMouseClicked, this);
+            square->Bind(wxEVT_LEFT_UP, &Frame::OnItemMouseClicked, this);
             gridSizer->Add(square);
             chessboard[i] = square;
         }
@@ -110,79 +104,13 @@ wxPanel *MyFrame::createChessboardGrid(wxWindow *parent, const wxPoint &pos, con
     return chessboardGrid;
 }
 
-//                             --- Menu events
-
-void MyFrame::newMatchClicked(wxCommandEvent &) {
-    if (m_pcTurn) return;
-
-    if (m_isPlaying) {
-        wxMessageDialog dialog(this, strings["game.leave"], strings["game.new"], wxYES_NO);
-        if (dialog.ShowModal() != wxID_YES) return;
-        m_isPlaying = false;
-    }
-
-    m_isEnd = false;
-
-    updateChessboard();
-    updateStatusText();
-
-    Refresh();
-}
-
-void MyFrame::closeFrame(wxCommandEvent &) {
-    Close();
-}
-
-void MyFrame::changeDifficultClicked(wxCommandEvent &) {
-    if (m_pcTurn) {
-        wxMessageDialog dialog(this, strings["game.wait.text"], strings["game.wait"]);
-        dialog.ShowModal();
-        return;
-    }
-
-    if (m_isPlaying) {
-        wxMessageDialog dialog(this, strings["game.leave"], strings["game.new"], wxYES_NO);
-        if (dialog.ShowModal() != wxID_YES) return;
-    }
-
-    while (true) {
-        wxTextEntryDialog dialog(this, strings["game.diff.text"], strings["game.diff"]);
-        if (dialog.ShowModal() != wxID_OK) return;
-        auto strValue = dialog.GetValue();
-        long value;
-        if (strValue.ToLong(&value) && value >= minGD && value <= maxGD) {
-            m_isPlaying = false;
-            m_isEnd = false;
-            gameDifficult = (int) value;
-
-            updateChessboard();
-            updateStatusText();
-
-            Refresh();
-            return;
-        }
-    }
-}
-
-void MyFrame::aboutClicked(wxCommandEvent &) {
-    wxAboutDialogInfo dialog;
-    dialog.SetName(strings.get("app.title", PROJECT_NAME));
-    dialog.SetVersion(PROJECT_VERSION);
-    dialog.SetDescription(strings["app.about.desc"]);
-    dialog.SetCopyright(strings["app.about.copy"]);
-    dialog.SetDevelopers(developers);
-    wxAboutBox(dialog, this);
-}
-
-//                             --- End menu events
-
-void MyFrame::updateStatusText(const wxString &text) {
+void Frame::updateStatusText(const wxString &text) {
     SetStatusText(wxString::Format(strings["app.statusbar.ph"],
                                    text.empty() ? strings[m_pcTurn ? "game.turn.pc" : "game.turn.you"] : text,
                                    gameDifficult));
 }
 
-void MyFrame::updateBoardAndIcons(Chessboard::Move *move) {
+void Frame::updateBoardAndIcons(Chessboard::Move *move) {
     board.updateBoard(move);
     for (int i = 0; i < CHESSBOARD_SIZE * CHESSBOARD_SIZE; i++) {
         // update icons
@@ -208,7 +136,7 @@ void MyFrame::updateBoardAndIcons(Chessboard::Move *move) {
     Refresh();
 }
 
-void MyFrame::updateChessboard(Chessboard::Move *move) {
+void Frame::updateChessboard(Chessboard::Move *move) {
     updateBoardAndIcons(move);
     delete move;
 
@@ -218,7 +146,7 @@ void MyFrame::updateChessboard(Chessboard::Move *move) {
     moves = board.findMoves(false);
 }
 
-void MyFrame::checkUpdateSelection(int newSelection) {
+void Frame::checkUpdateSelection(int newSelection) {
     // it removes the border from all squares
     for (auto &i : chessboard) {
         i->SetBorder(wxNullPen);
@@ -275,89 +203,7 @@ void MyFrame::checkUpdateSelection(int newSelection) {
     Refresh();
 }
 
-void MyFrame::OnItemMouseClicked(wxMouseEvent &event) {
-    if (m_isEnd) return;
-    if (m_pcTurn) {
-        wxMessageDialog dialog(this, strings["game.wait.text"], strings["game.wait"]);
-        dialog.ShowModal();
-        return;
-    }
-    int x, y;
-    event.GetPosition(&x, &y);
-    if (x < 0 || y < 0 || x >= squareSize || y >= squareSize) return; // illegal position
-
-    int currentPos = event.GetId();
-
-    if (selectedPos == selectedNone) {
-        checkUpdateSelection(currentPos);
-        return;
-    }
-
-    // already selected
-
-    // same square or white square, illegal move
-    if (currentPos == selectedPos || (currentPos / 8) % 2 != currentPos % 2) {
-        checkUpdateSelection(); // it removes also the possible move borders
-        return; // no move
-    }
-
-    Chessboard::PieceType value = board.get(currentPos);
-    if (value != Chessboard::EMPTY) {
-        checkUpdateSelection(currentPos);
-        return; // no move
-    }
-
-    int oldSelection = selectedPos;
-    checkUpdateSelection();
-    Chessboard::Move *playerMove = findPlayerMove(oldSelection, currentPos);
-    if (playerMove == nullptr) {
-        Refresh();
-        return; // illegal move
-    }
-
-    updateBoardAndIcons(playerMove);
-    m_isPlaying = true;
-    m_pcTurn = true;
-
-    updateStatusText();
-    auto *thread = new MinimaxThread(this, board, gameDifficult, THREAD_FINISH);
-    if (thread->Create() != wxTHREAD_NO_ERROR || thread->Run() != wxTHREAD_NO_ERROR) {
-        std::cout << "Thread error\n";
-        exit(-1);
-    }
-
-    // The player move is in the moves vector that will be deleted after the PC move
-    Refresh();
-}
-
-void MyFrame::onThreadFinished(wxCommandEvent &event) {
-    m_pcTurn = false;
-    auto *pcMove = reinterpret_cast<Chessboard::Move *>(event.GetClientData());
-    if (pcMove == nullptr) {
-        m_isEnd = true;
-        m_isPlaying = false;
-        updateStatusText(strings["game.you_won"]);
-        wxMessageDialog dialog(this, strings["game.you_won"],
-                               strings["game.over"]);
-        dialog.ShowModal();
-        return;
-    }
-
-    updateChessboard(pcMove);
-
-    if (moves.empty()) {
-        m_isEnd = true;
-        m_isPlaying = false;
-        updateStatusText(strings["game.you_lost"]);
-        wxMessageDialog dialog(this, strings["game.you_lost"],
-                               strings["game.over"]);
-        dialog.ShowModal();
-    } else {
-        updateStatusText();
-    }
-}
-
-Chessboard::Move *MyFrame::findPlayerMove(int oldIndex, int newIndex) {
+Chessboard::Move *Frame::findPlayerMove(int oldIndex, int newIndex) {
     Chessboard::PieceType oldValue, newValue;
     for (Chessboard::Move *move: moves) {
         oldValue = move->m_mat[oldIndex];
@@ -373,12 +219,12 @@ Chessboard::Move *MyFrame::findPlayerMove(int oldIndex, int newIndex) {
     return nullptr;
 }
 
-void MyFrame::deleteMoves() {
+void Frame::deleteMoves() {
     for (Chessboard::Move *move: moves) {
         delete move;
     }
 }
 
-MyFrame::~MyFrame() {
+Frame::~Frame() {
     deleteMoves();
 }
