@@ -7,45 +7,55 @@
 
 class Chessboard {
 public:
-    Chessboard();
-    virtual ~Chessboard();
+	Chessboard();
 
-    enum PieceType {
-        EMPTY = 0, // no piece
-        PC_PAWN,   // pc pawn
-        PC_DAME,   // pc dame
-        PL_PAWN,   // player pawn
-        PL_DAME    // player dame
-    };
+	virtual ~Chessboard();
 
-    struct Move {
-        Move(const PieceType *mat, bool eatenFromPawn, int score)
-        : m_mat(mat), m_eatenFromPawn(eatenFromPawn), m_score(score) {}
+	enum PieceType {
+		EMPTY = 0, // no piece
+		PC_PAWN,   // pc pawn
+		PC_DAME,   // pc dame
+		PL_PAWN,   // player pawn
+		PL_DAME    // player dame
+	};
 
-        ~Move() { delete[]m_mat; }
+	struct Move {
+		Move(const PieceType *mat, bool eatenFromPawn, int score)
+				: m_mat(mat), m_eatenFromPawn(eatenFromPawn), m_score(score) {}
 
-        const PieceType *m_mat;
-        const bool m_eatenFromPawn;
-        const int m_score;
-    };
-    typedef std::vector<Move *> MoveList;
+		~Move() { delete[]m_mat; }
 
-    static PieceType *copyMatrix(const PieceType *from);
-    [[nodiscard]] PieceType get(int index) const;
-    void updateBoard(Move *move);
-    [[nodiscard]] MoveList findMoves(bool pcTurn) const;
-    static MoveList findMoves(Move *start_move, bool pcTurn);
+		const PieceType *m_mat;
+		const bool m_eatenFromPawn;
+		const int m_score;
+	};
+
+	typedef std::vector<Move *> MoveList;
+
+	static PieceType *copyMatrix(const PieceType *from);
+
+	[[nodiscard]] PieceType get(int index) const;
+
+	void updateBoard(Move *move);
+
+	[[nodiscard]] MoveList findMoves(bool pcTurn) const;
+
+	static MoveList findMoves(Move *start_move, bool pcTurn);
 
 private:
-    PieceType m_mat[CHESSBOARD_SIZE * CHESSBOARD_SIZE]{};
-    void setDefaultLayout();
+	PieceType m_mat[CHESSBOARD_SIZE * CHESSBOARD_SIZE]{};
 
-    static bool addStepDownSx(MoveList &moves, const PieceType *mat, int s_row, int s_col, int score);
-    static bool addStepDownDx(MoveList &moves, const PieceType *mat, int s_row, int s_col, int score);
-    static bool addStepUpSx(MoveList &moves, const PieceType *mat, int s_row, int s_col, int score);
-    static bool addStepUpDx(MoveList &moves, const PieceType *mat, int s_row, int s_col, int score);
+	void setDefaultLayout();
 
-    static MoveList findMoves(const PieceType *mat, bool pcTurn);
+	static bool addStepDownSx(MoveList &moves, const PieceType *mat, int s_row, int s_col, int score);
+
+	static bool addStepDownDx(MoveList &moves, const PieceType *mat, int s_row, int s_col, int score);
+
+	static bool addStepUpSx(MoveList &moves, const PieceType *mat, int s_row, int s_col, int score);
+
+	static bool addStepUpDx(MoveList &moves, const PieceType *mat, int s_row, int s_col, int score);
+
+	static MoveList findMoves(const PieceType *mat, bool pcTurn);
 
 };
 

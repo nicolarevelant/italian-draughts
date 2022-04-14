@@ -7,39 +7,41 @@
 
 class ChessboardSquare : public wxWindow {
 public:
-    ChessboardSquare() : m_size(DEF_SQUARE_SIZE) { Init(); }
-    ~ChessboardSquare() override = default;
+	ChessboardSquare() : m_size(DEF_SQUARE_SIZE) { Init(); }
 
-    explicit ChessboardSquare(wxWindow *parent,
-                              wxWindowID windowId = wxID_ANY,
-                              int size = DEF_SQUARE_SIZE,
-                              const wxPen &border = wxNullPen,
-                              const wxBitmap &bitmap = wxNullBitmap)
-                              : m_size(size) {
-        Init();
-        Create(parent, windowId, border, bitmap);
-    }
+	~ChessboardSquare() override = default;
 
-    bool Create(wxWindow *parent,
-                wxWindowID windowId = wxID_ANY,
-                const wxPen &border = wxNullPen,
-                const wxBitmap &bitmap = wxNullBitmap);
+	explicit ChessboardSquare(wxWindow *parent,
+	                          wxWindowID windowId = wxID_ANY,
+	                          int size = DEF_SQUARE_SIZE,
+	                          const wxPen &border = wxNullPen,
+	                          const wxBitmap &bitmap = wxNullBitmap)
+			: m_size(size) {
+		Init();
+		Create(parent, windowId, border, bitmap);
+	}
 
-    void SetBorder(const wxPen &border);
-    void SetBitmap(const wxBitmap &bitmap);
+	bool Create(wxWindow *parent,
+	            wxWindowID windowId = wxID_ANY,
+	            const wxPen &border = wxNullPen,
+	            const wxBitmap &bitmap = wxNullBitmap);
+
+	void SetBorder(const wxPen &border);
+
+	void SetBitmap(const wxBitmap &bitmap);
 
 private:
-    const int m_size;
-    wxBitmap m_bitmap = wxNullBitmap;
-    const wxBrush m_transparentBrush = wxBrush(wxTransparentColour, wxBRUSHSTYLE_TRANSPARENT);
-    wxPen m_border = wxNullPen;
+	const int m_size;
+	wxBitmap m_bitmap = wxNullBitmap;
+	const wxBrush m_transparentBrush = wxBrush(wxTransparentColour, wxBRUSHSTYLE_TRANSPARENT);
+	wxPen m_border = wxNullPen;
 
-    void Init();
+	void Init();
 
-    // needed for having size*size as forced size
-    [[nodiscard]] wxSize DoGetBestSize() const override;
+	// needed for having size*size as forced size
+	[[nodiscard]] wxSize DoGetBestSize() const override;
 
-    void OnPaint(wxPaintEvent &);
+	void OnPaint(wxPaintEvent &);
 };
 
 

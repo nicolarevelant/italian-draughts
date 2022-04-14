@@ -1,2 +1,9 @@
 1.2
-    - First public version
+	- First public version
+
+1.2.1
+	- Menu bar with system theme
+
+1.2.2
+	- Removed hover effect
+	- New feature: now you can see what moves you can make when a piece is selected
