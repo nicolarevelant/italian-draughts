@@ -2,8 +2,8 @@
 
 Frame::Frame(const std::string &locale, const std::string &theme)
 		: wxFrame(nullptr, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(
-		squareSize * CHESSBOARD_SIZE + border * 2 + padding * 2 + 160,
-		squareSize * CHESSBOARD_SIZE + border * 2 + padding * 2 + 51)),
+		squareSize * 8 + border * 2 + padding * 2 + 160,
+		squareSize * 8 + border * 2 + padding * 2 + 51)),
 		  strings(locale), colors(theme),
 
 		// colors and borders
@@ -46,8 +46,7 @@ wxMenuBar *Frame::createMenuBar() {
 	menuFile->Append(wxID_EXIT, strings["app.exit"], strings["app.exit.help"]);
 
 	auto *menuSettings = new wxMenu;
-	menuSettings->Append(CHANGE_GD, strings["app.menu.changeGD"],
-	                     strings["app.menu.changeGD.help"]);
+	menuSettings->Append(CHANGE_GD, strings["app.menu.changeGD"]);
 
 	auto *menuHelp = new wxMenu;
 	menuHelp->Append(wxID_ABOUT, strings["app.about"], strings["app.about.help"]);
@@ -59,14 +58,14 @@ wxMenuBar *Frame::createMenuBar() {
 
 	menuBar->Bind(wxEVT_MENU, &Frame::newMatchClicked, this, NEW_MATCH);
 	menuBar->Bind(wxEVT_MENU, &Frame::closeFrame, this, wxID_EXIT);
-	menuBar->Bind(wxEVT_MENU, &Frame::changeDifficultClicked, this, CHANGE_GD);
+	menuBar->Bind(wxEVT_MENU, &Frame::changeDifficultyClicked, this, CHANGE_GD);
 	menuBar->Bind(wxEVT_MENU, &Frame::aboutClicked, this, wxID_ABOUT);
 
 	return menuBar;
 }
 
 wxPanel *Frame::createChessboard(wxWindow *parent) {
-	int gridSize = squareSize * CHESSBOARD_SIZE;
+	int gridSize = squareSize * 8;
 	auto *chessboardPanel = new wxPanel(parent, wxID_ANY, wxDefaultPosition,
 	                                    wxSize(gridSize + border * 2, gridSize + border * 2));
 	chessboardPanel->SetBackgroundColour(colors["border"]);
@@ -77,7 +76,7 @@ wxPanel *Frame::createChessboard(wxWindow *parent) {
 }
 
 wxPanel *Frame::createChessboardGrid(wxWindow *parent, const wxPoint &pos, const wxSize &size) {
-	auto *gridSizer = new wxGridSizer(CHESSBOARD_SIZE, CHESSBOARD_SIZE, 0, 0);
+	auto *gridSizer = new wxGridSizer(8, 8, 0, 0);
 	auto *chessboardGrid = new wxPanel(parent, wxID_ANY, pos, size);
 	chessboardGrid->SetSizer(gridSizer);
 
@@ -86,8 +85,8 @@ wxPanel *Frame::createChessboardGrid(wxWindow *parent, const wxPoint &pos, const
 	chessboardGrid->SetBackgroundColour(lightColor);
 
 	ChessboardSquare *square;
-	for (int row = 0, i = 0, col; row < CHESSBOARD_SIZE; row++) {
-		for (col = 0; col < CHESSBOARD_SIZE; col++, i++) {
+	for (int row = 0, i = 0, col; row < 8; row++) {
+		for (col = 0; col < 8; col++, i++) {
 			square = new ChessboardSquare(chessboardGrid, i);
 			if (row % 2 == col % 2) {
 				square->SetBackgroundColour(darkColor);
@@ -112,7 +111,7 @@ void Frame::updateStatusText(const wxString &text) {
 
 void Frame::updateBoardAndIcons(Chessboard::Move *move) {
 	board.updateBoard(move);
-	for (int i = 0; i < CHESSBOARD_SIZE * CHESSBOARD_SIZE; i++) {
+	for (int i = 0; i < 64; i++) {
 		// update icons
 		switch (board.get(i)) {
 			case Chessboard::EMPTY:
@@ -167,7 +166,7 @@ void Frame::checkUpdateSelection(int newSelection) {
 
 	bool isValid = false;
 	for (auto &move: moves) {
-		if (move->m_mat[newSelection] == Chessboard::EMPTY) {
+		if (move->disposition[newSelection] == Chessboard::EMPTY) {
 			// there is at least 1 move with this piece
 			isValid = true;
 			break;
@@ -180,14 +179,14 @@ void Frame::checkUpdateSelection(int newSelection) {
 		// highlight the possible moves
 		Chessboard::PieceType oldValue;
 		for (Chessboard::Move *move: moves) {
-			oldValue = move->m_mat[newSelection];
+			oldValue = move->disposition[newSelection];
 			if (oldValue != Chessboard::EMPTY) {
 				continue; // this Chessboard::Move doesn't move the current selected piece
 			}
 
 			// highlight the empty squares in the current disposition that are filled in 'move'
-			for (int i = 0; i < CHESSBOARD_SIZE * CHESSBOARD_SIZE; i++) {
-				if (board.get(i) == Chessboard::EMPTY && move->m_mat[i] != Chessboard::EMPTY) {
+			for (int i = 0; i < 64; i++) {
+				if (board.get(i) == Chessboard::EMPTY && move->disposition[i] != Chessboard::EMPTY) {
 					chessboard[i]->SetBorder(possibleMoveBorder);
 				}
 			}
@@ -205,13 +204,15 @@ void Frame::checkUpdateSelection(int newSelection) {
 
 Chessboard::Move *Frame::findPlayerMove(int oldIndex, int newIndex) {
 	Chessboard::PieceType oldValue, newValue;
+
+	// iterates the possible moves
 	for (Chessboard::Move *move: moves) {
-		oldValue = move->m_mat[oldIndex];
+		oldValue = move->disposition[oldIndex];
 		if (oldValue != Chessboard::EMPTY)
 			continue; // this is not the correct move
 
 		// here only if this move change the old position that becomes empty
-		newValue = move->m_mat[newIndex];
+		newValue = move->disposition[newIndex];
 		if (newValue == Chessboard::PL_PAWN || newValue == Chessboard::PL_DAME)
 			return move; // this is the correct move from oldIndex to newIndex
 	}

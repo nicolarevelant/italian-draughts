@@ -5,12 +5,11 @@ app.menu.help=&Aiuto
 
 app.menu.new_match=&Nuova partita
 app.menu.changeGD=&Cambia difficoltà
-app.menu.changeGD.help=Imposta la difficoltà di gioco tra 1 e 10
 
 app.exit=Esci
 app.exit.help=Abbandona il gioco
 app.about=Informazioni sulla Dama Italiana
-app.about.desc=Questo gioco è la dama italiana, un gioco di stategia per 2 giocatori.
+app.about.desc=Dama Italiana, un gioco di stategia per 2 giocatori.
 app.about.help=Apri la pagina di aiuto
 
 app.title=Dama Italiana
@@ -26,10 +25,10 @@ game.invalid-move=Selezione non valida
 game.invalid-move.text=Non puoi fare alcuna mossa con questo pezzo
 
 game.diff=Difficoltà di gioco
-game.diff.text=Scegli la difficoltà tra 1 e 10
+game.diff.text=Scegli la difficoltà tra %d e %d
 
 game.wait=Interfaccia bloccata
-game.wait_text=Devi aspettare il tuo turno per continuare...
+game.wait.text=Devi aspettare il tuo turno per continuare...
 
 game.over=Fine partita
 game.you_lost=Hai perso

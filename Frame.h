@@ -13,7 +13,8 @@
 
 class Frame : public wxFrame {
 public:
-	static const int squareSize = DEF_SQUARE_SIZE, border = 40, padding = 20, selectedNone = -1, minGD = DEF_MIN_GD, maxGD = DEF_MAX_GD;
+	static const int squareSize = DEF_SQUARE_SIZE, border = 40, padding = 20,
+			selectedNone = -1, minGD = DEF_MIN_GD, maxGD = DEF_MAX_GD;
 
 	explicit Frame(const std::string &locale = "", const std::string &theme = "");
 
@@ -31,7 +32,7 @@ private:
 	const wxBitmap pcPawn, pcDame, plPawn, plDame;
 	const wxArrayString developers = wxArrayString(1, {"Nicola Revelant <nicolarevelant44@gmail.com>"});
 
-	ChessboardSquare *chessboard[CHESSBOARD_SIZE * CHESSBOARD_SIZE]{};
+	std::array<ChessboardSquare *, 64> chessboard{};
 	int selectedPos = selectedNone, gameDifficult = minGD;
 	bool m_isPlaying = false, m_isEnd = false, m_pcTurn = false;
 	Chessboard board{};
@@ -62,7 +63,7 @@ private:
 
 	void closeFrame(wxCommandEvent &);
 
-	void changeDifficultClicked(wxCommandEvent &);
+	void changeDifficultyClicked(wxCommandEvent &);
 
 	void aboutClicked(wxCommandEvent &);
 

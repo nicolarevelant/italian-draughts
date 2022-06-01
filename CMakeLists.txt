@@ -1,18 +1,23 @@
 cmake_minimum_required(VERSION 3.20)
-project(italian-draughts VERSION 1.2.2)
+project(italian-draughts VERSION 1.2.3)
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
 
+
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 	message(WARNING "Build type: Debug")
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Og")
-	set(SYSTEM_CFG_PATH ../)
 elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
-	set(SYSTEM_CFG_PATH /etc/${PROJECT_NAME}/)
 else()
 	message(FATAL_ERROR "Unknown value for CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
+endif()
+
+if (RESOURCES_PATH STREQUAL "System")
+	set(SYSTEM_CFG_PATH /etc/${PROJECT_NAME}/)
+else()
+	set(SYSTEM_CFG_PATH ../)
 endif()
 
 set(USER_CFG_PATH ~/.config/${PROJECT_NAME}/)

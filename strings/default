@@ -5,13 +5,12 @@ app.menu.help=&Help
 
 app.menu.new_match=&New match
 app.menu.changeGD=&Change difficulty
-app.menu.changeGD.help=Change game difficulty from 1 to 10
 
 app.exit=Exit
 app.exit.help=Leave the game
 app.about=About Italian Draughts
 app.about.copy=Copyright (C) 2022 Nicola Revelant
-app.about.desc=This game is the italian draughts, a strategy game for 2 players.
+app.about.desc=Italian Draughts, a strategy game for 2 players.
 app.about.help=Open about dialog
 
 app.title=Italian Draughts
@@ -27,7 +26,7 @@ game.invalid-move=Invalid selection
 game.invalid-move.text=You can't make any moves with this piece
 
 game.diff=Game difficulty
-game.diff.text=Choose game difficulty from 1 to 10
+game.diff.text=Choose game difficulty from %d to %d
 
 game.wait=Wait your turn
 game.wait.text=You have to wait your turn to continue...

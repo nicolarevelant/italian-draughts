@@ -23,7 +23,7 @@ void Frame::closeFrame(wxCommandEvent &) {
 	Close();
 }
 
-void Frame::changeDifficultClicked(wxCommandEvent &) {
+void Frame::changeDifficultyClicked(wxCommandEvent &) {
 	if (m_pcTurn) {
 		wxMessageDialog dialog(this, strings["game.wait.text"], strings["game.wait"]);
 		dialog.ShowModal();
@@ -36,11 +36,12 @@ void Frame::changeDifficultClicked(wxCommandEvent &) {
 	}
 
 	while (true) {
-		wxTextEntryDialog dialog(this, strings["game.diff.text"], strings["game.diff"]);
+		wxString message = wxString::Format(strings["game.diff.text"], minGD, maxGD);
+		wxTextEntryDialog dialog(this, message, strings["game.diff"]);
 		if (dialog.ShowModal() != wxID_OK) return;
-		auto strValue = dialog.GetValue();
+
 		long value;
-		if (strValue.ToLong(&value) && value >= minGD && value <= maxGD) {
+		if (dialog.GetValue().ToLong(&value) && value >= minGD && value <= maxGD) {
 			m_isPlaying = false;
 			m_isEnd = false;
 			gameDifficult = (int) value;
@@ -87,7 +88,7 @@ void Frame::OnItemMouseClicked(wxMouseEvent &event) {
 	// already selected
 
 	// same square or white square, illegal move
-	if (currentPos == selectedPos || (currentPos / CHESSBOARD_SIZE) % 2 != currentPos % 2) {
+	if (currentPos == selectedPos || (currentPos / 8) % 2 != currentPos % 2) {
 		checkUpdateSelection(); // it removes also the possible move borders
 		return; // no move
 	}
@@ -113,8 +114,8 @@ void Frame::OnItemMouseClicked(wxMouseEvent &event) {
 	updateStatusText();
 	auto *thread = new MinimaxThread(this, board, gameDifficult, THREAD_FINISH);
 	if (thread->Create() != wxTHREAD_NO_ERROR || thread->Run() != wxTHREAD_NO_ERROR) {
-		std::cout << "Thread error\n";
-		exit(-1);
+		std::cerr << "Runtime error, cannot create a new thread, aborting..." << std::endl;
+		exit(EXIT_FAILURE);
 	}
 
 	// The player move is in the moves vector that will be deleted after the PC move
@@ -128,20 +129,19 @@ void Frame::onThreadFinished(wxCommandEvent &event) {
 		m_isEnd = true;
 		m_isPlaying = false;
 		updateStatusText(strings["game.you_won"]);
-		wxMessageDialog dialog(this, strings["game.you_won"],
-		                       strings["game.over"]);
+		wxMessageDialog dialog(this, strings["game.you_won"], strings["game.over"]);
 		dialog.ShowModal();
 		return;
 	}
 
 	updateChessboard(pcMove);
 
+	// updateChessboard also updates 'moves'
 	if (moves.empty()) {
 		m_isEnd = true;
 		m_isPlaying = false;
 		updateStatusText(strings["game.you_lost"]);
-		wxMessageDialog dialog(this, strings["game.you_lost"],
-		                       strings["game.over"]);
+		wxMessageDialog dialog(this, strings["game.you_lost"], strings["game.over"]);
 		dialog.ShowModal();
 	} else {
 		updateStatusText();

@@ -3,8 +3,6 @@
 
 #include <bits/stdc++.h>
 
-#define CHESSBOARD_SIZE 8
-
 class Chessboard {
 public:
 	Chessboard();
@@ -20,19 +18,17 @@ public:
 	};
 
 	struct Move {
-		Move(const PieceType *mat, bool eatenFromPawn, int score)
-				: m_mat(mat), m_eatenFromPawn(eatenFromPawn), m_score(score) {}
+		Move(const std::array<PieceType, 64> disposition, bool eatenFromPawn, int score)
+				: disposition(disposition), eatenFromPawn(eatenFromPawn), score(score) {}
 
-		~Move() { delete[]m_mat; }
-
-		const PieceType *m_mat;
-		const bool m_eatenFromPawn;
-		const int m_score;
+		const std::array<PieceType, 64> disposition; // the disposition after the move
+		const bool eatenFromPawn; // this is used to determine which moves to discard (a pawn must eat if it can)
+		const int score; // number of pieces eaten
 	};
 
 	typedef std::vector<Move *> MoveList;
 
-	static PieceType *copyMatrix(const PieceType *from);
+	static std::array<Chessboard::PieceType, 64> copyDisposition(std::array<PieceType, 64> from);
 
 	[[nodiscard]] PieceType get(int index) const;
 
@@ -43,20 +39,14 @@ public:
 	static MoveList findMoves(Move *start_move, bool pcTurn);
 
 private:
-	PieceType m_mat[CHESSBOARD_SIZE * CHESSBOARD_SIZE]{};
+	std::array<PieceType, 64> m_disposition{};
 
 	void setDefaultLayout();
 
-	static bool addStepDownSx(MoveList &moves, const PieceType *mat, int s_row, int s_col, int score);
+	static MoveList findMoves(std::array<PieceType, 64> disposition, bool pcTurn);
 
-	static bool addStepDownDx(MoveList &moves, const PieceType *mat, int s_row, int s_col, int score);
-
-	static bool addStepUpSx(MoveList &moves, const PieceType *mat, int s_row, int s_col, int score);
-
-	static bool addStepUpDx(MoveList &moves, const PieceType *mat, int s_row, int s_col, int score);
-
-	static MoveList findMoves(const PieceType *mat, bool pcTurn);
-
+	static bool addMoveStep(MoveList &moves, std::array<PieceType, 64> disposition,
+	                        int s_row, int s_col, bool row_offset, bool col_offset, int score);
 };
 
 #endif //ITALIAN_DRAUGHTS_CHESSBOARD_H

@@ -32,7 +32,7 @@ public:
 			}
 		}
 
-		if (locale.empty()) locale = std::setlocale(LC_ALL, "");
+		if (locale.empty()) locale = std::setlocale(LC_CTYPE, "");
 		auto *frame = new Frame(locale, theme);
 		frame->Show(true);
 		return true;
