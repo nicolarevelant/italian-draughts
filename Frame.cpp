@@ -164,16 +164,18 @@ void Frame::checkUpdateSelection(int newSelection) {
 		return;
 	}
 
-	bool isValid = false;
+	/*bool isValid = false;
 	for (auto &move: moves) {
 		if (move->disposition[newSelection] == Chessboard::EMPTY) {
 			// there is at least 1 move with this piece
 			isValid = true;
 			break;
 		}
-	}
+	}*/
+	auto emptyChecker = [newSelection](Chessboard::Move *move) {return move->disposition[newSelection] == Chessboard::EMPTY; };
 
-	if (isValid) {
+	if (std::any_of(moves.begin(), moves.end(), emptyChecker)) {
+		// is valid
 		chessboard[newSelection]->SetBorder(focusBorder);
 
 		// highlight the possible moves

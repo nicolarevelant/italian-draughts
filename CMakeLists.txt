@@ -21,16 +21,17 @@ else()
 
 		# custom build commands
 		message(PROJECT NAME: ${PROJECT_NAME})
-		add_custom_command(OUTPUT man/${PROJECT_NAME}.1
-				COMMAND scdoc < man/${PROJECT_NAME}.1.scd > man/${PROJECT_NAME}.1
-				DEPENDS man/${PROJECT_NAME}.1.scd VERBATIM)
-		add_custom_command(OUTPUT man/${PROJECT_NAME}.5
-				COMMAND scdoc < man/${PROJECT_NAME}.5.scd > man/${PROJECT_NAME}.5
-				DEPENDS man/${PROJECT_NAME}.1.scd VERBATIM)
 
+		# convert man pages
+		add_custom_command(OUTPUT man/${PROJECT_NAME}.1 man/${PROJECT_NAME}.5
+				COMMAND scdoc < man/${PROJECT_NAME}.1.scd > man/${PROJECT_NAME}.1
+				COMMAND scdoc < man/${PROJECT_NAME}.5.scd > man/${PROJECT_NAME}.5
+				DEPENDS man/${PROJECT_NAME}.1.scd man/${PROJECT_NAME}.5.scd)
+
+		# compress man pages
 		add_custom_command(OUTPUT man/${PROJECT_NAME}.1.gz man/${PROJECT_NAME}.5.gz
 				COMMAND gzip man/${PROJECT_NAME}.1 man/${PROJECT_NAME}.5
-				DEPENDS man/${PROJECT_NAME}.11 man/${PROJECT_NAME}.55 )
+				DEPENDS man/${PROJECT_NAME}.1 man/${PROJECT_NAME}.5 )
 
 		set(PORTABLE 1)
 	else()
