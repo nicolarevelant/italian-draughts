@@ -11,7 +11,7 @@ std::array<Chessboard::PieceType, 64> Chessboard::copyDisposition(const std::arr
 	return to;
 }
 
-Chessboard::MoveList Chessboard::findMoves(Chessboard::Move *start_move, bool pcTurn) {
+Chessboard::MoveList Chessboard::findMoves(const Chessboard::Move *start_move, bool pcTurn) {
 	return findMoves(start_move->disposition, pcTurn);
 }
 

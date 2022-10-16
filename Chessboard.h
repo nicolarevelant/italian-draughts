@@ -30,13 +30,13 @@ public:
 
 	static std::array<Chessboard::PieceType, 64> copyDisposition(std::array<PieceType, 64> from);
 
-	[[nodiscard]] PieceType get(int index) const;
+	PieceType get(int index) const;
 
 	void updateBoard(Move *move);
 
-	[[nodiscard]] MoveList findMoves(bool pcTurn) const;
+	MoveList findMoves(bool pcTurn) const;
 
-	static MoveList findMoves(Move *start_move, bool pcTurn);
+	static MoveList findMoves(const Move *start_move, bool pcTurn);
 
 private:
 	std::array<PieceType, 64> m_disposition{};

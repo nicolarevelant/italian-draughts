@@ -1,15 +1,15 @@
 #include "GameLogic.h"
 
-Chessboard::Move *GameLogic::calculateBestMove(Chessboard &board, int depth) {
+Chessboard::Move *GameLogic::calculateBestMove(const Chessboard &board, int depth) {
 	if (depth < 0) return nullptr;
 
 	Chessboard::Move *res_move = nullptr;
-	int score, bestScore = INT_MIN;
+	int bestScore = INT_MIN;
 	int alpha = INT_MIN, beta = INT_MAX;
 
 	std::vector<Chessboard::Move *> moves = board.findMoves(true);
 	for (Chessboard::Move *move: moves) {
-		score = minimax(move, move->score, false, depth, alpha, beta);
+		int score = minimax(move, move->score, false, depth, alpha, beta);
 		if (score > bestScore) {
 			bestScore = score;
 			res_move = move;
@@ -37,7 +37,7 @@ Chessboard::Move *GameLogic::calculateBestMove(Chessboard &board, int depth) {
 	return res_move;
 }
 
-int GameLogic::minimax(Chessboard::Move *start_move, int eaten, bool maximizing, int depth, int alpha, int beta) {
+int GameLogic::minimax(const Chessboard::Move *start_move, int eaten, bool maximizing, int depth, int alpha, int beta) {
 	if (depth == 0) return eaten; // depth limit reached
 
 	int bestScore, score;

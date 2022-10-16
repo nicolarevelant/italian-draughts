@@ -9,7 +9,7 @@ MinimaxThread::MinimaxThread(wxEvtHandler *evtHandler, Chessboard &board, int ga
 
 void *MinimaxThread::Entry() {
 	wxCommandEvent evt(wxEVT_MENU, m_id);
-	evt.SetClientData(reinterpret_cast<wxObject *>(GameLogic::calculateBestMove(m_board, m_gameDifficult)));
+	evt.SetClientData(GameLogic::calculateBestMove(m_board, m_gameDifficult));
 	wxPostEvent(m_evtHandler, evt);
 	return nullptr;
 }

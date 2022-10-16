@@ -5,10 +5,10 @@
 
 class GameLogic {
 public:
-	static Chessboard::Move *calculateBestMove(Chessboard &board, int depth);
+	static Chessboard::Move *calculateBestMove(const Chessboard &board, int depth);
 
 private:
-	static int minimax(Chessboard::Move *start_move, int eaten, bool maximizing, int depth, int alpha, int beta);
+	static int minimax(const Chessboard::Move *start_move, int eaten, bool maximizing, int depth, int alpha, int beta);
 };
 
 
