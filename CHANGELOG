@@ -10,3 +10,6 @@
 
 1.2.3
 	- Minor changes
+
+1.2.4
+	- Support for CMake Toolchain files (vcpkg)
