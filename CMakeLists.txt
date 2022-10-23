@@ -19,42 +19,45 @@ else()
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
 		set(SYSTEM_CFG_PATH /etc/${PROJECT_NAME}/)
 
-		# custom build commands
-		message(PROJECT NAME: ${PROJECT_NAME})
-
 		# convert man pages
-		add_custom_command(OUTPUT man/${PROJECT_NAME}.1 man/${PROJECT_NAME}.5
-				COMMAND scdoc < man/${PROJECT_NAME}.1.scd > man/${PROJECT_NAME}.1
-				COMMAND scdoc < man/${PROJECT_NAME}.5.scd > man/${PROJECT_NAME}.5
-				DEPENDS man/${PROJECT_NAME}.1.scd man/${PROJECT_NAME}.5.scd)
+		add_custom_command(COMMENT "Converting manual pages"
+				OUTPUT ${CMAKE_BINARY_DIR}/man/${PROJECT_NAME}.1 ${CMAKE_BINARY_DIR}/man/${PROJECT_NAME}.5
+				COMMAND mkdir -p ${CMAKE_BINARY_DIR}/man
+				COMMAND scdoc < ${CMAKE_SOURCE_DIR}/man/${PROJECT_NAME}.1.scd > ${CMAKE_BINARY_DIR}/man/${PROJECT_NAME}.1
+				COMMAND scdoc < ${CMAKE_SOURCE_DIR}/man/${PROJECT_NAME}.5.scd > ${CMAKE_BINARY_DIR}/man/${PROJECT_NAME}.5
+				DEPENDS ${CMAKE_SOURCE_DIR}/man/${PROJECT_NAME}.1.scd ${CMAKE_SOURCE_DIR}/man/${PROJECT_NAME}.5.scd
+				)
 
 		# compress man pages
-		add_custom_command(OUTPUT man/${PROJECT_NAME}.1.gz man/${PROJECT_NAME}.5.gz
-				COMMAND gzip man/${PROJECT_NAME}.1 man/${PROJECT_NAME}.5
-				DEPENDS man/${PROJECT_NAME}.1 man/${PROJECT_NAME}.5 )
+		add_custom_command(COMMENT "Compressing manual pages"
+				OUTPUT ${CMAKE_BINARY_DIR}/man/${PROJECT_NAME}.1.gz ${CMAKE_BINARY_DIR}/man/${PROJECT_NAME}.5.gz
+				COMMAND gzip -f ${CMAKE_BINARY_DIR}/man/${PROJECT_NAME}.1 ${CMAKE_BINARY_DIR}/man/${PROJECT_NAME}.5
+				DEPENDS ${CMAKE_BINARY_DIR}/man/${PROJECT_NAME}.1 ${CMAKE_BINARY_DIR}/man/${PROJECT_NAME}.5
+				)
 
-		set(PORTABLE 1)
+		set(SET_INSTALL_RULES 1)
 	else()
 		message(FATAL_ERROR "Unknown value for CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
 	endif()
 endif()
 
-set(USER_CFG_PATH ~/.config/${PROJECT_NAME}/)
-configure_file(ProjectVariables.h.in ProjectVariables.h)
+if (SET_INSTALL_RULES)
+	add_executable(${PROJECT_NAME} main.cpp Chessboard.cpp ChessboardSquare.cpp
+			GameLogic.cpp MinimaxThread.cpp Frame.cpp FrameEvents.cpp Resources.cpp man/${PROJECT_NAME}.1.gz man/${PROJECT_NAME}.5.gz)
 
-find_package(wxWidgets REQUIRED)
-include(${wxWidgets_USE_FILE})
-
-add_executable(${PROJECT_NAME} main.cpp Chessboard.cpp ChessboardSquare.cpp
-		GameLogic.cpp MinimaxThread.cpp Frame.cpp FrameEvents.cpp Resources.cpp)
-
-target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_BINARY_DIR} ${wxWidgets_INCLUDE_DIRS})
-target_link_libraries(${PROJECT_NAME} PRIVATE ${wxWidgets_LIBRARIES})
-
-if (PORTABLE)
 	# install files
 	install(TARGETS ${PROJECT_NAME} DESTINATION usr/bin)
 
-	install(FILES man/${PROJECT_NAME}.1.gz DESTINATION usr/share/man/man1)
-	install(FILES man/${PROJECT_NAME}.5.gz DESTINATION usr/share/man/man5)
+	install(FILES ${CMAKE_BINARY_DIR}/man/${PROJECT_NAME}.1.gz DESTINATION usr/share/man/man1)
+	install(FILES ${CMAKE_BINARY_DIR}/man/${PROJECT_NAME}.5.gz DESTINATION usr/share/man/man5)
+else()
+	add_executable(${PROJECT_NAME} main.cpp Chessboard.cpp ChessboardSquare.cpp
+			GameLogic.cpp MinimaxThread.cpp Frame.cpp FrameEvents.cpp Resources.cpp)
 endif()
+
+set(USER_CFG_PATH ~/.config/${PROJECT_NAME}/)
+configure_file(ProjectVariables.h.in ProjectVariables.h)
+
+find_package(wxWidgets CONFIG REQUIRED)
+target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_BINARY_DIR})
+target_link_libraries(${PROJECT_NAME} PRIVATE wx::base wx::core)

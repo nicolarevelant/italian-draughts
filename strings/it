@@ -9,6 +9,7 @@ app.menu.changeGD=&Cambia difficoltà
 app.exit=Esci
 app.exit.help=Abbandona il gioco
 app.about=Informazioni sulla Dama Italiana
+# app.about.copy
 app.about.desc=Dama Italiana, un gioco di stategia per 2 giocatori.
 app.about.help=Apri la pagina di aiuto
 
