@@ -32,5 +32,5 @@ game.wait=Wait your turn
 game.wait.text=You have to wait your turn to continue...
 
 game.over=Game over
-game.you-lost=You lost
-game.you-won=You won
+game.lost=You lost
+game.won=You won

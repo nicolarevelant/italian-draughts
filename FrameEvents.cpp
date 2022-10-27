@@ -128,8 +128,8 @@ void Frame::onThreadFinished(wxCommandEvent &event) {
 	if (pcMove == nullptr) {
 		m_isEnd = true;
 		m_isPlaying = false;
-		updateStatusText(strings["game.you_won"]);
-		wxMessageDialog dialog(this, strings["game.you_won"], strings["game.over"]);
+		updateStatusText(strings["game.won"]);
+		wxMessageDialog dialog(this, strings["game.won"], strings["game.over"]);
 		dialog.ShowModal();
 		return;
 	}
@@ -140,8 +140,8 @@ void Frame::onThreadFinished(wxCommandEvent &event) {
 	if (moves.empty()) {
 		m_isEnd = true;
 		m_isPlaying = false;
-		updateStatusText(strings["game.you_lost"]);
-		wxMessageDialog dialog(this, strings["game.you_lost"], strings["game.over"]);
+		updateStatusText(strings["game.lost"]);
+		wxMessageDialog dialog(this, strings["game.lost"], strings["game.over"]);
 		dialog.ShowModal();
 	} else {
 		updateStatusText();

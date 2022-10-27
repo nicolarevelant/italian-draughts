@@ -32,6 +32,6 @@ game.wait=Interfaccia bloccata
 game.wait.text=Devi aspettare il tuo turno per continuare...
 
 game.over=Fine partita
-game.you_lost=Hai perso
-game.you_won=Hai vinto
+game.lost=Hai perso
+game.won=Hai vinto
 
