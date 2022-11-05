@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project(italian-draughts VERSION 1.2.4)
+project(italian-draughts VERSION 1.2.5)
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic")
@@ -61,3 +61,4 @@ configure_file(ProjectVariables.h.in ProjectVariables.h)
 find_package(wxWidgets CONFIG REQUIRED)
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_BINARY_DIR})
 target_link_libraries(${PROJECT_NAME} PRIVATE wx::base wx::core)
+
