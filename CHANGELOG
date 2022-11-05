@@ -13,3 +13,7 @@
 
 1.2.4
 	- Support for CMake Toolchain files (vcpkg)
+
+1.2.5
+	- Minor changes
+
