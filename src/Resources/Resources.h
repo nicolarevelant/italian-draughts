@@ -16,13 +16,14 @@ public:
 
 	typedef std::map<std::string, wxString> StringsMap;
 
-	[[nodiscard]] const wxString &get(const std::string &key, const wxString &def = wxEmptyString) const;
+	const wxString &get(const std::string &key, const wxString &def = wxEmptyString) const;
 
 	const wxString &operator[](const std::string &key) const {
 		return get(key);
 	}
 
 private:
+	StringResources(const StringResources &);
 	StringsMap m_strings; // strings for current locale
 	StringResources *m_parent;
 
@@ -39,13 +40,14 @@ public:
 
 	typedef std::map<std::string, wxColour> ColorsMap;
 
-	[[nodiscard]] const wxColour &get(const std::string &key, const wxColour &def = wxNullColour) const;
+	const wxColour &get(const std::string &key, const wxColour &def = wxNullColour) const;
 
 	const wxColour &operator[](const std::string &key) const {
 		return get(key);
 	}
 
 private:
+	ColorResources(const ColorResources &);
 	ColorsMap m_colors;   // colors for current theme
 	ColorResources *m_parent;
 

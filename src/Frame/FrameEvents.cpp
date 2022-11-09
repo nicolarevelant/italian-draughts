@@ -59,7 +59,7 @@ void Frame::aboutClicked(wxCommandEvent &) {
 	wxAboutDialogInfo dialog;
 	dialog.SetName(strings.get("app.title", PROJECT_NAME));
 	dialog.SetVersion(PROJECT_VERSION);
-	dialog.SetDescription(strings["app.about.desc"]);
+	dialog.SetDescription(strings.get("app.about.desc", PROJECT_DESCRIPTION));
 	dialog.SetCopyright(strings["app.about.copy"]);
 	dialog.SetDevelopers(developers);
 	wxAboutBox(dialog, this);

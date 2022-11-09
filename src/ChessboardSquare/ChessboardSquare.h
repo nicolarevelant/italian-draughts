@@ -1,7 +1,7 @@
 #ifndef ITALIAN_DRAUGHTS_CHESSBOARD_SQUARE_H
 #define ITALIAN_DRAUGHTS_CHESSBOARD_SQUARE_H
 
-#include "Resources.h"
+#include "../Resources/Resources.h"
 
 #define DEF_SQUARE_SIZE 74
 

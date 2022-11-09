@@ -1,8 +1,8 @@
 #ifndef ITALIAN_DRAUGHTS_FRAME_H
 #define ITALIAN_DRAUGHTS_FRAME_H
 
-#include "ChessboardSquare.h"
-#include "MinimaxThread.h"
+#include "../ChessboardSquare/ChessboardSquare.h"
+#include "../WorkingThread/MinimaxThread.h"
 #include "wx/aboutdlg.h"
 
 #define DEF_MIN_GD 1

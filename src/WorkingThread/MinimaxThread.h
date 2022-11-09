@@ -2,7 +2,7 @@
 #define ITALIAN_DRAUGHTS_MINIMAX_THREAD_H
 
 #include "wx/wx.h"
-#include "GameLogic.h"
+#include "../GameLogic/GameLogic.h"
 
 class MinimaxThread : public wxThread {
 public:

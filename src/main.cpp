@@ -1,5 +1,6 @@
 #include <getopt.h>
-#include "Frame.h"
+#include "Frame/Frame.h"
+#include "wx/wx.h"
 
 static option longOptions[] = {
 		{"locale", required_argument, nullptr, 'l'},

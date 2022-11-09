@@ -1,0 +1,1 @@
+add_library(ChessboardManager STATIC Chessboard.cpp Chessboard.h)

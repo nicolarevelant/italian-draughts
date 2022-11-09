@@ -1,7 +1,7 @@
 #ifndef ITALIAN_DRAUGHTS_GAME_LOGIC_H
 #define ITALIAN_DRAUGHTS_GAME_LOGIC_H
 
-#include "Chessboard.h"
+#include "../ChessboardManager/Chessboard.h"
 
 class GameLogic {
 public:

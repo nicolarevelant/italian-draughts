@@ -39,6 +39,7 @@ public:
 	static MoveList findMoves(const Move *start_move, bool pcTurn);
 
 private:
+	Chessboard(const Chessboard &); // prevents copy-constructor
 	std::array<PieceType, 64> m_disposition{};
 
 	void setDefaultLayout();
