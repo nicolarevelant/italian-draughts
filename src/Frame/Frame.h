@@ -26,8 +26,7 @@ private:
 		CHANGE_GD,
 		THREAD_FINISH
 	};
-	const StringResources strings;
-	const ColorResources colors;
+	const Resources resources;
 	const wxPen focusBorder, possibleMoveBorder;
 	const wxBitmap pcPawn, pcDame, plPawn, plDame;
 	const wxArrayString developers = wxArrayString(1, {"Nicola Revelant <nicolarevelant44@gmail.com>"});

@@ -6,7 +6,7 @@ void Frame::newMatchClicked(wxCommandEvent &) {
 	if (m_pcTurn) return;
 
 	if (m_isPlaying) {
-		wxMessageDialog dialog(this, strings["game.leave"], strings["game.new"], wxYES_NO);
+		wxMessageDialog dialog(this, resources.getString("game.leave"), resources.getString("game.new"), wxYES_NO);
 		if (dialog.ShowModal() != wxID_YES) return;
 		m_isPlaying = false;
 	}
@@ -25,19 +25,19 @@ void Frame::closeFrame(wxCommandEvent &) {
 
 void Frame::changeDifficultyClicked(wxCommandEvent &) {
 	if (m_pcTurn) {
-		wxMessageDialog dialog(this, strings["game.wait.text"], strings["game.wait"]);
+		wxMessageDialog dialog(this, resources.getString("game.wait.text"), resources.getString("game.wait"));
 		dialog.ShowModal();
 		return;
 	}
 
 	if (m_isPlaying) {
-		wxMessageDialog dialog(this, strings["game.leave"], strings["game.new"], wxYES_NO);
+		wxMessageDialog dialog(this, resources.getString("game.leave"), resources.getString("game.new"), wxYES_NO);
 		if (dialog.ShowModal() != wxID_YES) return;
 	}
 
 	while (true) {
-		wxString message = wxString::Format(strings["game.diff.text"], minGD, maxGD);
-		wxTextEntryDialog dialog(this, message, strings["game.diff"]);
+		wxString message = wxString::Format(resources.getString("game.diff.text"), minGD, maxGD);
+		wxTextEntryDialog dialog(this, message, resources.getString("game.diff"));
 		if (dialog.ShowModal() != wxID_OK) return;
 
 		long value;
@@ -57,10 +57,10 @@ void Frame::changeDifficultyClicked(wxCommandEvent &) {
 
 void Frame::aboutClicked(wxCommandEvent &) {
 	wxAboutDialogInfo dialog;
-	dialog.SetName(strings.get("app.title", PROJECT_NAME));
+	dialog.SetName(resources.getString("app.title", PROJECT_NAME));
 	dialog.SetVersion(PROJECT_VERSION);
-	dialog.SetDescription(strings.get("app.about.desc", PROJECT_DESCRIPTION));
-	dialog.SetCopyright(strings["app.about.copy"]);
+	dialog.SetDescription(resources.getString("app.about.desc", PROJECT_DESCRIPTION));
+	dialog.SetCopyright(resources.getString("app.about.copy"));
 	dialog.SetDevelopers(developers);
 	wxAboutBox(dialog, this);
 }
@@ -70,7 +70,7 @@ void Frame::aboutClicked(wxCommandEvent &) {
 void Frame::OnItemMouseClicked(wxMouseEvent &event) {
 	if (m_isEnd) return;
 	if (m_pcTurn) {
-		wxMessageDialog dialog(this, strings["game.wait.text"], strings["game.wait"]);
+		wxMessageDialog dialog(this, resources.getString("game.wait.text"), resources.getString("game.wait"));
 		dialog.ShowModal();
 		return;
 	}
@@ -128,8 +128,8 @@ void Frame::onThreadFinished(wxCommandEvent &event) {
 	if (pcMove == nullptr) {
 		m_isEnd = true;
 		m_isPlaying = false;
-		updateStatusText(strings["game.won"]);
-		wxMessageDialog dialog(this, strings["game.won"], strings["game.over"]);
+		updateStatusText(resources.getString("game.won"));
+		wxMessageDialog dialog(this, resources.getString("game.won"), resources.getString("game.over"));
 		dialog.ShowModal();
 		return;
 	}
@@ -140,8 +140,8 @@ void Frame::onThreadFinished(wxCommandEvent &event) {
 	if (moves.empty()) {
 		m_isEnd = true;
 		m_isPlaying = false;
-		updateStatusText(strings["game.lost"]);
-		wxMessageDialog dialog(this, strings["game.lost"], strings["game.over"]);
+		updateStatusText(resources.getString("game.lost"));
+		wxMessageDialog dialog(this, resources.getString("game.lost"), resources.getString("game.over"));
 		dialog.ShowModal();
 	} else {
 		updateStatusText();

@@ -8,48 +8,25 @@
 #define LOCALE_LANGUAGE_LEN 2
 #define LOCALE_MAX_LEN 5
 
-class StringResources {
+class Resources {
 public:
-	explicit StringResources(const std::string &locale = "");
-
-	virtual ~StringResources();
+	explicit Resources(const std::string &locale = "", const std::string &theme = "");
 
 	typedef std::map<std::string, wxString> StringsMap;
+	typedef std::map<std::string, wxColour> ColorsMap;
 
-	const wxString &get(const std::string &key, const wxString &def = wxEmptyString) const;
+	const wxString &getString(const std::string &key, const wxString &def = wxEmptyString) const;
+	const wxColour &getColor(const std::string &key, const wxColour &def = wxNullColour) const;
 
-	const wxString &operator[](const std::string &key) const {
-		return get(key);
-	}
 
 private:
-	StringResources(const StringResources &);
+	Resources(const Resources &);
 	StringsMap m_strings; // strings for current locale
-	StringResources *m_parent;
+	ColorsMap m_colors;   // colors for current theme
 
 	static bool fillStringsMap(StringsMap &strings,
 	                           const std::string &path = SYSTEM_CFG_PATH,
 	                           const std::string &locale = "default");
-};
-
-class ColorResources {
-public:
-	explicit ColorResources(const std::string &theme = "");
-
-	virtual ~ColorResources();
-
-	typedef std::map<std::string, wxColour> ColorsMap;
-
-	const wxColour &get(const std::string &key, const wxColour &def = wxNullColour) const;
-
-	const wxColour &operator[](const std::string &key) const {
-		return get(key);
-	}
-
-private:
-	ColorResources(const ColorResources &);
-	ColorsMap m_colors;   // colors for current theme
-	ColorResources *m_parent;
 
 	static bool fillColorsMap(ColorsMap &colors,
 	                          const std::string &path = SYSTEM_CFG_PATH,

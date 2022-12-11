@@ -4,17 +4,17 @@ Frame::Frame(const std::string &locale, const std::string &theme)
 		: wxFrame(nullptr, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(
 		squareSize * 8 + border * 2 + padding * 2 + 160,
 		squareSize * 8 + border * 2 + padding * 2 + 51)),
-		  strings(locale), colors(theme),
+		  resources(locale, theme),
 
 		// colors and borders
-		  focusBorder(colors.get("focus-border", *wxWHITE), 3),
-		  possibleMoveBorder(colors.get("possible-move-border", *wxRED), 3),
+		  focusBorder(resources.getColor("focus-border", *wxWHITE), 3),
+		  possibleMoveBorder(resources.getColor("possible-move-border", *wxRED), 3),
 
 		// bitmaps
 		  pcPawn(SYSTEM_CFG_PATH"images/pcPawn.png"), pcDame(SYSTEM_CFG_PATH"images/pcDame.png"),
 		  plPawn(SYSTEM_CFG_PATH"images/plPawn.png"), plDame(SYSTEM_CFG_PATH"images/plDame.png") {
-	wxFrame::SetTitle(strings.get("app.title", PROJECT_NAME));
-	wxColour bgColor = colors.get("bg");
+	wxFrame::SetTitle(resources.getString("app.title", PROJECT_NAME));
+	wxColour bgColor = resources.getColor("bg");
 
 	wxFrame::SetMenuBar(createMenuBar());
 	wxStatusBar *statusBar = wxFrame::CreateStatusBar();
@@ -41,20 +41,20 @@ Frame::Frame(const std::string &locale, const std::string &theme)
 
 wxMenuBar *Frame::createMenuBar() {
 	auto *menuFile = new wxMenu;
-	menuFile->Append(NEW_MATCH, strings["app.menu.new_match"]);
+	menuFile->Append(NEW_MATCH, resources.getString("app.menu.new_match"));
 	menuFile->AppendSeparator();
-	menuFile->Append(wxID_EXIT, strings["app.exit"], strings["app.exit.help"]);
+	menuFile->Append(wxID_EXIT, resources.getString("app.exit"), resources.getString("app.exit.help"));
 
 	auto *menuSettings = new wxMenu;
-	menuSettings->Append(CHANGE_GD, strings["app.menu.changeGD"]);
+	menuSettings->Append(CHANGE_GD, resources.getString("app.menu.changeGD"));
 
 	auto *menuHelp = new wxMenu;
-	menuHelp->Append(wxID_ABOUT, strings["app.about"], strings["app.about.help"]);
+	menuHelp->Append(wxID_ABOUT, resources.getString("app.about"), resources.getString("app.about.help"));
 
 	auto *menuBar = new wxMenuBar;
-	menuBar->Append(menuFile, strings["app.menu.file"]);
-	menuBar->Append(menuSettings, strings["app.menu.settings"]);
-	menuBar->Append(menuHelp, strings["app.menu.help"]);
+	menuBar->Append(menuFile, resources.getString("app.menu.file"));
+	menuBar->Append(menuSettings, resources.getString("app.menu.settings"));
+	menuBar->Append(menuHelp, resources.getString("app.menu.help"));
 
 	menuBar->Bind(wxEVT_MENU, &Frame::newMatchClicked, this, NEW_MATCH);
 	menuBar->Bind(wxEVT_MENU, &Frame::closeFrame, this, wxID_EXIT);
@@ -68,7 +68,7 @@ wxPanel *Frame::createChessboard(wxWindow *parent) {
 	int gridSize = squareSize * 8;
 	auto *chessboardPanel = new wxPanel(parent, wxID_ANY, wxDefaultPosition,
 	                                    wxSize(gridSize + border * 2, gridSize + border * 2));
-	chessboardPanel->SetBackgroundColour(colors["border"]);
+	chessboardPanel->SetBackgroundColour(resources.getColor("border"));
 	createChessboardGrid(chessboardPanel, wxPoint(border, border),
 	                     wxSize(gridSize, gridSize));
 
@@ -80,8 +80,8 @@ wxPanel *Frame::createChessboardGrid(wxWindow *parent, const wxPoint &pos, const
 	auto *chessboardGrid = new wxPanel(parent, wxID_ANY, pos, size);
 	chessboardGrid->SetSizer(gridSizer);
 
-	const wxColour lightColor = colors.get("light", DEF_LIGHT_COLOR);
-	const wxColour darkColor = colors.get("dark", DEF_DARK_COLOR);
+	const wxColour lightColor = resources.getColor("light", DEF_LIGHT_COLOR);
+	const wxColour darkColor = resources.getColor("dark", DEF_DARK_COLOR);
 	chessboardGrid->SetBackgroundColour(lightColor);
 
 	ChessboardSquare *square;
@@ -104,8 +104,8 @@ wxPanel *Frame::createChessboardGrid(wxWindow *parent, const wxPoint &pos, const
 }
 
 void Frame::updateStatusText(const wxString &text) {
-	SetStatusText(wxString::Format(strings["app.statusbar.ph"],
-	                               text.empty() ? strings[m_pcTurn ? "game.turn.pc" : "game.turn.you"] : text,
+	SetStatusText(wxString::Format(resources.getString("app.statusbar.ph"),
+	                               text.empty() ? resources.getString(m_pcTurn ? "game.turn.pc" : "game.turn.you") : text,
 	                               gameDifficult));
 }
 
@@ -196,8 +196,8 @@ void Frame::checkUpdateSelection(int newSelection) {
 
 		selectedPos = newSelection;
 	} else {
-		wxMessageDialog dialog(this, strings["game.invalid-move.text"],
-		                       strings["game.invalid-move"]);
+		wxMessageDialog dialog(this, resources.getString("game.invalid-move.text"),
+		                       resources.getString("game.invalid-move"));
 		dialog.ShowModal();
 		selectedPos = selectedNone;
 	}
