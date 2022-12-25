@@ -1,10 +1,10 @@
 #include "Frame.h"
 
-Frame::Frame(const std::string &locale, const std::string &theme)
+Frame::Frame(const std::string &theme)
 		: wxFrame(nullptr, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(
 		squareSize * 8 + border * 2 + padding * 2 + 160,
 		squareSize * 8 + border * 2 + padding * 2 + 51)),
-		  resources(locale, theme),
+		  resources(theme),
 
 		// colors and borders
 		  focusBorder(resources.getColor("focus-border", *wxWHITE), 3),
@@ -13,7 +13,7 @@ Frame::Frame(const std::string &locale, const std::string &theme)
 		// bitmaps
 		  pcPawn(SYSTEM_CFG_PATH"images/pcPawn.png"), pcDame(SYSTEM_CFG_PATH"images/pcDame.png"),
 		  plPawn(SYSTEM_CFG_PATH"images/plPawn.png"), plDame(SYSTEM_CFG_PATH"images/plDame.png") {
-	wxFrame::SetTitle(resources.getString("app.title", PROJECT_NAME));
+	wxFrame::SetTitle("Italian Draughts");
 	wxColour bgColor = resources.getColor("bg");
 
 	wxFrame::SetMenuBar(createMenuBar());
@@ -41,20 +41,21 @@ Frame::Frame(const std::string &locale, const std::string &theme)
 
 wxMenuBar *Frame::createMenuBar() {
 	auto *menuFile = new wxMenu;
-	menuFile->Append(NEW_MATCH, resources.getString("app.menu.new_match"));
+	menuFile->Append(NEW_MATCH, _("&New match"));
 	menuFile->AppendSeparator();
-	menuFile->Append(wxID_EXIT, resources.getString("app.exit"), resources.getString("app.exit.help"));
+	menuFile->Append(wxID_EXIT, _("&Exit"), _("Leave the game"));
 
 	auto *menuSettings = new wxMenu;
-	menuSettings->Append(CHANGE_GD, resources.getString("app.menu.changeGD"));
+	//menuSettings->Append(CHANGE_GD, resources.getString("app.menu.changeGD"));
+	menuSettings->Append(CHANGE_GD, _("&Change difficulty"));
 
 	auto *menuHelp = new wxMenu;
-	menuHelp->Append(wxID_ABOUT, resources.getString("app.about"), resources.getString("app.about.help"));
+	menuHelp->Append(wxID_ABOUT, _("About Italian Draughts"), _("Open about dialog"));
 
 	auto *menuBar = new wxMenuBar;
-	menuBar->Append(menuFile, resources.getString("app.menu.file"));
-	menuBar->Append(menuSettings, resources.getString("app.menu.settings"));
-	menuBar->Append(menuHelp, resources.getString("app.menu.help"));
+	menuBar->Append(menuFile, _("&File"));
+	menuBar->Append(menuSettings, _("&Settings"));
+	menuBar->Append(menuHelp, _("&Help"));
 
 	menuBar->Bind(wxEVT_MENU, &Frame::newMatchClicked, this, NEW_MATCH);
 	menuBar->Bind(wxEVT_MENU, &Frame::closeFrame, this, wxID_EXIT);
@@ -104,8 +105,8 @@ wxPanel *Frame::createChessboardGrid(wxWindow *parent, const wxPoint &pos, const
 }
 
 void Frame::updateStatusText(const wxString &text) {
-	SetStatusText(wxString::Format(resources.getString("app.statusbar.ph"),
-	                               text.empty() ? resources.getString(m_pcTurn ? "game.turn.pc" : "game.turn.you") : text,
+	SetStatusText(wxString::Format(_("%s | Difficulty: %d"),
+	                               text.empty() ? _(m_pcTurn ? "Opponent's turn" : "Your turn") : text,
 	                               gameDifficult));
 }
 
@@ -196,8 +197,8 @@ void Frame::checkUpdateSelection(int newSelection) {
 
 		selectedPos = newSelection;
 	} else {
-		wxMessageDialog dialog(this, resources.getString("game.invalid-move.text"),
-		                       resources.getString("game.invalid-move"));
+		wxMessageDialog dialog(this, _("You can't make any moves with this piece"),
+		                       _("Invalid selection"));
 		dialog.ShowModal();
 		selectedPos = selectedNone;
 	}

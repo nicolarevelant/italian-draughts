@@ -16,7 +16,7 @@ public:
 	static const int squareSize = DEF_SQUARE_SIZE, border = 40, padding = 20,
 			selectedNone = -1, minGD = DEF_MIN_GD, maxGD = DEF_MAX_GD;
 
-	explicit Frame(const std::string &locale = "", const std::string &theme = "");
+	explicit Frame(const std::string &theme = "");
 
 	~Frame() override;
 

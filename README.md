@@ -5,10 +5,13 @@ using the [Minimax](https://en.wikipedia.org/wiki/Minimax) algorithm.
 
 Instructions on how to play can be found [here](https://en.wikipedia.org/wiki/Italian_draughts).
 
-## Manual pages
+## Documentation
 
 Manual pages are available in section 1 (command invocation) and section 5
-(config files syntax). Man pages are written in [scdoc](https://git.sr.ht/~sircmpwn/scdoc).
+(config and resource files syntax). Manual pages are written
+in [scdoc](https://git.sr.ht/~sircmpwn/scdoc).
+
+Info pages are not available (yet).
 
 ## Git branches
 
@@ -20,17 +23,7 @@ with the version code (MAJOR.MINOR.PATCH).
 
 ## Installation
 
-From the source directory
-
-Portable:
-
-```bash
-cmake -B build -DCMAKE_BUILD_TYPE=Release -DPORTABLE=1
-cmake --build build
-build/italian-draughts
-```
-
-System:
+From the source directory:
 
 ```bash
 cmake -B build -DCMAKE_BUILD_TYPE=Release
@@ -38,3 +31,18 @@ cmake --build build
 cmake --install build
 /usr/bin/italian-draughts
 ```
+
+To set a custom system configuration files path (instead of /etc/italian-draughts)
+you can set the `SYSTEM_CFG_PATH` cmake variable. If you set a custom path the
+manual pages 
+
+# Copyright and license
+
+Third-party software used:
+
+- [wxWidgets](https://www.wxwidgets.org/) (C++ library for GUI)
+- [scdoc](https://git.sr.ht/~sircmpwn/scdoc/) (Compiling manual pages)
+
+This program is free software: you can redistribute it and/or modify it under the terms
+of the GNU General Public License as published by the Free Software Foundation,
+either version 3 of the License, or (at your option) any later version.

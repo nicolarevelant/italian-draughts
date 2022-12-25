@@ -11,7 +11,7 @@ class MyApp : public wxApp {
 public:
 	bool OnInit() override {
 		wxLog::SetActiveTarget(new wxLogStderr);
-		std::string locale;
+		char *locale = nullptr;
 		std::string theme;
 		int c;
 		while ((c = getopt_long(argc, argv, ":l:t:", longOptions, nullptr)) != -1) {
@@ -33,8 +33,9 @@ public:
 			}
 		}
 
-		if (locale.empty()) locale = std::setlocale(LC_CTYPE, "");
-		auto *frame = new Frame(locale, theme);
+		if (locale)
+			std::setlocale(LC_ALL, locale);
+		auto *frame = new Frame(theme);
 		frame->Show(true);
 		return true;
 	}

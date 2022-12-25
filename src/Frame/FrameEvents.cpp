@@ -6,7 +6,7 @@ void Frame::newMatchClicked(wxCommandEvent &) {
 	if (m_pcTurn) return;
 
 	if (m_isPlaying) {
-		wxMessageDialog dialog(this, resources.getString("game.leave"), resources.getString("game.new"), wxYES_NO);
+		wxMessageDialog dialog(this, _("Are you sure you want to leave the game?"), _("New match"), wxYES_NO);
 		if (dialog.ShowModal() != wxID_YES) return;
 		m_isPlaying = false;
 	}
@@ -25,19 +25,19 @@ void Frame::closeFrame(wxCommandEvent &) {
 
 void Frame::changeDifficultyClicked(wxCommandEvent &) {
 	if (m_pcTurn) {
-		wxMessageDialog dialog(this, resources.getString("game.wait.text"), resources.getString("game.wait"));
+		wxMessageDialog dialog(this, _("You have to wait your turn to continue..."), _("Wait your turn"));
 		dialog.ShowModal();
 		return;
 	}
 
 	if (m_isPlaying) {
-		wxMessageDialog dialog(this, resources.getString("game.leave"), resources.getString("game.new"), wxYES_NO);
+		wxMessageDialog dialog(this, _("Are you sure you want to leave the game?"), _("New match"), wxYES_NO);
 		if (dialog.ShowModal() != wxID_YES) return;
 	}
 
 	while (true) {
-		wxString message = wxString::Format(resources.getString("game.diff.text"), minGD, maxGD);
-		wxTextEntryDialog dialog(this, message, resources.getString("game.diff"));
+		wxString message = wxString::Format(_("Choose game difficulty from %d to %d"), minGD, maxGD);
+		wxTextEntryDialog dialog(this, message, _("Game difficulty"));
 		if (dialog.ShowModal() != wxID_OK) return;
 
 		long value;
@@ -57,10 +57,10 @@ void Frame::changeDifficultyClicked(wxCommandEvent &) {
 
 void Frame::aboutClicked(wxCommandEvent &) {
 	wxAboutDialogInfo dialog;
-	dialog.SetName(resources.getString("app.title", PROJECT_NAME));
+	dialog.SetName(wxFrame::GetTitle());
 	dialog.SetVersion(PROJECT_VERSION);
-	dialog.SetDescription(resources.getString("app.about.desc", PROJECT_DESCRIPTION));
-	dialog.SetCopyright(resources.getString("app.about.copy"));
+	dialog.SetDescription("Italian Draughts, a strategy game for 2 players.");
+	dialog.SetCopyright("Copyright (C) 2022 Nicola Revelant");
 	dialog.SetDevelopers(developers);
 	wxAboutBox(dialog, this);
 }
@@ -70,7 +70,7 @@ void Frame::aboutClicked(wxCommandEvent &) {
 void Frame::OnItemMouseClicked(wxMouseEvent &event) {
 	if (m_isEnd) return;
 	if (m_pcTurn) {
-		wxMessageDialog dialog(this, resources.getString("game.wait.text"), resources.getString("game.wait"));
+		wxMessageDialog dialog(this, _("You have to wait your turn to continue..."), _("Wait your turn"));
 		dialog.ShowModal();
 		return;
 	}
@@ -128,8 +128,8 @@ void Frame::onThreadFinished(wxCommandEvent &event) {
 	if (pcMove == nullptr) {
 		m_isEnd = true;
 		m_isPlaying = false;
-		updateStatusText(resources.getString("game.won"));
-		wxMessageDialog dialog(this, resources.getString("game.won"), resources.getString("game.over"));
+		updateStatusText(_("You won"));
+		wxMessageDialog dialog(this, _("You won"), _("Game over"));
 		dialog.ShowModal();
 		return;
 	}
@@ -140,8 +140,8 @@ void Frame::onThreadFinished(wxCommandEvent &event) {
 	if (moves.empty()) {
 		m_isEnd = true;
 		m_isPlaying = false;
-		updateStatusText(resources.getString("game.lost"));
-		wxMessageDialog dialog(this, resources.getString("game.lost"), resources.getString("game.over"));
+		updateStatusText(_("You lost"));
+		wxMessageDialog dialog(this, _("You lost"), _("Game over"));
 		dialog.ShowModal();
 	} else {
 		updateStatusText();
