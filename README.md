@@ -34,7 +34,7 @@ cmake --install build
 
 To set a custom system configuration files path (instead of /etc/italian-draughts)
 you can set the `SYSTEM_CFG_PATH` cmake variable. If you set a custom path the
-manual pages 
+manual pages won't be compiled and no install rules will be generated.
 
 # Copyright and license
 
