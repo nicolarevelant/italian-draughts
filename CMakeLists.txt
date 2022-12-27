@@ -9,6 +9,13 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic")
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 	set(SYSTEM_CFG_PATH "${CMAKE_SOURCE_DIR}/")
+
+	# Prints all Cmake variables
+	get_cmake_property(_variableNames VARIABLES)
+	list (SORT _variableNames)
+	foreach (_variableName ${_variableNames})
+		message(STATUS "${_variableName}=${${_variableName}}")
+	endforeach()
 endif()
 
 message("Build type: ${CMAKE_BUILD_TYPE}")
@@ -39,14 +46,8 @@ else()
 	set(INSTALL_CONFIG_PATH "etc/${PROJECT_NAME}")
 
 	# images
-	install(FILES images/pcDame.png DESTINATION ${INSTALL_CONFIG_PATH}/images)
-	install(FILES images/pcPawn.png DESTINATION ${INSTALL_CONFIG_PATH}/images)
-	install(FILES images/plDame.png DESTINATION ${INSTALL_CONFIG_PATH}/images)
-	install(FILES images/plPawn.png DESTINATION ${INSTALL_CONFIG_PATH}/images)
+	install(DIRECTORY images DESTINATION ${INSTALL_CONFIG_PATH})
 
 	# themes
-	install(FILES themes/default DESTINATION ${INSTALL_CONFIG_PATH}/themes)
-
-	# locales
-	install(FILES locales/default DESTINATION ${INSTALL_CONFIG_PATH}/locales)
+	install(DIRECTORY themes DESTINATION ${INSTALL_CONFIG_PATH})
 endif()
