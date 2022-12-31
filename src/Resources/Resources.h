@@ -14,7 +14,7 @@ public:
 	const wxColour &getColor(const std::string &key, const wxColour &def = wxNullColour) const;
 
 private:
-	Resources(const Resources &);
+	Resources(const Resources &); // prevents copy-constructor
 	ColorsMap m_colors;   // colors for current theme
 
 	static bool fillColorsMap(ColorsMap &colors,

@@ -1,0 +1,1 @@
+add_library(MenuBar STATIC ChessboardGrid.cpp ChessboardGrid.h)

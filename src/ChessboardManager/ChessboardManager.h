@@ -1,13 +1,13 @@
-#ifndef ITALIAN_DRAUGHTS_CHESSBOARD_H
-#define ITALIAN_DRAUGHTS_CHESSBOARD_H
+#ifndef ITALIAN_DRAUGHTS_CHESSBOARD_MANAGER_H
+#define ITALIAN_DRAUGHTS_CHESSBOARD_MANAGER_H
 
 #include <bits/stdc++.h>
 
-class Chessboard {
+class ChessboardManager {
 public:
-	Chessboard();
+	ChessboardManager();
 
-	virtual ~Chessboard();
+	virtual ~ChessboardManager();
 
 	enum PieceType {
 		EMPTY = 0, // no piece
@@ -28,7 +28,7 @@ public:
 
 	typedef std::vector<Move *> MoveList;
 
-	static std::array<Chessboard::PieceType, 64> copyDisposition(std::array<PieceType, 64> from);
+	static std::array<ChessboardManager::PieceType, 64> copyDisposition(std::array<PieceType, 64> from);
 
 	PieceType get(int index) const;
 
@@ -39,7 +39,7 @@ public:
 	static MoveList findMoves(const Move *start_move, bool pcTurn);
 
 private:
-	Chessboard(const Chessboard &); // prevents copy-constructor
+	ChessboardManager(const ChessboardManager &); // prevents copy-constructor
 	std::array<PieceType, 64> m_disposition{};
 
 	void setDefaultLayout();
@@ -50,4 +50,4 @@ private:
 	                        int s_row, int s_col, bool row_offset, bool col_offset, int score);
 };
 
-#endif //ITALIAN_DRAUGHTS_CHESSBOARD_H
+#endif //ITALIAN_DRAUGHTS_CHESSBOARD_MANAGER_H

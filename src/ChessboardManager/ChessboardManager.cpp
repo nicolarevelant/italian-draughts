@@ -1,21 +1,21 @@
-#include "Chessboard.h"
+#include "ChessboardManager.h"
 
-Chessboard::Chessboard() = default;
+ChessboardManager::ChessboardManager() = default;
 
-Chessboard::~Chessboard() = default;
+ChessboardManager::~ChessboardManager() = default;
 
-std::array<Chessboard::PieceType, 64> Chessboard::copyDisposition(const std::array<PieceType, 64> from) {
+std::array<ChessboardManager::PieceType, 64> ChessboardManager::copyDisposition(const std::array<PieceType, 64> from) {
 	std::array<PieceType, 64> to{};
 	std::copy(from.begin(), from.end(), to.begin());
 
 	return to;
 }
 
-Chessboard::MoveList Chessboard::findMoves(const Chessboard::Move *start_move, bool pcTurn) {
+ChessboardManager::MoveList ChessboardManager::findMoves(const ChessboardManager::Move *start_move, bool pcTurn) {
 	return findMoves(start_move->disposition, pcTurn);
 }
 
-Chessboard::MoveList Chessboard::findMoves(const std::array<PieceType, 64> disposition, bool pcTurn) {
+ChessboardManager::MoveList ChessboardManager::findMoves(const std::array<PieceType, 64> disposition, bool pcTurn) {
 	MoveList moves;
 
 	if (pcTurn) {
@@ -81,11 +81,11 @@ Chessboard::MoveList Chessboard::findMoves(const std::array<PieceType, 64> dispo
 	return moves;
 }
 
-Chessboard::MoveList Chessboard::findMoves(bool pcTurn) const {
-	return Chessboard::findMoves(m_disposition, pcTurn);
+ChessboardManager::MoveList ChessboardManager::findMoves(bool pcTurn) const {
+	return ChessboardManager::findMoves(m_disposition, pcTurn);
 }
 
-void Chessboard::updateBoard(Move *move) {
+void ChessboardManager::updateBoard(Move *move) {
 	if (move == nullptr) {
 		setDefaultLayout();
 	} else {
@@ -98,7 +98,7 @@ void Chessboard::updateBoard(Move *move) {
 /**
  * Resets the initial pieces disposition
  */
-void Chessboard::setDefaultLayout() {
+void ChessboardManager::setDefaultLayout() {
 	for (int i = 0; i < 64; i++) {
 		if ((i / 8) % 2 == i % 2) {
 			if (i < (8 * 3)) {
@@ -114,12 +114,12 @@ void Chessboard::setDefaultLayout() {
 	}
 }
 
-Chessboard::PieceType Chessboard::get(int index) const {
+ChessboardManager::PieceType ChessboardManager::get(int index) const {
 	return m_disposition[index];
 }
 
-bool Chessboard::addMoveStep(MoveList &moves, const std::array<PieceType, 64> disposition, int s_row, int s_col,
-                             bool row_offset, bool col_offset, int score) {
+bool ChessboardManager::addMoveStep(MoveList &moves, const std::array<PieceType, 64> disposition, int s_row, int s_col,
+                                    bool row_offset, bool col_offset, int score) {
 	// invalid move (out of bounds)
 	if (s_row == (row_offset ? 7 : 0) || s_col == (col_offset ? 7 : 0))
 		return false;
@@ -132,7 +132,7 @@ bool Chessboard::addMoveStep(MoveList &moves, const std::array<PieceType, 64> di
 	if (mid_value == EMPTY) {
 		// move without jump, only if the number of jumps equals 0 (first and last step of the move)
 		if (score == 0) {
-			std::array<PieceType, 64> copy = Chessboard::copyDisposition(disposition);
+			std::array<PieceType, 64> copy = ChessboardManager::copyDisposition(disposition);
 			copy[s_row * 8 + s_col] = EMPTY;
 			if (row_offset) {
 				copy[row * 8 + col] = (row == 7 && s_value == PC_PAWN) ? PC_DAME : s_value;
@@ -162,7 +162,7 @@ bool Chessboard::addMoveStep(MoveList &moves, const std::array<PieceType, 64> di
 		}
 
 		// possible jump, check only in the same y direction
-		std::array<PieceType, 64> copy = Chessboard::copyDisposition(disposition);
+		std::array<PieceType, 64> copy = ChessboardManager::copyDisposition(disposition);
 		copy[s_row * 8 + s_col] = EMPTY;
 		copy[row * 8 + col + (row_offset ? -8 : 8) +
 		     (col_offset ? -1 : 1)] = EMPTY;
@@ -201,7 +201,7 @@ bool Chessboard::addMoveStep(MoveList &moves, const std::array<PieceType, 64> di
 	}
 
 	// possible jump
-	std::array<PieceType, 64> copy = Chessboard::copyDisposition(disposition);
+	std::array<PieceType, 64> copy = ChessboardManager::copyDisposition(disposition);
 	copy[s_row * 8 + s_col] = EMPTY;
 	copy[row * 8 + col + (row_offset ? -8 : 8) +
 	     (col_offset ? -1 : 1)] = EMPTY;

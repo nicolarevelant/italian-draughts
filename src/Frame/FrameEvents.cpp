@@ -93,15 +93,15 @@ void Frame::OnItemMouseClicked(wxMouseEvent &event) {
 		return; // no move
 	}
 
-	Chessboard::PieceType value = board.get(currentPos);
-	if (value != Chessboard::EMPTY) {
+	ChessboardManager::PieceType value = board.get(currentPos);
+	if (value != ChessboardManager::EMPTY) {
 		checkUpdateSelection(currentPos);
 		return; // no move
 	}
 
 	int oldSelection = selectedPos;
 	checkUpdateSelection();
-	Chessboard::Move *playerMove = findPlayerMove(oldSelection, currentPos);
+	ChessboardManager::Move *playerMove = findPlayerMove(oldSelection, currentPos);
 	if (playerMove == nullptr) {
 		Refresh();
 		return; // illegal move
@@ -124,7 +124,7 @@ void Frame::OnItemMouseClicked(wxMouseEvent &event) {
 
 void Frame::onThreadFinished(wxCommandEvent &event) {
 	m_pcTurn = false;
-	auto *pcMove = reinterpret_cast<Chessboard::Move *>(event.GetClientData());
+	auto *pcMove = reinterpret_cast<ChessboardManager::Move *>(event.GetClientData());
 	if (pcMove == nullptr) {
 		m_isEnd = true;
 		m_isPlaying = false;

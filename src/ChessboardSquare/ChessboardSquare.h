@@ -1,13 +1,13 @@
 #ifndef ITALIAN_DRAUGHTS_CHESSBOARD_SQUARE_H
 #define ITALIAN_DRAUGHTS_CHESSBOARD_SQUARE_H
 
-#include "../Resources/Resources.h"
+#include <wx/wx.h>
 
 #define DEF_SQUARE_SIZE 74
 
 class ChessboardSquare : public wxWindow {
 public:
-	ChessboardSquare() : m_size(DEF_SQUARE_SIZE) { Init(); }
+	ChessboardSquare(int size = DEF_SQUARE_SIZE) : m_size(size) { Init(); }
 
 	~ChessboardSquare() override = default;
 
@@ -31,6 +31,8 @@ public:
 	void SetBitmap(const wxBitmap &bitmap);
 
 private:
+	ChessboardSquare(const ChessboardSquare &); // prevents copy-constructor
+
 	const int m_size;
 	wxBitmap m_bitmap = wxNullBitmap;
 	const wxBrush m_transparentBrush = wxBrush(wxTransparentColour, wxBRUSHSTYLE_TRANSPARENT);
@@ -39,7 +41,7 @@ private:
 	void Init();
 
 	// needed for having size*size as forced size
-	[[nodiscard]] wxSize DoGetBestSize() const override;
+	wxSize DoGetBestSize() const override;
 
 	void OnPaint(wxPaintEvent &);
 };

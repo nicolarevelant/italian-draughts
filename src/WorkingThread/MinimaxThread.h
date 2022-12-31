@@ -6,10 +6,10 @@
 
 class MinimaxThread : public wxThread {
 public:
-	MinimaxThread(wxEvtHandler *evtHandler, Chessboard &board, int gameDifficult, int id);
+	MinimaxThread(wxEvtHandler *evtHandler, ChessboardManager &board, int gameDifficult, int id);
 
 private:
-	Chessboard &m_board;
+	ChessboardManager &m_board;
 	int m_gameDifficult, m_id;
 
 	void *Entry() override;

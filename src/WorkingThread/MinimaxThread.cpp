@@ -1,6 +1,6 @@
 #include "MinimaxThread.h"
 
-MinimaxThread::MinimaxThread(wxEvtHandler *evtHandler, Chessboard &board, int gameDifficult, int id)
+MinimaxThread::MinimaxThread(wxEvtHandler *evtHandler, ChessboardManager &board, int gameDifficult, int id)
 		: wxThread(wxTHREAD_DETACHED), m_board(board) {
 	m_evtHandler = evtHandler;
 	m_gameDifficult = gameDifficult;
