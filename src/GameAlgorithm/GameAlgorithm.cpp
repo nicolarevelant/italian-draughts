@@ -1,14 +1,16 @@
-#include "GameLogic.h"
+#include <climits>
+#include "GameAlgorithm.h"
+#include "GameManager/GameManager.h"
 
-ChessboardManager::Move *GameLogic::calculateBestMove(const ChessboardManager &board, int depth) {
+Move *GameAlgorithm::calculateBestMove(const Disposition &disposition, int depth) {
 	if (depth < 0) return nullptr;
 
-	ChessboardManager::Move *res_move = nullptr;
+	Move *res_move = nullptr;
 	int bestScore = INT_MIN;
 	int alpha = INT_MIN, beta = INT_MAX;
 
-	std::vector<ChessboardManager::Move *> moves = board.findMoves(true);
-	for (ChessboardManager::Move *move: moves) {
+	std::vector<Move *> moves = GameManager::findMoves(disposition, true);
+	for (Move *move: moves) {
 		int score = minimax(move, move->score, false, depth, alpha, beta);
 		if (score > bestScore) {
 			bestScore = score;
@@ -29,7 +31,7 @@ ChessboardManager::Move *GameLogic::calculateBestMove(const ChessboardManager &b
 		res_move = moves.front();
 	}
 
-	for (ChessboardManager::Move *move: moves) {
+	for (Move *move: moves) {
 		if (move != res_move)
 			delete move;
 	}
@@ -37,15 +39,15 @@ ChessboardManager::Move *GameLogic::calculateBestMove(const ChessboardManager &b
 	return res_move;
 }
 
-int GameLogic::minimax(const ChessboardManager::Move *start_move, int eaten, bool maximizing, int depth, int alpha, int beta) {
+int GameAlgorithm::minimax(const Move *start_move, int eaten, bool maximizing, int depth, int alpha, int beta) {
 	if (depth == 0) return eaten; // depth limit reached
 
 	int bestScore, score;
 
 	if (maximizing) {
 		bestScore = INT_MIN;
-		std::vector<ChessboardManager::Move *> moves = ChessboardManager::findMoves(start_move, true);
-		for (ChessboardManager::Move *move: moves) {
+		std::vector<Move *> moves = GameManager::findMoves(start_move->disposition, true);
+		for (Move *move: moves) {
 			score = minimax(move, eaten + move->score, false, depth - 1, alpha, beta);
 			if (score > bestScore) {
 				bestScore = score;
@@ -57,15 +59,15 @@ int GameLogic::minimax(const ChessboardManager::Move *start_move, int eaten, boo
 			}
 		}
 
-		for (ChessboardManager::Move *move: moves) {
+		for (Move *move: moves) {
 			delete move;
 		}
 		return bestScore;
 	}
 
 	bestScore = INT_MAX;
-	std::vector<ChessboardManager::Move *> moves = ChessboardManager::findMoves(start_move, false);
-	for (ChessboardManager::Move *move: moves) {
+	std::vector<Move *> moves = GameManager::findMoves(start_move->disposition, false);
+	for (Move *move: moves) {
 		score = minimax(move, eaten - move->score, true, depth - 1, alpha, beta);
 		if (score < bestScore) {
 			bestScore = score;
@@ -77,7 +79,7 @@ int GameLogic::minimax(const ChessboardManager::Move *start_move, int eaten, boo
 		}
 	}
 
-	for (ChessboardManager::Move *move: moves) {
+	for (Move *move: moves) {
 		delete move;
 	}
 	return bestScore;

@@ -1,9 +1,9 @@
 #ifndef ITALIAN_DRAUGHTS_FRAME_H
 #define ITALIAN_DRAUGHTS_FRAME_H
 
-#include "../WorkingThread/MinimaxThread.h"
 #include "../Resources/Resources.h"
-#include "wx/aboutdlg.h"
+#include "../ChessboardManager/ChessboardManager.h"
+#include "../ChessboardGrid/ChessboardGrid.h"
 #include "wx/wx.h"
 
 #define DEF_MIN_GD 1
@@ -18,7 +18,11 @@ public:
 	static const int squareSize = DEF_SQUARE_SIZE, border = 40, padding = 20,
 			selectedNone = -1, minGD = DEF_MIN_GD, maxGD = DEF_MAX_GD;
 
-	explicit Frame(const std::string &theme = "");
+	Frame();
+
+	explicit Frame(wxWindow *parent, const std::string &theme = "");
+
+	bool Create(wxWindow *parent, const std::string &theme = "");
 
 	~Frame() override;
 
@@ -30,26 +34,17 @@ private:
 		CHANGE_GD,
 		THREAD_FINISH
 	};
-	const Resources resources;
+
+	Resources resources;
 	const wxArrayString developers = wxArrayString(1, {"Nicola Revelant <nicolarevelant44@gmail.com>"});
 
-	int selectedPos = selectedNone, gameDifficult = minGD;
-	bool m_isPlaying = false, m_isEnd = false, m_pcTurn = false;
-	ChessboardManager::MoveList moves; // list of moves the player can do
+	ChessboardManager *chessboardManager{};
 
 	wxMenuBar *createMenuBar();
 
 	wxPanel *createChessboard(wxWindow *parent);
 
 	void updateStatusText(const wxString &text = wxEmptyString);
-
-	void updateChessboard(ChessboardManager::Move *move = nullptr);
-
-	void checkUpdateSelection(int newSelection = selectedNone);
-
-	ChessboardManager::Move *findPlayerMove(int oldIndex, int newIndex);
-
-	void deleteMoves();
 
 	// events
 	void newMatchClicked(wxCommandEvent &);

@@ -1,20 +1,25 @@
 #include "Frame.h"
-#include "../ChessboardGrid/ChessboardGrid.h"
 
-Frame::Frame(const std::string &theme)
-		: wxFrame(nullptr, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(
-		squareSize * 8 + border * 2 + padding * 2 + 160,
-		squareSize * 8 + border * 2 + padding * 2 + 51)),
-		  resources(theme),
+#include "wx/aboutdlg.h"
 
- {
-	wxFrame::SetTitle("Italian Draughts");
-	wxColour bgColor = resources.getColor("bg");
+Frame::Frame() = default;
+
+Frame::Frame(wxWindow *parent, const std::string &theme) : Frame() {
+	Create(parent, theme);
+}
+
+bool Frame::Create(wxWindow *parent, const std::string &theme) {
+	if (!wxFrame::Create(parent, wxID_ANY, "Italian Draughts", wxDefaultPosition, wxSize(
+			squareSize * 8 + border * 2 + padding * 2 + 160,
+			squareSize * 8 + border * 2 + padding * 2 + 51)))
+		return false;
+
+	const wxColour &bgColor = resources.getColor("bg");
 
 	wxFrame::SetMenuBar(createMenuBar());
 	wxStatusBar *statusBar = wxFrame::CreateStatusBar();
 	statusBar->SetBackgroundColour(bgColor);
-	statusBar->SetForegroundColour(*wxWHITE);
+	//statusBar->SetForegroundColour(*wxWHITE);
 	updateStatusText();
 
 	// window sizer
@@ -29,9 +34,11 @@ Frame::Frame(const std::string &theme)
 	mainSizer->Add(chessboardPanel, 0, wxALL, 20);
 	mainSizer->AddStretchSpacer();
 
-	updateChessboard();
-
 	Bind(wxEVT_MENU, &Frame::onThreadFinished, this, THREAD_FINISH);
+}
+
+Frame::~Frame() {
+	delete chessboardManager;
 }
 
 wxMenuBar *Frame::createMenuBar() {
@@ -65,11 +72,14 @@ wxPanel *Frame::createChessboard(wxWindow *parent) {
 	auto *chessboardPanel = new wxPanel(parent, wxID_ANY, wxDefaultPosition,
 	                                    wxSize(gridSize + border * 2, gridSize + border * 2));
 	chessboardPanel->SetBackgroundColour(resources.getColor("border"));
-	new ChessboardGrid(chessboardPanel, wxID_ANY,
-					   resources.getColor("dark", DEF_DARK_COLOR),
+	auto *grid = new ChessboardGrid(resources.getColor("dark", DEF_DARK_COLOR),
 					   resources.getColor("light", DEF_LIGHT_COLOR),
+					   resources.getColor("focus-border"),
+					   resources.getColor("possible-move-border"),
+					   chessboardPanel, wxID_ANY,
 					   wxPoint(border, border),
-					   wxSize(gridSize, gridSize));
+					   squareSize);
+	chessboardManager = new ChessboardManager(grid);
 
 	return chessboardPanel;
 }
@@ -125,7 +135,7 @@ void Frame::checkUpdateSelection(int newSelection) {
 
 		// highlight the possible moves
 		ChessboardManager::PieceType oldValue;
-		for (ChessboardManager::Move *move: moves) {
+		for (ChessboardManager::Move *move : moves) {
 			oldValue = move->disposition[newSelection];
 			if (oldValue != ChessboardManager::EMPTY) {
 				continue; // this ChessboardManager::Move doesn't move the current selected piece
@@ -167,12 +177,155 @@ ChessboardManager::Move *Frame::findPlayerMove(int oldIndex, int newIndex) {
 	return nullptr;
 }
 
-void Frame::deleteMoves() {
-	for (ChessboardManager::Move *move: moves) {
-		delete move;
+
+
+//                             --- Menu events
+
+void Frame::newMatchClicked(wxCommandEvent &) {
+	if (m_pcTurn) return;
+
+	if (m_isPlaying) {
+		wxMessageDialog dialog(this, _("Are you sure you want to leave the game?"), _("New match"), wxYES_NO);
+		if (dialog.ShowModal() != wxID_YES) return;
+		m_isPlaying = false;
+	}
+
+	m_isEnd = false;
+
+	updateChessboard();
+	updateStatusText();
+
+	Refresh();
+}
+
+void Frame::closeFrame(wxCommandEvent &) {
+	Close();
+}
+
+void Frame::changeDifficultyClicked(wxCommandEvent &) {
+	if (m_pcTurn) {
+		wxMessageDialog dialog(this, _("You have to wait your turn to continue..."), _("Wait your turn"));
+		dialog.ShowModal();
+		return;
+	}
+
+	if (m_isPlaying) {
+		wxMessageDialog dialog(this, _("Are you sure you want to leave the game?"), _("New match"), wxYES_NO);
+		if (dialog.ShowModal() != wxID_YES) return;
+	}
+
+	while (true) {
+		wxString message = wxString::Format(_("Choose game difficulty from %d to %d"), minGD, maxGD);
+		wxTextEntryDialog dialog(this, message, _("Game difficulty"));
+		if (dialog.ShowModal() != wxID_OK) return;
+
+		long value;
+		if (dialog.GetValue().ToLong(&value) && value >= minGD && value <= maxGD) {
+			m_isPlaying = false;
+			m_isEnd = false;
+			gameDifficult = (int) value;
+
+			updateChessboard();
+			updateStatusText();
+
+			Refresh();
+			return;
+		}
 	}
 }
 
-Frame::~Frame() {
-	deleteMoves();
+void Frame::aboutClicked(wxCommandEvent &) {
+	wxAboutDialogInfo dialog;
+	dialog.SetName(wxFrame::GetTitle());
+	dialog.SetVersion(PROJECT_VERSION);
+	dialog.SetDescription("Italian Draughts, a strategy game for 2 players.");
+	dialog.SetCopyright("Copyright (C) 2022 Nicola Revelant");
+	dialog.SetDevelopers(developers);
+	dialog.SetLicense("GNU General Public License, version 3 or later");
+
+	wxAboutBox(dialog, this);
 }
+
+//                             --- Other events
+
+void Frame::OnItemMouseClicked(wxMouseEvent &event) {
+	if (m_isEnd) return;
+	if (m_pcTurn) {
+		wxMessageDialog dialog(this, _("You have to wait your turn to continue..."), _("Wait your turn"));
+		dialog.ShowModal();
+		return;
+	}
+	int x, y;
+	event.GetPosition(&x, &y);
+	if (x < 0 || y < 0 || x >= squareSize || y >= squareSize) return; // illegal position
+
+	int currentPos = event.GetId();
+
+	if (selectedPos == selectedNone) {
+		checkUpdateSelection(currentPos);
+		return;
+	}
+
+	// already selected
+
+	// same square or white square, illegal move
+	if (currentPos == selectedPos || (currentPos / 8) % 2 != currentPos % 2) {
+		checkUpdateSelection(); // it removes also the possible move borders
+		return; // no move
+	}
+
+	ChessboardManager::PieceType value = board.get(currentPos);
+	if (value != ChessboardManager::EMPTY) {
+		checkUpdateSelection(currentPos);
+		return; // no move
+	}
+
+	int oldSelection = selectedPos;
+	checkUpdateSelection();
+	ChessboardManager::Move *playerMove = findPlayerMove(oldSelection, currentPos);
+	if (playerMove == nullptr) {
+		Refresh();
+		return; // illegal move
+	}
+
+	updateBoardAndIcons(playerMove);
+	m_isPlaying = true;
+	m_pcTurn = true;
+
+	updateStatusText();
+	auto *thread = new MinimaxThread(this, board, gameDifficult, THREAD_FINISH);
+	if (thread->Create() != wxTHREAD_NO_ERROR || thread->Run() != wxTHREAD_NO_ERROR) {
+		std::cerr << "Runtime error, cannot create a new thread, aborting..." << std::endl;
+		exit(EXIT_FAILURE);
+	}
+
+	// The player move is in the moves vector that will be deleted after the PC move
+	Refresh();
+}
+
+void Frame::onThreadFinished(wxCommandEvent &event) {
+	m_pcTurn = false;
+	auto *pcMove = reinterpret_cast<ChessboardManager::Move *>(event.GetClientData());
+	if (pcMove == nullptr) {
+		m_isEnd = true;
+		m_isPlaying = false;
+		updateStatusText(_("You won"));
+		wxMessageDialog dialog(this, _("You won"), _("Game over"));
+		dialog.ShowModal();
+		return;
+	}
+
+	updateChessboard(pcMove);
+
+	// updateChessboard also updates 'moves'
+	if (moves.empty()) {
+		m_isEnd = true;
+		m_isPlaying = false;
+		updateStatusText(_("You lost"));
+		wxMessageDialog dialog(this, _("You lost"), _("Game over"));
+		dialog.ShowModal();
+	} else {
+		updateStatusText();
+	}
+}
+

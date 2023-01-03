@@ -1,1 +1,1 @@
-add_library(Frame STATIC Frame.cpp FrameEvents.cpp Frame.h)
+add_library(Frame STATIC Frame.cpp Frame.h)

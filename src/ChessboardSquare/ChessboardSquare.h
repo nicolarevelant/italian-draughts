@@ -3,25 +3,16 @@
 
 #include <wx/wx.h>
 
-#define DEF_SQUARE_SIZE 74
-
 class ChessboardSquare : public wxWindow {
 public:
-	ChessboardSquare(int size = DEF_SQUARE_SIZE) : m_size(size) { Init(); }
+	ChessboardSquare();
 
 	~ChessboardSquare() override = default;
 
-	explicit ChessboardSquare(wxWindow *parent,
-	                          wxWindowID windowId = wxID_ANY,
-	                          int size = DEF_SQUARE_SIZE,
-	                          const wxPen &border = wxNullPen,
-	                          const wxBitmap &bitmap = wxNullBitmap)
-			: m_size(size) {
-		Init();
-		Create(parent, windowId, border, bitmap);
-	}
+	explicit ChessboardSquare(int size, wxWindow *parent, wxWindowID windowId = wxID_ANY,
+	                          const wxPen &border = wxNullPen, const wxBitmap &bitmap = wxNullBitmap);
 
-	bool Create(wxWindow *parent,
+	bool Create(int size, wxWindow *parent,
 	            wxWindowID windowId = wxID_ANY,
 	            const wxPen &border = wxNullPen,
 	            const wxBitmap &bitmap = wxNullBitmap);
@@ -33,12 +24,10 @@ public:
 private:
 	ChessboardSquare(const ChessboardSquare &); // prevents copy-constructor
 
-	const int m_size;
-	wxBitmap m_bitmap = wxNullBitmap;
-	const wxBrush m_transparentBrush = wxBrush(wxTransparentColour, wxBRUSHSTYLE_TRANSPARENT);
-	wxPen m_border = wxNullPen;
-
-	void Init();
+	int m_size = 0;
+	wxBitmap &m_bitmap = wxNullBitmap;
+	const wxBrush m_transparentBrush{wxTransparentColour, wxBRUSHSTYLE_TRANSPARENT};
+	wxPen &m_border = wxNullPen;
 
 	// needed for having size*size as forced size
 	wxSize DoGetBestSize() const override;

@@ -1,11 +1,17 @@
 #include "ChessboardSquare.h"
 
-void ChessboardSquare::Init() {
+ChessboardSquare::ChessboardSquare() {
 	Bind(wxEVT_PAINT, &ChessboardSquare::OnPaint, this);
 }
 
-bool ChessboardSquare::Create(wxWindow *parent, wxWindowID windowId, const wxPen &brd, const wxBitmap &bmp) {
+ChessboardSquare::ChessboardSquare(int size, wxWindow *parent, wxWindowID windowId, const wxPen &border,
+                                   const wxBitmap &bitmap) : ChessboardSquare() {
+	Create(size, parent, windowId, border, bitmap);
+}
+
+bool ChessboardSquare::Create(int size, wxWindow *parent, wxWindowID windowId, const wxPen &brd, const wxBitmap &bmp) {
 	if (wxWindow::Create(parent, windowId)) {
+		m_size = size;
 		m_border = brd;
 		m_bitmap = bmp;
 		Layout();
