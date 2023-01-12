@@ -2,7 +2,7 @@
 #define ITALIAN_DRAUGHTS_CHESSBOARD_GRID_H
 
 #include "ChessboardSquare/ChessboardSquare.h"
-#include "utils.h"
+#include "GameUtils/GameUtils.h"
 #include <wx/wx.h>
 
 #define DEF_SQUARE_SIZE 74
@@ -27,23 +27,29 @@ public:
 	 * Updates the disposition of the pieces in the chessboard and clears every border
 	 * @param newDisposition The new disposition to apply
 	 */
-	void updateDisposition(Disposition &newDisposition);
+	void updateDisposition(const GameUtils::Disposition &newDisposition);
 
 	/**
-	 * Set a new border for the square located at an specifica location
+	 * Set a new border for the square located at an specific location
 	 * @param index Position of the square
 	 * @param border The new border
 	 */
-	void setBorder(int index, wxPen &border);
+	void SetSquareBorder(int index, const wxPen &border);
+
+	/**
+	 * Clears the border of all 64 squares
+	 */
+	void ClearSquareBorders();
 
 private:
 	ChessboardGrid(const ChessboardGrid &); // prevents copy-constructor
 	std::array<ChessboardSquare *, 64> chessboard{};
 
 	wxBitmap pcPawn, pcDame, plPawn, plDame;
-	MoveList moves; // list of moves the player can do
+	GameUtils::MoveList moves; // list of moves the player can do
 
 	int squareSize{};
+	void OnItemMouseClicked(wxMouseEvent &evt);
 };
 
 

@@ -6,13 +6,15 @@ ChessboardSquare::ChessboardSquare() {
 
 ChessboardSquare::ChessboardSquare(int size, wxWindow *parent, wxWindowID windowId, const wxPen &border,
                                    const wxBitmap &bitmap) : ChessboardSquare() {
-	Create(size, parent, windowId, border, bitmap);
+	if (!Create(size, parent, windowId, border, bitmap))
+		throw std::exception();
 }
 
-bool ChessboardSquare::Create(int size, wxWindow *parent, wxWindowID windowId, const wxPen &brd, const wxBitmap &bmp) {
+bool
+ChessboardSquare::Create(int size, wxWindow *parent, wxWindowID windowId, const wxPen &border, const wxBitmap &bmp) {
 	if (wxWindow::Create(parent, windowId)) {
 		m_size = size;
-		m_border = brd;
+		m_border = border;
 		m_bitmap = bmp;
 		Layout();
 		return true;
@@ -20,7 +22,7 @@ bool ChessboardSquare::Create(int size, wxWindow *parent, wxWindowID windowId, c
 	return false;
 }
 
-wxSize ChessboardSquare::DoGetBestSize() const {
+wxSize ChessboardSquare::DoGetBestClientSize() const {
 	return {m_size, m_size};
 }
 

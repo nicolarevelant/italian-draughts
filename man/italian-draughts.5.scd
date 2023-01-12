@@ -10,26 +10,26 @@ italian-draughts searches the resources in following paths:
 . ~/.config/italian-draughts
 
 These are read in cascade from the first path to the last one, that is, from
-an empty set every resourse will be added to it or it's value will be updated.
+an empty set every resource will be added to it or it's value will be updated.
 
-Not all resourses are read, but those that are required to the program (see
+Not all resources are read, but those that are required to the program (see
 *italian-draughts*(1)) and the parent's ones recursively up to the default ones.
 
-In general the resourses are located in <path>/<type>/<modifier>, with <path>
-the resourses path, <type> the resourse type (i.e. strings or colors) and
-<modifier> the file in which there are some resourses.
+In general the resources are located in <path>/<type>/<modifier>, with <path>
+the resources path, <type> the resource type (i.e. strings or colors) and
+<modifier> the file in which there are some resources.
 
 To support different configurations (i.e. different languages, different themes)
-the resourses of a specific type are splitted in 1 or more files.
+the resources of a specific type are split in 1 or more files.
 
-For each type of resourse, all the default values are located in "default" file,
+For each type of resource, all the default values are located in "default" file,
 that should be always present in every <type> directory.
 
 # MODIFIERS
 Modifiers allows you to create a variant of a specific type (i.e. localize a
 program, set a custom theme, etc.). Below is indicated which modifier to use
-(that is the file name) for the most used resourse types, and in brackets the
-hierarchy used in case the modifier don't overwrite the parent resourse. The
+(that is the file name) for the most used resource types, and in brackets the
+hierarchy used in case the modifier don't overwrite the parent resource. The
 invalid characters are: "/" and "\\".
 
 ## strings (default > language > language_country)
@@ -42,7 +42,7 @@ uses only exclusively UTF-8).
 ## colors (default > theme)
 The theme name. There is no specific hierarchy.
 
-# SEE ALSE
+# SEE ALSO
 *italian-draughts*(1)
 
 # AUTHORS

@@ -7,9 +7,15 @@
 
 class Resources {
 public:
-	explicit Resources(const std::string &theme = "");
+	explicit Resources();
 
 	typedef std::map<std::string, wxColour> ColorsMap;
+
+	/**
+	 * Adds or overwrites colors read from a file that represents the specified theme
+	 * @param theme Theme to add
+	 */
+	void addTheme(const std::string &theme);
 
 	const wxColour &getColor(const std::string &key, const wxColour &def = wxNullColour) const;
 

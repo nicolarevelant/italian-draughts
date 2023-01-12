@@ -1,4 +1,4 @@
 # Window frame
 
-This class represents the frame of a window. It listens the window events
-and it forwards them to the children (e.g. panels).
+This library contains a class that represents the window frame
+including the menu bar and the status bar.

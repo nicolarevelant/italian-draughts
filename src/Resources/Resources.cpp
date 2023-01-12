@@ -1,15 +1,11 @@
 #include "Resources.h"
 
-Resources::Resources(const std::string &theme) {
-	if (theme.empty()) {
-		fillColorsMap(m_colors, SYSTEM_CFG_PATH);
-		fillColorsMap(m_colors, USER_CFG_PATH);
-	} else {
-		fillColorsMap(m_colors, SYSTEM_CFG_PATH);
-		fillColorsMap(m_colors, USER_CFG_PATH);
-		fillColorsMap(m_colors, SYSTEM_CFG_PATH, theme);
-		fillColorsMap(m_colors, USER_CFG_PATH, theme);
-	}
+Resources::Resources() {
+	fillColorsMap(m_colors, SYSTEM_CFG_PATH);
+}
+
+void Resources::addTheme(const std::string &theme) {
+	fillColorsMap(m_colors, SYSTEM_CFG_PATH, theme);
 }
 
 bool Resources::fillColorsMap(ColorsMap &colors, const std::string &path, const std::string &theme) {

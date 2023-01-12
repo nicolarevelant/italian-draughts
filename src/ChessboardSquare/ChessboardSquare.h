@@ -17,20 +17,28 @@ public:
 	            const wxPen &border = wxNullPen,
 	            const wxBitmap &bitmap = wxNullBitmap);
 
-	void SetBorder(const wxPen &border);
+	/**
+	 * Set a new border as wxPen
+	 * @param border A new wxPen border
+	 */
+	void SetBorder(const wxPen &border = wxNullPen);
 
+	/**
+	 * Set a new image as wxBitmap
+	 * @param bitmap A new wxBitmap image
+	 */
 	void SetBitmap(const wxBitmap &bitmap);
+
+protected:
+	wxSize DoGetBestClientSize() const override;
 
 private:
 	ChessboardSquare(const ChessboardSquare &); // prevents copy-constructor
 
 	int m_size = 0;
-	wxBitmap &m_bitmap = wxNullBitmap;
+	wxBitmap m_bitmap = wxNullBitmap;
 	const wxBrush m_transparentBrush{wxTransparentColour, wxBRUSHSTYLE_TRANSPARENT};
-	wxPen &m_border = wxNullPen;
-
-	// needed for having size*size as forced size
-	wxSize DoGetBestSize() const override;
+	wxPen m_border = wxNullPen;
 
 	void OnPaint(wxPaintEvent &);
 };

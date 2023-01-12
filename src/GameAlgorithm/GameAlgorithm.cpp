@@ -1,16 +1,15 @@
 #include <climits>
 #include "GameAlgorithm.h"
-#include "GameManager/GameManager.h"
 
-Move *GameAlgorithm::calculateBestMove(const Disposition &disposition, int depth) {
+GameUtils::Move *GameAlgorithm::calculateBestMove(const GameUtils::Disposition &disposition, int depth) {
 	if (depth < 0) return nullptr;
 
-	Move *res_move = nullptr;
+	GameUtils::Move *res_move = nullptr;
 	int bestScore = INT_MIN;
 	int alpha = INT_MIN, beta = INT_MAX;
 
-	std::vector<Move *> moves = GameManager::findMoves(disposition, true);
-	for (Move *move: moves) {
+	std::vector<GameUtils::Move *> moves = GameUtils::findMoves(disposition, false);
+	for (GameUtils::Move *move: moves) {
 		int score = minimax(move, move->score, false, depth, alpha, beta);
 		if (score > bestScore) {
 			bestScore = score;
@@ -31,7 +30,7 @@ Move *GameAlgorithm::calculateBestMove(const Disposition &disposition, int depth
 		res_move = moves.front();
 	}
 
-	for (Move *move: moves) {
+	for (GameUtils::Move *move: moves) {
 		if (move != res_move)
 			delete move;
 	}
@@ -39,16 +38,16 @@ Move *GameAlgorithm::calculateBestMove(const Disposition &disposition, int depth
 	return res_move;
 }
 
-int GameAlgorithm::minimax(const Move *start_move, int eaten, bool maximizing, int depth, int alpha, int beta) {
-	if (depth == 0) return eaten; // depth limit reached
+int GameAlgorithm::minimax(const GameUtils::Move *start_move, int oldScore, bool maximizing, int depth, int alpha, int beta) {
+	if (depth == 0) return oldScore; // depth limit reached
 
 	int bestScore, score;
 
 	if (maximizing) {
 		bestScore = INT_MIN;
-		std::vector<Move *> moves = GameManager::findMoves(start_move->disposition, true);
-		for (Move *move: moves) {
-			score = minimax(move, eaten + move->score, false, depth - 1, alpha, beta);
+		std::vector<GameUtils::Move *> moves = GameUtils::findMoves(start_move->disposition, false);
+		for (GameUtils::Move *move: moves) {
+			score = minimax(move, oldScore + move->score, false, depth - 1, alpha, beta);
 			if (score > bestScore) {
 				bestScore = score;
 			}
@@ -59,16 +58,16 @@ int GameAlgorithm::minimax(const Move *start_move, int eaten, bool maximizing, i
 			}
 		}
 
-		for (Move *move: moves) {
+		for (GameUtils::Move *move: moves) {
 			delete move;
 		}
 		return bestScore;
 	}
 
 	bestScore = INT_MAX;
-	std::vector<Move *> moves = GameManager::findMoves(start_move->disposition, false);
-	for (Move *move: moves) {
-		score = minimax(move, eaten - move->score, true, depth - 1, alpha, beta);
+	std::vector<GameUtils::Move *> moves = GameUtils::findMoves(start_move->disposition, true);
+	for (GameUtils::Move *move: moves) {
+		score = minimax(move, oldScore - move->score, true, depth - 1, alpha, beta);
 		if (score < bestScore) {
 			bestScore = score;
 		}
@@ -79,7 +78,7 @@ int GameAlgorithm::minimax(const Move *start_move, int eaten, bool maximizing, i
 		}
 	}
 
-	for (Move *move: moves) {
+	for (GameUtils::Move *move: moves) {
 		delete move;
 	}
 	return bestScore;

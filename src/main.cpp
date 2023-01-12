@@ -35,8 +35,8 @@ public:
 
 		if (locale)
 			std::setlocale(LC_ALL, locale);
-		auto *frame = new Frame(theme);
-		frame->Show(true);
+
+		(new Frame(nullptr, theme))->Show(true);
 		return true;
 	}
 };

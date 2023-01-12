@@ -1,42 +1,42 @@
-#include "GameManager.h"
+#include "GameUtils.h"
 #include "GameAlgorithm/GameAlgorithm.h"
 
-GameManager::MinimaxThread::MinimaxThread(wxEvtHandler *evtHandler, const Disposition &disposition, int gameDifficult, int id)
+GameUtils::AlgorithmThread::AlgorithmThread(wxEvtHandler *evtHandler, const Disposition &disposition, int gameDifficult,
+                                            int id)
 		: wxThread(wxTHREAD_DETACHED), m_disposition(disposition) {
 	m_evtHandler = evtHandler;
 	m_gameDifficult = gameDifficult;
 	m_id = id;
 }
 
-void *GameManager::MinimaxThread::Entry() {
+void *GameUtils::AlgorithmThread::Entry() {
 	wxCommandEvent evt(wxEVT_MENU, m_id);
 	evt.SetClientData(GameAlgorithm::calculateBestMove(m_disposition, m_gameDifficult));
-	//wxPostEvent(m_evtHandler, evt);
 	m_evtHandler->AddPendingEvent(evt);
 
 	return nullptr;
 }
 
-MoveList GameManager::findMoves(const Disposition &disposition, bool pcTurn) {
+GameUtils::MoveList GameUtils::findMoves(const Disposition &disposition, bool player) {
 	MoveList moves;
 
-	if (pcTurn) {
+	if (player) {
 		for (int row = 0, col; row < 8; row++) {
 			for (col = 0; col < 8; col++) {
 				switch (disposition[row * 8 + col]) {
-					case PC_DAME:
+					case PL_DAME:
+						addMoveStep(moves, disposition, row, col, true, false, 0);
+						addMoveStep(moves, disposition, row, col, true, true, 0);
 						addMoveStep(moves, disposition, row, col, false, false, 0);
 						addMoveStep(moves, disposition, row, col, false, true, 0);
-						addMoveStep(moves, disposition, row, col, true, false, 0);
-						addMoveStep(moves, disposition, row, col, true, true, 0);
 						break;
-					case PC_PAWN:
-						addMoveStep(moves, disposition, row, col, true, false, 0);
-						addMoveStep(moves, disposition, row, col, true, true, 0);
+					case PL_PAWN:
+						addMoveStep(moves, disposition, row, col, false, false, 0);
+						addMoveStep(moves, disposition, row, col, false, true, 0);
 						break;
 					case EMPTY:
-					case PL_PAWN:
-					case PL_DAME:
+					case PC_PAWN:
+					case PC_DAME:
 						break;
 				}
 			}
@@ -45,19 +45,19 @@ MoveList GameManager::findMoves(const Disposition &disposition, bool pcTurn) {
 		for (int row = 0, col; row < 8; row++) {
 			for (col = 0; col < 8; col++) {
 				switch (disposition[row * 8 + col]) {
-					case PL_DAME:
+					case PC_DAME:
+						addMoveStep(moves, disposition, row, col, false, false, 0);
+						addMoveStep(moves, disposition, row, col, false, true, 0);
 						addMoveStep(moves, disposition, row, col, true, false, 0);
 						addMoveStep(moves, disposition, row, col, true, true, 0);
-						addMoveStep(moves, disposition, row, col, false, false, 0);
-						addMoveStep(moves, disposition, row, col, false, true, 0);
 						break;
-					case PL_PAWN:
-						addMoveStep(moves, disposition, row, col, false, false, 0);
-						addMoveStep(moves, disposition, row, col, false, true, 0);
+					case PC_PAWN:
+						addMoveStep(moves, disposition, row, col, true, false, 0);
+						addMoveStep(moves, disposition, row, col, true, true, 0);
 						break;
 					case EMPTY:
-					case PC_PAWN:
-					case PC_DAME:
+					case PL_PAWN:
+					case PL_DAME:
 						break;
 				}
 			}
@@ -83,8 +83,8 @@ MoveList GameManager::findMoves(const Disposition &disposition, bool pcTurn) {
 	return moves;
 }
 
-bool GameManager::addMoveStep(MoveList &moves, const Disposition &disposition, int s_row, int s_col,
-                                    bool row_offset, bool col_offset, int score) {
+bool GameUtils::addMoveStep(MoveList &moves, const Disposition &disposition, int s_row, int s_col,
+                            bool row_offset, bool col_offset, int score) {
 	// invalid move (out of bounds)
 	if (s_row == (row_offset ? 7 : 0) || s_col == (col_offset ? 7 : 0))
 		return false;
@@ -97,7 +97,8 @@ bool GameManager::addMoveStep(MoveList &moves, const Disposition &disposition, i
 	if (mid_value == EMPTY) {
 		// move without jump, only if the number of jumps equals 0 (first and last step of the move)
 		if (score == 0) {
-			Disposition copy = copyDisposition(disposition);
+			Disposition copy;
+			std::copy(disposition.begin(), disposition.end(), copy.begin());
 			copy[s_row * 8 + s_col] = EMPTY;
 			if (row_offset) {
 				copy[row * 8 + col] = (row == 7 && s_value == PC_PAWN) ? PC_DAME : s_value;
@@ -116,7 +117,7 @@ bool GameManager::addMoveStep(MoveList &moves, const Disposition &disposition, i
 
 	if (s_value == (row_offset ? PC_PAWN : PL_PAWN)) {
 		if (mid_value != (row_offset ? PL_PAWN : PC_PAWN)) {
-			return false; // white man only eat black man
+			return false; // white man only eat black man and vice-versa
 		}
 
 		// move with jump from pawn
@@ -127,7 +128,8 @@ bool GameManager::addMoveStep(MoveList &moves, const Disposition &disposition, i
 		}
 
 		// possible jump, check only in the same y direction
-		Disposition copy = copyDisposition(disposition);
+		Disposition copy;
+		std::copy(disposition.begin(), disposition.end(), copy.begin());
 		copy[s_row * 8 + s_col] = EMPTY;
 		copy[row * 8 + col + (row_offset ? -8 : 8) +
 		     (col_offset ? -1 : 1)] = EMPTY;
@@ -136,7 +138,7 @@ bool GameManager::addMoveStep(MoveList &moves, const Disposition &disposition, i
 		} else {
 			copy[row * 8 + col] = (row == 0) ? PL_DAME : PL_PAWN;
 		}
-		score++;
+		score += PAWN_SCORE;
 
 		if (addMoveStep(moves, copy, row, col, row_offset, false, score))
 			isValid = false;
@@ -166,12 +168,13 @@ bool GameManager::addMoveStep(MoveList &moves, const Disposition &disposition, i
 	}
 
 	// possible jump
-	Disposition copy = copyDisposition(disposition);
+	Disposition copy;
+	std::copy(disposition.begin(), disposition.end(), copy.begin());
 	copy[s_row * 8 + s_col] = EMPTY;
 	copy[row * 8 + col + (row_offset ? -8 : 8) +
 	     (col_offset ? -1 : 1)] = EMPTY;
 	copy[row * 8 + col] = s_value;
-	score += 2;
+	score += DAME_SCORE;
 
 	if (addMoveStep(moves, copy, row, col, row_offset, false, score))
 		isValid = false;

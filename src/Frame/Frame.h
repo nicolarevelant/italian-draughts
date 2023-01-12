@@ -2,22 +2,20 @@
 #define ITALIAN_DRAUGHTS_FRAME_H
 
 #include "../Resources/Resources.h"
-#include "../ChessboardManager/ChessboardManager.h"
+#include "MatchManager/MatchManager.h"
 #include "../ChessboardGrid/ChessboardGrid.h"
 #include "wx/wx.h"
-
-#define DEF_MIN_GD 1
-#define DEF_MAX_GD 10
-#define DEF_SQUARE_SIZE 74
 
 #define DEF_DARK_COLOR wxColour(32, 32, 32)
 #define DEF_LIGHT_COLOR wxColour(140, 140, 140)
 
+#define CHESSBOARD_BORDER_H 40
+#define CHESSBOARD_BORDER_V 40
+#define CHESSBOARD_MARGIN_H 60
+#define CHESSBOARD_MARGIN_V 40
+
 class Frame : public wxFrame {
 public:
-	static const int squareSize = DEF_SQUARE_SIZE, border = 40, padding = 20,
-			selectedNone = -1, minGD = DEF_MIN_GD, maxGD = DEF_MAX_GD;
-
 	Frame();
 
 	explicit Frame(wxWindow *parent, const std::string &theme = "");
@@ -31,22 +29,22 @@ private:
 
 	enum MenuItems {
 		NEW_MATCH = 1,
-		CHANGE_GD,
-		THREAD_FINISH
+		CHANGE_GD
 	};
 
 	Resources resources;
 	const wxArrayString developers = wxArrayString(1, {"Nicola Revelant <nicolarevelant44@gmail.com>"});
 
-	ChessboardManager *chessboardManager{};
+	MatchManager *chessboardManager{};
 
 	wxMenuBar *createMenuBar();
 
 	wxPanel *createChessboard(wxWindow *parent);
 
-	void updateStatusText(const wxString &text = wxEmptyString);
-
 	// events
+
+	void onGameEvent(enum MatchManager::UpdateType updateType);
+
 	void newMatchClicked(wxCommandEvent &);
 
 	void closeFrame(wxCommandEvent &);
@@ -54,10 +52,6 @@ private:
 	void changeDifficultyClicked(wxCommandEvent &);
 
 	void aboutClicked(wxCommandEvent &);
-
-	void OnItemMouseClicked(wxMouseEvent &);
-
-	void onThreadFinished(wxCommandEvent &event);
 };
 
 #endif //ITALIAN_DRAUGHTS_FRAME_H
