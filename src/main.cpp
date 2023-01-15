@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright (C) 2023  Nicola Revelant
+
 #include <getopt.h>
 #include "Frame/Frame.h"
 #include "wx/wx.h"

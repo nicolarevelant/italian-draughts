@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright (C) 2023  Nicola Revelant
+
 #ifndef ITALIAN_DRAUGHTS_DRAUGHTS_MATCH_MANAGER_H
 #define ITALIAN_DRAUGHTS_DRAUGHTS_MATCH_MANAGER_H
 

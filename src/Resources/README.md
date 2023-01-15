@@ -1,4 +1,4 @@
-# Resource management
+# Resource Management
 
 Class for accessing an application's resources.
 

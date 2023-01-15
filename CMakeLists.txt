@@ -1,8 +1,12 @@
 cmake_minimum_required(VERSION 3.20)
 project(italian-draughts
-		VERSION 1.2.5
-		DESCRIPTION "Italian Draughts: the famous strategy game for 2 players written in C++"
+		VERSION 1.3.0
+		DESCRIPTION "Italian Draughts: a strategy game for 2 players written in C++."
 		LANGUAGES CXX)
+
+set(PROJECT_PRETTY_NAME "Italian Draughts")
+set(PROJECT_COPYRIGHT "Copyright (C) 2023 Nicola Revelant")
+set(PROJECT_LICENSE "GNU General Public License, version 3 or later")
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic")

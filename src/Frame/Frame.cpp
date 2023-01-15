@@ -1,5 +1,7 @@
-#include "Frame.h"
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright (C) 2023  Nicola Revelant
 
+#include "Frame.h"
 #include "wx/aboutdlg.h"
 
 Frame::Frame() = default;
@@ -10,7 +12,7 @@ Frame::Frame(wxWindow *parent, const std::string &theme) : Frame() {
 }
 
 bool Frame::Create(wxWindow *parent, const std::string &theme) {
-	if (!wxFrame::Create(parent, wxID_ANY, "Italian Draughts"))
+	if (!wxFrame::Create(parent, wxID_ANY, PROJECT_PRETTY_NAME))
 		return false;
 
 	if (!theme.empty())
@@ -61,7 +63,7 @@ wxMenuBar *Frame::createMenuBar() {
 	menuSettings->Append(CHANGE_GD, _("&Change difficulty"), _("Change difficulty"));
 
 	auto *menuHelp = new wxMenu;
-	menuHelp->Append(wxID_ABOUT, _("About Italian Draughts"), _("Open about dialog"));
+	menuHelp->Append(wxID_ABOUT, _("About " PROJECT_PRETTY_NAME), _("Open about dialog"));
 
 	auto *menuBar = new wxMenuBar;
 	menuBar->Append(menuFile, _("&File"));
@@ -163,10 +165,10 @@ void Frame::aboutClicked(wxCommandEvent &) {
 	wxAboutDialogInfo dialog;
 	dialog.SetName(wxFrame::GetTitle());
 	dialog.SetVersion(PROJECT_VERSION);
-	dialog.SetDescription("Italian Draughts, a strategy game for 2 players.");
-	dialog.SetCopyright("Copyright (C) 2022 Nicola Revelant");
+	dialog.SetDescription(PROJECT_DESCRIPTION);
+	dialog.SetCopyright(PROJECT_COPYRIGHT);
 	dialog.SetDevelopers(developers);
-	dialog.SetLicense("GNU General Public License, version 3 or later");
+	dialog.SetLicense(PROJECT_LICENSE);
 
 	wxAboutBox(dialog, this);
 }
