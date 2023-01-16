@@ -20,16 +20,16 @@ Sets the theme
 This program allows you to play italian draughts, a strategy board game for 2
 players and it's played on a 8x8 checkerboard.
 
-# CONFIGURATION
-italian-draughts searches the resources into the following paths:
+# RESOURCES
+italian-draughts searches the resources into the following path:
 
-. /etc/italian-draughts
-. ~/.config/italian-draughts
+. /etc/italian-draughts/themes/
 
-They are read in cascade from the first path to the last one, that is, from a
-empty set every resource will be added or it's value will be updated.
+First it reads from 'default' file and then, if the user specified a theme,
+from the file whose name corresponds to the theme name. New values can be added
+or overwrite the default ones.
 
-For information on the config file format, see *italian-draughts*(5).
+For information on the resource file format, see *italian-draughts*(5).
 
 # SEE ALSO
 *italian-draughts*(5)
@@ -37,4 +37,4 @@ For information on the config file format, see *italian-draughts*(5).
 # AUTHORS
 Maintained by Nicola Revelant <nicolarevelant44@gmail.com>. Up-to-date sources
 can be found at https://gitlab.com/nicolarevelant44/italian-draughts and
-bugs/patches can be submitted by e-mail.
+bugs/patches can be submitted via e-mail or via GitLab.

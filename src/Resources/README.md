@@ -2,7 +2,7 @@
 
 Class for accessing an application's resources.
 
-## Localization
+## Internationalization (i18n)
 
 This program can be started with a specific locale, or it will use the system language.
 

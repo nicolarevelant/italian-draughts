@@ -5,9 +5,11 @@
 #include "Frame/Frame.h"
 #include "wx/wx.h"
 
+
 static option longOptions[] = {
 		{"locale", required_argument, nullptr, 'l'},
-		{"theme",  required_argument, nullptr, 't'}
+		{"theme", required_argument, nullptr, 't'},
+		{"help", no_argument, nullptr, 'h'}
 };
 
 class MyApp : public wxApp {
@@ -17,7 +19,7 @@ public:
 		char *locale = nullptr;
 		std::string theme;
 		int c;
-		while ((c = getopt_long(argc, argv, ":l:t:", longOptions, nullptr)) != -1) {
+		while ((c = getopt_long(argc, argv, ":l:t:h", longOptions, nullptr)) != -1) {
 			switch (c) {
 				case '?':
 					std::cout << "Unknown option: " << optind << std::endl;
@@ -30,6 +32,10 @@ public:
 					// theme
 					theme = optarg;
 					break;
+				case 'h':
+					// help message
+					printHelpMessage();
+					return false;
 				default:
 					std::cout << "Error parsing arguments" << std::endl;
 					return false;
@@ -41,6 +47,13 @@ public:
 
 		(new Frame(nullptr, theme))->Show(true);
 		return true;
+	}
+
+	void printHelpMessage() {
+		std::cout << "Usage: " << argv[0] << " [OPTIONS]" << std::endl;
+		std::cout << "Options:" << std::endl;
+		std::cout << "  -l, --locale=LOCALE        Use LOCALE as language" << std::endl;
+		std::cout << "  -t, --theme=THEME          Use THEME as theme name" << std::endl;
 	}
 };
 
