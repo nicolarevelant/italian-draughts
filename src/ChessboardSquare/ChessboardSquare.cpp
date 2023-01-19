@@ -7,19 +7,14 @@ ChessboardSquare::ChessboardSquare() {
 	Bind(wxEVT_PAINT, &ChessboardSquare::OnPaint, this);
 }
 
-ChessboardSquare::ChessboardSquare(int size, wxWindow *parent, wxWindowID windowId, const wxPen &border,
-                                   const wxBitmap &bitmap) : ChessboardSquare() {
-	if (!Create(size, parent, windowId, border, bitmap))
+ChessboardSquare::ChessboardSquare(int size, wxWindow *parent, wxWindowID windowId) : ChessboardSquare() {
+	if (!Create(size, parent, windowId))
 		throw std::exception();
 }
 
-bool
-ChessboardSquare::Create(int size, wxWindow *parent, wxWindowID windowId, const wxPen &border, const wxBitmap &bmp) {
+bool ChessboardSquare::Create(int size, wxWindow *parent, wxWindowID windowId) {
 	if (wxWindow::Create(parent, windowId)) {
 		m_size = size;
-		m_border = border;
-		m_bitmap = bmp;
-		Layout();
 		return true;
 	}
 	return false;

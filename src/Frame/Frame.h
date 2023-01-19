@@ -21,6 +21,11 @@ class Frame : public wxFrame {
 public:
 	Frame();
 
+	/**
+	 * Creates a new Frame
+	 * @param parent Parent
+	 * @param theme Theme name (optional)
+	 */
 	explicit Frame(wxWindow *parent, const std::string &theme = "");
 
 	bool Create(wxWindow *parent, const std::string &theme = "");
@@ -40,20 +45,45 @@ private:
 
 	MatchManager *chessboardManager{};
 
+	/**
+	 * Creates a new menu bar and associates events
+	 * @return The new menu bar
+	 */
 	wxMenuBar *createMenuBar();
 
+	/**
+	 * Creates a wxPanel that contains the ChessboardGrid
+	 * @param parent Parent
+	 * @return The new wxPanel
+	 */
 	wxPanel *createChessboard(wxWindow *parent);
 
 	// events
 
+	/**
+	 * Update status bar
+	 * @param updateType Update type
+	 */
 	void onGameEvent(enum MatchManager::UpdateType updateType);
 
+	/**
+	 * Starts a new match
+	 */
 	void newMatchClicked(wxCommandEvent &);
 
+	/**
+	 * Close frame
+	 */
 	void closeFrame(wxCommandEvent &);
 
+	/**
+	 * Change difficulty
+	 */
 	void changeDifficultyClicked(wxCommandEvent &);
 
+	/**
+	 * Shows about dialog
+	 */
 	void aboutClicked(wxCommandEvent &);
 };
 

@@ -18,10 +18,22 @@ public:
 	ChessboardGrid();
 	~ChessboardGrid() override;
 
+	/**
+	 * Creates a new ChessboardGrid
+	 * @param darkColor Color used in dark squares
+	 * @param lightColor Color used in light squares
+	 * @param parent Parent of this wxPanel
+	 * @param winId Window ID, or wxID_ANY
+	 * @param pos Position relative to the parent
+	 * @param squareSize Square size
+	 */
 	ChessboardGrid(const wxColour &darkColor, const wxColour &lightColor,
 				   wxWindow *parent, wxWindowID winId = wxID_ANY,
 				   const wxPoint &pos = wxDefaultPosition, int squareSize = DEF_SQUARE_SIZE);
 
+	/**
+	 * Creates a new ChessboardGrid using two-step construction
+	 */
 	bool Create(const wxColour &darkColor, const wxColour &lightColor,
 	            wxWindow *parent, wxWindowID winId = wxID_ANY,
 				const wxPoint &pos = wxDefaultPosition, int squareSize = DEF_SQUARE_SIZE);
