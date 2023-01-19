@@ -12,13 +12,23 @@ public:
 
 	~ChessboardSquare() override = default;
 
-	explicit ChessboardSquare(int size, wxWindow *parent, wxWindowID windowId = wxID_ANY,
-	                          const wxPen &border = wxNullPen, const wxBitmap &bitmap = wxNullBitmap);
+	/**
+	 * Creates a new chessboard square
+	 * @param size Square size
+	 * @param parent Parent
+	 * @param windowId Window ID
+	 */
+	explicit ChessboardSquare(int size, wxWindow *parent, wxWindowID windowId = wxID_ANY);
 
+	/**
+	 * Creates the chessboard square using two-step construction
+	 * @param size Square size
+	 * @param parent Parent
+	 * @param windowId Window ID
+	 * @return
+	 */
 	bool Create(int size, wxWindow *parent,
-	            wxWindowID windowId = wxID_ANY,
-	            const wxPen &border = wxNullPen,
-	            const wxBitmap &bitmap = wxNullBitmap);
+	            wxWindowID windowId = wxID_ANY);
 
 	/**
 	 * Set a new border as wxPen
@@ -43,6 +53,9 @@ private:
 	const wxBrush m_transparentBrush{wxTransparentColour, wxBRUSHSTYLE_TRANSPARENT};
 	wxPen m_border = wxNullPen;
 
+	/**
+	 * Paint event
+	 */
 	void OnPaint(wxPaintEvent &);
 };
 
