@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.20)
 project(italian-draughts
-		VERSION 1.3.0
+		VERSION 1.3.1
 		DESCRIPTION "Italian Draughts: a strategy game for 2 players written in C++."
 		LANGUAGES CXX)
 
