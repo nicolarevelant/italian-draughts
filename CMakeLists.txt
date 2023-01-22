@@ -47,6 +47,9 @@ else()
 	# license
 	install(FILES LICENSE DESTINATION usr/share/licenses/${PROJECT_NAME})
 
+	# .desktop
+	install(FILES italian-draughts.desktop DESTINATION usr/share/applications)
+
 	set(INSTALL_CONFIG_PATH "etc/${PROJECT_NAME}")
 
 	# images
