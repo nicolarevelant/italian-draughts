@@ -5,11 +5,10 @@
 #include "Frame/Frame.h"
 #include "wx/wx.h"
 
-
 static option longOptions[] = {
 		{"locale", required_argument, nullptr, 'l'},
-		{"theme", required_argument, nullptr, 't'},
-		{"help", no_argument, nullptr, 'h'}
+		{"theme",  required_argument, nullptr, 't'},
+		{"help",   no_argument,       nullptr, 'h'}
 };
 
 class MyApp : public wxApp {

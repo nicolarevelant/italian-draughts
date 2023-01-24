@@ -16,6 +16,7 @@
 class ChessboardGrid : public wxPanel {
 public:
 	ChessboardGrid();
+
 	~ChessboardGrid() override;
 
 	/**
@@ -28,15 +29,15 @@ public:
 	 * @param squareSize Square size
 	 */
 	ChessboardGrid(const wxColour &darkColor, const wxColour &lightColor,
-				   wxWindow *parent, wxWindowID winId = wxID_ANY,
-				   const wxPoint &pos = wxDefaultPosition, int squareSize = DEF_SQUARE_SIZE);
+	               wxWindow *parent, wxWindowID winId = wxID_ANY,
+	               const wxPoint &pos = wxDefaultPosition, int squareSize = DEF_SQUARE_SIZE);
 
 	/**
 	 * Creates a new ChessboardGrid using two-step construction
 	 */
 	bool Create(const wxColour &darkColor, const wxColour &lightColor,
 	            wxWindow *parent, wxWindowID winId = wxID_ANY,
-				const wxPoint &pos = wxDefaultPosition, int squareSize = DEF_SQUARE_SIZE);
+	            const wxPoint &pos = wxDefaultPosition, int squareSize = DEF_SQUARE_SIZE);
 
 	/**
 	 * Updates the disposition of the pieces in the chessboard and clears every border
@@ -64,6 +65,7 @@ private:
 	GameUtils::MoveList moves; // list of moves the player can do
 
 	int squareSize{};
+
 	void OnItemMouseClicked(wxMouseEvent &evt);
 };
 

@@ -11,16 +11,9 @@ set(PROJECT_LICENSE "GNU General Public License, version 3 or later")
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic")
 
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
 	set(SYSTEM_CFG_PATH "${CMAKE_SOURCE_DIR}/")
-
-	# Prints all Cmake variables
-	get_cmake_property(_variableNames VARIABLES)
-	list (SORT _variableNames)
-	foreach (_variableName ${_variableNames})
-		message(STATUS "${_variableName}=${${_variableName}}")
-	endforeach()
-endif()
+endif ()
 
 message("Build type: ${CMAKE_BUILD_TYPE}")
 
@@ -31,7 +24,7 @@ if (SYSTEM_CFG_PATH)
 
 	# it creates the executable
 	add_subdirectory(src)
-else()
+else ()
 	# system configuration path (used by configure_file)
 	set(SYSTEM_CFG_PATH /etc/${PROJECT_NAME}/)
 
@@ -57,4 +50,4 @@ else()
 
 	# themes
 	install(DIRECTORY themes DESTINATION ${INSTALL_CONFIG_PATH})
-endif()
+endif ()

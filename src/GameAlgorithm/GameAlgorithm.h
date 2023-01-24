@@ -30,7 +30,8 @@ private:
 	 * @param beta Used by alpha-beta pruning
 	 * @return The score after the best move, or INT_MIN if maximizing, or INT_MAX otherwise
 	 */
-	static int minimax(const GameUtils::Move *start_move, int oldScore, bool maximizing, int depth, int alpha, int beta);
+	static int
+	minimax(const GameUtils::Move *start_move, int oldScore, bool maximizing, int depth, int alpha, int beta);
 };
 
 

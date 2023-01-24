@@ -7,6 +7,7 @@ Class for accessing an application's resources.
 This program can be started with a specific locale, or it will use the system language.
 
 Localized messages are stored in:
+
 - Unix/Linux: /usr/share/locale/**lang**/LC_MESSAGES/italian-draughts.mo
 - MacOS: italian-draughts.app/Contents/Resources/**lang**.lproj/italian-draughts.mo
 - Windows: C:\\Program Files\\italian-draughts\\**lang**\\italian-draughts.mo
