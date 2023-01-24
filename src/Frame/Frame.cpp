@@ -41,7 +41,6 @@ bool Frame::Create(wxWindow *parent, const std::string &theme) {
 	SetSizer(mainSizer);
 
 	mainSizer->AddStretchSpacer();
-	//mainSizer->Add(chessboardPanel, 0, wxALL, 20);
 	mainSizer->Add(chessboardPanel, 0, wxALL, CHESSBOARD_MARGIN_V);
 	mainSizer->AddStretchSpacer();
 
@@ -59,7 +58,6 @@ wxMenuBar *Frame::createMenuBar() {
 	menuFile->Append(wxID_EXIT, _("&Exit"), _("Leave the game"));
 
 	auto *menuSettings = new wxMenu;
-	//menuSettings->Append(CHANGE_GD, resources.getString("app.menu.changeGD"));
 	menuSettings->Append(CHANGE_GD, _("&Change difficulty"), _("Change difficulty"));
 
 	auto *menuHelp = new wxMenu;

@@ -47,8 +47,9 @@ public:
 	};
 
 	struct Move {
-		Move(const Disposition disposition, bool eatenFromPawn, int score)
-				: disposition(disposition), eatenFromPawn(eatenFromPawn), score(score) {}
+		Move(const Disposition disposition, bool eatenFromPawn, int score) : disposition(disposition),
+		                                                                     eatenFromPawn(eatenFromPawn),
+		                                                                     score(score) {}
 
 		/**
 		 * The disposition after the move

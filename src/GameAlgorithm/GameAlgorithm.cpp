@@ -41,7 +41,8 @@ GameUtils::Move *GameAlgorithm::calculateBestMove(const GameUtils::Disposition &
 	return res_move;
 }
 
-int GameAlgorithm::minimax(const GameUtils::Move *start_move, int oldScore, bool maximizing, int depth, int alpha, int beta) {
+int GameAlgorithm::minimax(const GameUtils::Move *start_move, int oldScore, bool maximizing, int depth, int alpha,
+                           int beta) {
 	if (depth == 0) return oldScore; // depth limit reached
 
 	int bestScore, score;

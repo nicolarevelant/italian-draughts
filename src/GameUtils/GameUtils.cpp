@@ -5,8 +5,7 @@
 #include "GameAlgorithm/GameAlgorithm.h"
 
 GameUtils::AlgorithmThread::AlgorithmThread(wxEvtHandler *evtHandler, const Disposition &disposition, int gameDifficult,
-                                            int id)
-		: wxThread(wxTHREAD_DETACHED), m_disposition(disposition) {
+                                            int id) : wxThread(wxTHREAD_DETACHED), m_disposition(disposition) {
 	m_evtHandler = evtHandler;
 	m_gameDifficult = gameDifficult;
 	m_id = id;
@@ -86,8 +85,8 @@ GameUtils::MoveList GameUtils::findMoves(const Disposition &disposition, bool pl
 	return moves;
 }
 
-bool GameUtils::addMoveStep(MoveList &moves, const Disposition &disposition, int s_row, int s_col,
-                            bool row_offset, bool col_offset, int score) {
+bool GameUtils::addMoveStep(MoveList &moves, const Disposition &disposition, int s_row, int s_col, bool row_offset,
+                            bool col_offset, int score) {
 	// invalid move (out of bounds)
 	if (s_row == (row_offset ? 7 : 0) || s_col == (col_offset ? 7 : 0))
 		return false;
@@ -134,8 +133,7 @@ bool GameUtils::addMoveStep(MoveList &moves, const Disposition &disposition, int
 		Disposition copy;
 		std::copy(disposition.begin(), disposition.end(), copy.begin());
 		copy[s_row * 8 + s_col] = EMPTY;
-		copy[row * 8 + col + (row_offset ? -8 : 8) +
-		     (col_offset ? -1 : 1)] = EMPTY;
+		copy[row * 8 + col + (row_offset ? -8 : 8) + (col_offset ? -1 : 1)] = EMPTY;
 		if (row_offset) {
 			copy[row * 8 + col] = (row == 7) ? PC_DAME : PC_PAWN;
 		} else {
@@ -174,8 +172,7 @@ bool GameUtils::addMoveStep(MoveList &moves, const Disposition &disposition, int
 	Disposition copy;
 	std::copy(disposition.begin(), disposition.end(), copy.begin());
 	copy[s_row * 8 + s_col] = EMPTY;
-	copy[row * 8 + col + (row_offset ? -8 : 8) +
-	     (col_offset ? -1 : 1)] = EMPTY;
+	copy[row * 8 + col + (row_offset ? -8 : 8) + (col_offset ? -1 : 1)] = EMPTY;
 	copy[row * 8 + col] = s_value;
 	score += DAME_SCORE;
 
