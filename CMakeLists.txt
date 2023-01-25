@@ -24,7 +24,7 @@ if (DATA_PATH)
 	add_subdirectory(src)
 else ()
 	# system configuration path (used by configure_file)
-	set(DATA_PATH /etc/${PROJECT_NAME}/)
+	set(DATA_PATH /usr/share/${PROJECT_NAME}/)
 
 	# Create the target
 	add_subdirectory(src)
