@@ -16,33 +16,41 @@ bool Frame::Create(wxWindow *parent, const std::string &theme) {
 		return false;
 
 	if (!theme.empty())
-		resources.addTheme(theme);
+		resources.addTheme(DATA_PATH, theme);
+
+	// create chessboard panel that contains the chessboard grid
+	auto *chessboardPanel = createChessboard(this, DATA_PATH);
+	if (chessboardPanel == nullptr)
+		return false;
+
+	// window sizer
+	auto *mainSizer = new wxBoxSizer(wxHORIZONTAL);
+	mainSizer->AddStretchSpacer();
+	mainSizer->Add(chessboardPanel, 0, wxALL, CHESSBOARD_MARGIN_V);
+	mainSizer->AddStretchSpacer();
+	SetSizer(mainSizer);
+
+	// Menu Bar
+	wxFrame::SetMenuBar(createMenuBar());
 
 	const wxColour &bgColor = resources.getColor("bg");
 	const wxColour &fgColor = resources.getColor("fg");
 
-	wxFrame::SetMenuBar(createMenuBar());
+	// Status Bar
 	wxStatusBar *statusBar = wxFrame::CreateStatusBar();
 	statusBar->SetBackgroundColour(bgColor);
 	statusBar->SetForegroundColour(fgColor);
 
+	// Window theme
 	wxWindow::SetBackgroundColour(bgColor);
 	wxWindow::SetForegroundColour(fgColor);
-
-	// chessboard panel: board grid and border
-	auto *chessboardPanel = createChessboard(this);
 
 	auto chessboardSize = chessboardPanel->GetMinSize();
 	SetClientSize(wxSize(chessboardSize.GetWidth() + CHESSBOARD_MARGIN_H * 2,
 	                     chessboardSize.GetHeight() + CHESSBOARD_MARGIN_V * 2));
 
-	// window sizer
-	auto *mainSizer = new wxBoxSizer(wxHORIZONTAL);
-	SetSizer(mainSizer);
-
-	mainSizer->AddStretchSpacer();
-	mainSizer->Add(chessboardPanel, 0, wxALL, CHESSBOARD_MARGIN_V);
-	mainSizer->AddStretchSpacer();
+	chessboardManager->setOnUpdateListener(std::bind(&Frame::onGameEvent, this, std::placeholders::_1));
+	chessboardManager->newMatch();
 
 	return true;
 }
@@ -76,22 +84,34 @@ wxMenuBar *Frame::createMenuBar() {
 	return menuBar;
 }
 
-wxPanel *Frame::createChessboard(wxWindow *parent) {
+wxPanel *Frame::createChessboard(wxWindow *parent, const std::string &path) {
+	// load images
+	wxBitmap pcPawn{path + "images/pcPawn.png"};
+	if (!pcPawn.IsOk()) return nullptr;
+	wxBitmap pcDame(path + "images/pcDame.png");
+	if (!pcDame.IsOk()) return nullptr;
+	wxBitmap plPawn(path + "images/plPawn.png");
+	if (!plPawn.IsOk()) return nullptr;
+	wxBitmap plDame(path + "images/plDame.png");
+	if (!plDame.IsOk()) return nullptr;
+	wxSize imageSize = pcPawn.GetSize();
+	if (pcDame.GetSize() != imageSize || plPawn.GetSize() != imageSize || plDame.GetSize() != imageSize) return nullptr;
+	if (imageSize.GetWidth() != imageSize.GetHeight()) return nullptr;
+
 	auto *chessboardPanel = new wxPanel(parent, wxID_ANY);
 	chessboardPanel->SetBackgroundColour(resources.getColor("border"));
+
 	auto *grid = new ChessboardGrid(resources.getColor("dark", DEF_DARK_COLOR),
 	                                resources.getColor("light", DEF_LIGHT_COLOR),
-	                                chessboardPanel, wxID_ANY,
+	                                imageSize.GetWidth(), chessboardPanel, wxID_ANY,
 	                                wxPoint(CHESSBOARD_BORDER_H, CHESSBOARD_BORDER_V));
+	grid->updateIcons(pcPawn, pcDame, plPawn, plDame);
 	int width, height;
 	grid->GetSize(&width, &height);
 	chessboardPanel->SetMinSize(wxSize(width + CHESSBOARD_BORDER_H * 2, height + CHESSBOARD_BORDER_V * 2));
 
-	chessboardManager = new MatchManager(grid,
-	                                     resources.getColor("focus-border"),
+	chessboardManager = new MatchManager(grid, resources.getColor("focus-border"),
 	                                     resources.getColor("possible-move-border"));
-
-	chessboardManager->setOnUpdateListener(std::bind(&Frame::onGameEvent, this, std::placeholders::_1));
 
 	return chessboardPanel;
 }
@@ -101,8 +121,7 @@ wxPanel *Frame::createChessboard(wxWindow *parent) {
 void Frame::onGameEvent(enum MatchManager::UpdateType updateType) {
 	switch (updateType) {
 		case MatchManager::TURN_PLAYER:
-			SetStatusText(
-					wxString::Format(_("%s | Difficulty: %d"), _("Your turn"), chessboardManager->getDifficulty()));
+			SetStatusText(wxString::Format(_("%s | Difficulty: %d"), _("Your turn"), chessboardManager->getDifficulty()));
 			break;
 		case MatchManager::TURN_PC:
 			SetStatusText(wxString::Format(_("%s | Difficulty: %d"), _("PC turn"), chessboardManager->getDifficulty()));
@@ -116,12 +135,10 @@ void Frame::onGameEvent(enum MatchManager::UpdateType updateType) {
 			wxMessageDialog(this, _("You lost"), _("Game over")).ShowModal();
 			break;
 		case MatchManager::ILLEGAL_SELECTION:
-			wxMessageDialog(this, _("You can't make any moves with this piece"),
-			                _("Invalid selection")).ShowModal();
+			wxMessageDialog(this, _("You can't make any moves with this piece"), _("Invalid selection")).ShowModal();
 			break;
 		case MatchManager::ILLEGAL_MOVE:
-			wxMessageDialog(this, _("You can't move the selected piece is this position"),
-			                _("Invalid move")).ShowModal();
+			wxMessageDialog(this, _("You can't move the selected piece is this position"), _("Invalid move")).ShowModal();
 	}
 }
 
@@ -151,8 +168,7 @@ void Frame::changeDifficultyClicked(wxCommandEvent &) {
 		if (dialog.ShowModal() != wxID_OK) return;
 
 		int value;
-		if (dialog.GetValue().ToInt(&value) &&
-		    value >= MatchManager::minGD && value <= MatchManager::maxGD &&
+		if (dialog.GetValue().ToInt(&value) && value >= MatchManager::minGD && value <= MatchManager::maxGD &&
 		    chessboardManager->changeDifficulty(value)) {
 			return;
 		}

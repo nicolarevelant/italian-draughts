@@ -9,6 +9,7 @@
 #include "../ChessboardGrid/ChessboardGrid.h"
 #include "wx/wx.h"
 
+#define DEF_BORDER_COLOR wxColour()
 #define DEF_DARK_COLOR wxColour(32, 32, 32)
 #define DEF_LIGHT_COLOR wxColour(140, 140, 140)
 
@@ -40,7 +41,7 @@ private:
 		CHANGE_GD
 	};
 
-	Resources resources;
+	Resources resources{DATA_PATH};
 	const wxArrayString developers = wxArrayString(1, {"Nicola Revelant <nicolarevelant44@gmail.com>"});
 
 	MatchManager *chessboardManager{};
@@ -56,7 +57,7 @@ private:
 	 * @param parent Parent
 	 * @return The new wxPanel
 	 */
-	wxPanel *createChessboard(wxWindow *parent);
+	wxPanel *createChessboard(wxWindow *parent, const std::string &path);
 
 	// events
 

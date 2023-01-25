@@ -10,25 +10,28 @@
 
 class Resources {
 public:
-	explicit Resources();
-
 	typedef std::map<std::string, wxColour> ColorsMap;
 
 	/**
+	 * Initialize a new object with the default theme
+	 * @param path Resource path
+	 */
+	explicit Resources(const std::string &path);
+
+	/**
 	 * Adds or overwrites colors read from a file that represents the specified theme
+	 * @param path Resource path
 	 * @param theme Theme to add
 	 */
-	void addTheme(const std::string &theme);
+	void addTheme(const std::string &path, const std::string &theme);
 
 	const wxColour &getColor(const std::string &key, const wxColour &def = wxNullColour) const;
 
 private:
 	Resources(const Resources &); // prevents copy-constructor
-	ColorsMap m_colors;   // colors for current theme
+	ColorsMap m_colors;
 
-	static bool fillColorsMap(ColorsMap &colors,
-	                          const std::string &path = SYSTEM_CFG_PATH,
-	                          const std::string &theme = "default");
+	static bool fillColorsMap(ColorsMap &colors, const std::string &path, const std::string &theme = "default");
 };
 
 

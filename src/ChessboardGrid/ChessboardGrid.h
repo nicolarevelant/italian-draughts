@@ -8,8 +8,6 @@
 #include "GameUtils/GameUtils.h"
 #include <wx/wx.h>
 
-#define DEF_SQUARE_SIZE 74
-
 /**
  * The mission of this class is to provide a wxPanel composed by a 8x8 grid
  */
@@ -23,21 +21,30 @@ public:
 	 * Creates a new ChessboardGrid
 	 * @param darkColor Color used in dark squares
 	 * @param lightColor Color used in light squares
+	 * @param squareSize Square size
 	 * @param parent Parent of this wxPanel
 	 * @param winId Window ID, or wxID_ANY
 	 * @param pos Position relative to the parent
-	 * @param squareSize Square size
 	 */
-	ChessboardGrid(const wxColour &darkColor, const wxColour &lightColor,
+	ChessboardGrid(const wxColour &darkColor, const wxColour &lightColor, int squareSize,
 	               wxWindow *parent, wxWindowID winId = wxID_ANY,
-	               const wxPoint &pos = wxDefaultPosition, int squareSize = DEF_SQUARE_SIZE);
+	               const wxPoint &pos = wxDefaultPosition);
 
 	/**
 	 * Creates a new ChessboardGrid using two-step construction
 	 */
-	bool Create(const wxColour &darkColor, const wxColour &lightColor,
+	bool Create(const wxColour &darkColor, const wxColour &lightColor, int squareSize,
 	            wxWindow *parent, wxWindowID winId = wxID_ANY,
-	            const wxPoint &pos = wxDefaultPosition, int squareSize = DEF_SQUARE_SIZE);
+	            const wxPoint &pos = wxDefaultPosition);
+
+	/**
+	 * Updates the icons
+	 * @param pcPawn PC pawn
+	 * @param pcDame PC dame
+	 * @param plPawn PL pawn
+	 * @param plDame PL dame
+	 */
+	void updateIcons(const wxBitmap &pcPawn, const wxBitmap &pcDame, const wxBitmap &plPawn, const wxBitmap &plDame);
 
 	/**
 	 * Updates the disposition of the pieces in the chessboard and clears every border
@@ -61,10 +68,10 @@ private:
 	ChessboardGrid(const ChessboardGrid &); // prevents copy-constructor
 	std::array<ChessboardSquare *, 64> chessboard{};
 
-	wxBitmap pcPawn, pcDame, plPawn, plDame;
+	wxBitmap m_pcPawn, m_pcDame, m_plPawn, m_plDame;
 	GameUtils::MoveList moves; // list of moves the player can do
 
-	int squareSize{};
+	int m_squareSize{};
 
 	void OnItemMouseClicked(wxMouseEvent &evt);
 };

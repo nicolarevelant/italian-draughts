@@ -21,8 +21,6 @@ MatchManager::MatchManager(ChessboardGrid *chessboard, const wxColour &focusColo
 	m_threadRunning = false;
 	m_isPlaying = false;
 	m_isEnd = false;
-	newMatch();
-	notifyUpdate(TURN_PLAYER);
 }
 
 MatchManager::~MatchManager() {
@@ -46,7 +44,7 @@ bool MatchManager::changeDifficulty(int newDifficulty) {
 
 	gameDifficulty = newDifficulty;
 	if (isPlaying() || m_isEnd) newMatch();
-	notifyUpdate(TURN_PLAYER);
+	else notifyUpdate(TURN_PLAYER);
 	return true;
 }
 
@@ -67,6 +65,7 @@ bool MatchManager::newMatch() {
 		delete move;
 
 	moves = GameUtils::findMoves(m_disposition, true);
+	notifyUpdate(TURN_PLAYER);
 	return true;
 }
 
