@@ -3,12 +3,20 @@
 
 #include "Resources.h"
 
-Resources::Resources() {
-	fillColorsMap(m_colors, SYSTEM_CFG_PATH);
+Resources::Resources(const std::string &path) {
+	fillColorsMap(m_colors, path);
 }
 
-void Resources::addTheme(const std::string &theme) {
-	fillColorsMap(m_colors, SYSTEM_CFG_PATH, theme);
+void Resources::addTheme(const std::string &path, const std::string &theme) {
+	fillColorsMap(m_colors, path, theme);
+}
+
+const wxColour &Resources::getColor(const std::string &key, const wxColour &def) const {
+	try {
+		return m_colors.at(key);
+	} catch (std::exception &e) {
+		return def;
+	}
 }
 
 bool Resources::fillColorsMap(ColorsMap &colors, const std::string &path, const std::string &theme) {
@@ -31,12 +39,4 @@ bool Resources::fillColorsMap(ColorsMap &colors, const std::string &path, const 
 	}
 
 	return false;
-}
-
-const wxColour &Resources::getColor(const std::string &key, const wxColour &def) const {
-	try {
-		return m_colors.at(key);
-	} catch (std::exception &e) {
-		return def;
-	}
 }

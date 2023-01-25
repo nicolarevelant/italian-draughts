@@ -12,42 +12,38 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic")
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-	set(SYSTEM_CFG_PATH "${CMAKE_SOURCE_DIR}/")
+	set(DATA_PATH "${CMAKE_SOURCE_DIR}/")
 endif ()
 
 message("Build type: ${CMAKE_BUILD_TYPE}")
 
-# user specific configuration path (used by configure_file)
-set(USER_CFG_PATH ~/.config/${PROJECT_NAME}/)
-if (SYSTEM_CFG_PATH)
-	message(WARNING "Using custom system path, ignoring manual pages and install rules")
+if (DATA_PATH)
+	message(WARNING "Using custom application data path, ignoring manual pages and install rules")
 
 	# it creates the executable
 	add_subdirectory(src)
 else ()
 	# system configuration path (used by configure_file)
-	set(SYSTEM_CFG_PATH /etc/${PROJECT_NAME}/)
+	set(DATA_PATH /etc/${PROJECT_NAME}/)
 
-	# it creates the executable
+	# Create the target
 	add_subdirectory(src)
 
-	# if the target need to be installed compiles the manual pages
+	# Compile and compress the manual pages
 	add_subdirectory(man)
 
-	# install files
+	# Install target
 	install(TARGETS ${PROJECT_NAME} DESTINATION usr/bin)
 
-	# license
+	# Install the license
 	install(FILES LICENSE DESTINATION usr/share/licenses/${PROJECT_NAME})
 
-	# .desktop
+	# Install the .desktop file
 	install(FILES italian-draughts.desktop DESTINATION usr/share/applications)
 
-	set(INSTALL_CONFIG_PATH "etc/${PROJECT_NAME}")
+	# Install images
+	install(DIRECTORY images DESTINATION "usr/share/${PROJECT_NAME}")
 
-	# images
-	install(DIRECTORY images DESTINATION ${INSTALL_CONFIG_PATH})
-
-	# themes
-	install(DIRECTORY themes DESTINATION ${INSTALL_CONFIG_PATH})
+	# Install themes
+	install(DIRECTORY themes DESTINATION "usr/share/${PROJECT_NAME}")
 endif ()

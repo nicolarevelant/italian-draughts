@@ -8,26 +8,18 @@ ChessboardGrid::ChessboardGrid() = default;
 
 ChessboardGrid::~ChessboardGrid() = default;
 
-ChessboardGrid::ChessboardGrid(const wxColour &darkColor, const wxColour &lightColor,
+ChessboardGrid::ChessboardGrid(const wxColour &darkColor, const wxColour &lightColor, int squareSize,
                                wxWindow *parent, wxWindowID winId,
-                               const wxPoint &pos, int squareSize) : ChessboardGrid() {
-	if (!Create(darkColor, lightColor, parent, winId, pos, squareSize))
+                               const wxPoint &pos) : ChessboardGrid() {
+	if (!Create(darkColor, lightColor, squareSize, parent, winId, pos))
 		throw std::exception();
 }
 
-bool ChessboardGrid::Create(const wxColour &darkColor, const wxColour &lightColor,
+bool ChessboardGrid::Create(const wxColour &darkColor, const wxColour &lightColor, int squareSize,
                             wxWindow *parent, wxWindowID winId,
-                            const wxPoint &pos, int sqSize) {
-	if (!wxPanel::Create(parent, winId, pos, wxSize{sqSize * 8, sqSize * 8}))
+                            const wxPoint &pos) {
+	if (!wxPanel::Create(parent, winId, pos, wxSize{squareSize * 8, squareSize * 8}))
 		return false;
-
-	if (!pcPawn.LoadFile(SYSTEM_CFG_PATH"images/pcPawn.png") ||
-	    !pcDame.LoadFile(SYSTEM_CFG_PATH"images/pcDame.png") ||
-	    !plPawn.LoadFile(SYSTEM_CFG_PATH"images/plPawn.png") ||
-	    !plDame.LoadFile(SYSTEM_CFG_PATH"images/plDame.png"))
-		return false;
-
-	squareSize = sqSize;
 
 	auto *gridSizer = new wxGridSizer(8, 8, 0, 0);
 	SetSizer(gridSizer);
@@ -48,9 +40,18 @@ bool ChessboardGrid::Create(const wxColour &darkColor, const wxColour &lightColo
 			chessboard[i] = square;
 		}
 	}
+	m_squareSize = squareSize;
 
 	Layout();
 	return true;
+}
+
+void ChessboardGrid::updateIcons(const wxBitmap &pcPawn, const wxBitmap &pcDame,
+								 const wxBitmap &plPawn, const wxBitmap &plDame) {
+	m_pcPawn = pcPawn;
+	m_pcDame = pcDame;
+	m_plPawn = plPawn;
+	m_plDame = plDame;
 }
 
 void ChessboardGrid::OnItemMouseClicked(wxMouseEvent &evt) {
@@ -65,16 +66,16 @@ void ChessboardGrid::updateDisposition(const GameUtils::Disposition &newDisposit
 				chessboard[i]->SetBitmap(wxNullBitmap);
 				break;
 			case GameUtils::PC_PAWN:
-				chessboard[i]->SetBitmap(pcPawn);
+				chessboard[i]->SetBitmap(m_pcPawn);
 				break;
 			case GameUtils::PC_DAME:
-				chessboard[i]->SetBitmap(pcDame);
+				chessboard[i]->SetBitmap(m_pcDame);
 				break;
 			case GameUtils::PL_PAWN:
-				chessboard[i]->SetBitmap(plPawn);
+				chessboard[i]->SetBitmap(m_plPawn);
 				break;
 			case GameUtils::PL_DAME:
-				chessboard[i]->SetBitmap(plDame);
+				chessboard[i]->SetBitmap(m_plDame);
 				break;
 		}
 	}
