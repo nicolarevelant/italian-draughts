@@ -74,7 +74,7 @@ bool MatchManager::isPlaying() const {
 }
 
 void MatchManager::onChessboardSquareClick(wxMouseEvent &event) {
-	if (m_threadRunning) return;
+	if (m_threadRunning || m_isEnd) return;
 
 	int currentPos = event.GetId();
 
