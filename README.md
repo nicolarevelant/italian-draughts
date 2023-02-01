@@ -3,7 +3,8 @@
 This program allows you to play italian draughts against the computer
 using the [Minimax](https://en.wikipedia.org/wiki/Minimax) algorithm.
 
-Instructions on how to play can be found [here](https://en.wikipedia.org/wiki/Italian_draughts).
+Instructions on how to play can be found
+[here](https://en.wikipedia.org/wiki/Italian_draughts).
 
 ## Documentation
 
@@ -32,9 +33,13 @@ cmake --install build
 /usr/bin/italian-draughts
 ```
 
-To set a custom system configuration files path (instead of /etc/italian-draughts)
-you can set the `SYSTEM_CFG_PATH` cmake variable. If you set a custom path the
-manual pages and the installation rules will be ignored.
+To set a custom application data path (instead of /usr/share/italian-draughts/)
+you can set the `DATA_PATH` cmake variable.
+
+If CMAKE_BUILD_TYPE equals Debug and DATA_PATH is not set then DATA_PATH is set
+to the absolute path of the project root directory.
+
+If you set a custom path the manual pages and the installation rules will be ignored.
 
 # Copyright and license
 
@@ -43,7 +48,7 @@ Third-party software used:
 - [wxWidgets](https://www.wxwidgets.org/) (C++ library for GUI)
 - [scdoc](https://git.sr.ht/~sircmpwn/scdoc/) (Compiling manual pages)
 
-Copyright (C) 2023  Nicola Revelant
+Copyright (C) 2023 Nicola Revelant
 
 This program is free software: you can redistribute it and/or modify it under the terms
 of the GNU General Public License as published by the Free Software Foundation,

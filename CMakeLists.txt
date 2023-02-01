@@ -11,14 +11,15 @@ set(PROJECT_LICENSE "GNU General Public License, version 3 or later")
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic")
 
-if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+if (CMAKE_BUILD_TYPE STREQUAL "Debug" AND NOT DEFINED DATA_PATH)
 	set(DATA_PATH "${CMAKE_SOURCE_DIR}/")
 endif ()
 
 message("Build type: ${CMAKE_BUILD_TYPE}")
 
-if (DATA_PATH)
+if (DEFINED DATA_PATH)
 	message(WARNING "Using custom application data path, ignoring manual pages and install rules")
+	message("Data path: ${DATA_PATH}")
 
 	# it creates the executable
 	add_subdirectory(src)
