@@ -1,7 +1,7 @@
 italian-draughts(1)
 
 # NAME
-italian-draughts - Italian Draughts Game
+italian-draughts - a strategy board game
 
 # SYNOPSIS
 italian-draughts [options...]
@@ -18,21 +18,16 @@ Sets the theme
 
 # DESCRIPTION
 This program allows you to play italian draughts, a strategy board game for 2
-players and it's played on a 8x8 checkerboard.
+players and it's played on an 8x8 checkerboard.
 
-# RESOURCES
-italian-draughts searches the resources into the following path:
+Currently you can play only against the computer.
 
-. /etc/italian-draughts/themes/
+# APPLICATION DATA
+italian-draughts reads the application data from the following path:
 
-First it reads from 'default' file and then, if the user specified a theme,
-from the file whose name corresponds to the theme name. New values can be added
-or overwrite the default ones.
+- /usr/share/italian-draughts/
 
-For information on the resource file format, see *italian-draughts*(5).
-
-# SEE ALSO
-*italian-draughts*(5)
+For information on file format, see *italian-draughts*(5).
 
 # AUTHORS
 Maintained by Nicola Revelant <nicolarevelant44@gmail.com>. Up-to-date sources
