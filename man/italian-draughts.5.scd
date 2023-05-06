@@ -31,7 +31,8 @@ Empty lines or those starting with # are ignored.
 # SEE ALSO
 *italian-draughts*(1)
 
+GitHub repository: https://github.com/nicolarevelant/italian-draughts
+
 # AUTHORS
-Maintained by Nicola Revelant <nicolarevelant44@gmail.com>. Up-to-date sources
-can be found at https://gitlab.com/nicolarevelant44/italian-draughts and
-bugs/patches can be submitted via e-mail or via GitLab.
+Maintained by Nicola Revelant <nicolarevelant44@gmail.com> and by other open
+source contributors.
