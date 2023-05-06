@@ -1,7 +1,6 @@
 # Italian Draughts
 
-This program allows you to play italian draughts against the computer
-using the [Minimax](https://en.wikipedia.org/wiki/Minimax) algorithm.
+Play Italian Draughts against the computer.
 
 Instructions on how to play can be found
 [here](https://en.wikipedia.org/wiki/Italian_draughts).
