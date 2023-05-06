@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.20)
 project(italian-draughts
-		VERSION 1.3.1
-		DESCRIPTION "Italian Draughts: a strategy game for 2 players written in C++."
+		VERSION 1.3.2
+		DESCRIPTION "Play Italian Draughts against the computer"
 		LANGUAGES CXX)
 
 set(PROJECT_PRETTY_NAME "Italian Draughts")
@@ -35,9 +35,6 @@ else ()
 
 	# Install target
 	install(TARGETS ${PROJECT_NAME} DESTINATION usr/bin)
-
-	# Install the license
-	install(FILES LICENSE DESTINATION usr/share/licenses/${PROJECT_NAME})
 
 	# Install the .desktop file
 	install(FILES italian-draughts.desktop DESTINATION usr/share/applications)

@@ -1,3 +1,15 @@
+# 1.3.2
+
+- Improve documentation
+- Changed the images of the pieces
+- Some changes in the build process, see README
+- Other minor bug fixes
+
+# 1.3.1
+
+- Improve documentation
+- Add the help message
+
 # 1.3.0
 
 - Class redesign

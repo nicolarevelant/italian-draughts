@@ -45,7 +45,7 @@ If you set a custom path the manual pages and the installation rules will be ign
 Third-party software used:
 
 - [wxWidgets](https://www.wxwidgets.org/) (C++ library for GUI)
-- [scdoc](https://git.sr.ht/~sircmpwn/scdoc/) (Compiling manual pages)
+- [scdoc](https://git.sr.ht/~sircmpwn/scdoc/) (Compile manual pages)
 
 Copyright (C) 2023 Nicola Revelant
 

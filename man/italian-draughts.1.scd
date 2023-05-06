@@ -17,10 +17,9 @@ Sets the locale
 Sets the theme
 
 # DESCRIPTION
-This program allows you to play italian draughts, a strategy board game for 2
-players and it's played on an 8x8 checkerboard.
-
-Currently you can play only against the computer.
+This program allows you to play italian draughts (a strategy board game)
+against the computer which uses the Minimax algorithm to find the best move to
+make.
 
 # APPLICATION DATA
 italian-draughts reads the application data from the following path:
@@ -29,7 +28,9 @@ italian-draughts reads the application data from the following path:
 
 For information on file format, see *italian-draughts*(5).
 
+# SEE ALSO
+GitHub repository: https://github.com/nicolarevelant/italian-draughts
+
 # AUTHORS
-Maintained by Nicola Revelant <nicolarevelant44@gmail.com>. Up-to-date sources
-can be found at https://gitlab.com/nicolarevelant44/italian-draughts and
-bugs/patches can be submitted via e-mail or via GitLab.
+Maintained by Nicola Revelant <nicolarevelant44@gmail.com> and by other open
+source contributors.
