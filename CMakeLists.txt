@@ -18,30 +18,28 @@ endif ()
 message("Build type: ${CMAKE_BUILD_TYPE}")
 
 if (DEFINED DATA_PATH)
-	message(WARNING "Using custom application data path, ignoring manual pages and install rules")
-	message("Data path: ${DATA_PATH}")
+	message(WARNING "Using custom application data path, ignoring manual pages and install rules\nData path: ${DATA_PATH}")
 
-	# it creates the executable
+	# Create the executable
 	add_subdirectory(src)
 else ()
-	# system configuration path (used by configure_file)
+	# System configuration path (used by configure_file)
 	set(DATA_PATH /usr/share/${PROJECT_NAME}/)
 
 	# Create the target
 	add_subdirectory(src)
 
+	include(GNUInstallDirs)
+
 	# Compile and compress the manual pages
 	add_subdirectory(man)
 
 	# Install target
-	install(TARGETS ${PROJECT_NAME} DESTINATION usr/bin)
-
-	# Install the .desktop file
-	install(FILES italian-draughts.desktop DESTINATION usr/share/applications)
+	install(TARGETS ${PROJECT_NAME})
 
 	# Install images
-	install(DIRECTORY images DESTINATION "usr/share/${PROJECT_NAME}")
+	install(DIRECTORY images DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}")
 
 	# Install themes
-	install(DIRECTORY themes DESTINATION "usr/share/${PROJECT_NAME}")
+	install(DIRECTORY themes DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}")
 endif ()

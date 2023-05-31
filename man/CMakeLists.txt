@@ -13,9 +13,8 @@ add_custom_target(ManualPages
 
 add_dependencies(${PROJECT_NAME} ManualPages)
 
-# install rules
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.1.gz
-		DESTINATION usr/share/man/man1)
+		DESTINATION ${CMAKE_INSTALL_MANDIR}/man1)
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.5.gz
-		DESTINATION usr/share/man/man5)
+		DESTINATION ${CMAKE_INSTALL_MANDIR}/man5)

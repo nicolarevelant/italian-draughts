@@ -32,5 +32,5 @@ For information on file format, see *italian-draughts*(5).
 GitHub repository: https://github.com/nicolarevelant/italian-draughts
 
 # AUTHORS
-Maintained by Nicola Revelant <nicolarevelant44@gmail.com> and by other open
+Maintained by Nicola Revelant <nicolarevelant@outlook.com> and by other open
 source contributors.
