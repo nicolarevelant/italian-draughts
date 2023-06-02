@@ -12,7 +12,7 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic")
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug" AND NOT DEFINED DATA_PATH)
-	set(DATA_PATH "${CMAKE_SOURCE_DIR}/")
+	set(DATA_PATH "${CMAKE_SOURCE_DIR}")
 endif ()
 
 message("Build type: ${CMAKE_BUILD_TYPE}")
@@ -24,7 +24,7 @@ if (DEFINED DATA_PATH)
 	add_subdirectory(src)
 else ()
 	# System configuration path (used by configure_file)
-	set(DATA_PATH /usr/share/${PROJECT_NAME}/)
+	set(DATA_PATH ${CMAKE_INSTALL_PREFIX}/share/${PROJECT_NAME})
 
 	# Create the target
 	add_subdirectory(src)
