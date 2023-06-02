@@ -86,13 +86,13 @@ wxMenuBar *Frame::createMenuBar() {
 
 wxPanel *Frame::createChessboard(wxWindow *parent, const std::string &path) {
 	// load images
-	wxBitmap pcPawn{path + "images/pcPawn.png"};
+	wxBitmap pcPawn{path + "/images/pcPawn.png"};
 	if (!pcPawn.IsOk()) return nullptr;
-	wxBitmap pcDame(path + "images/pcDame.png");
+	wxBitmap pcDame(path + "/images/pcDame.png");
 	if (!pcDame.IsOk()) return nullptr;
-	wxBitmap plPawn(path + "images/plPawn.png");
+	wxBitmap plPawn(path + "/images/plPawn.png");
 	if (!plPawn.IsOk()) return nullptr;
-	wxBitmap plDame(path + "images/plDame.png");
+	wxBitmap plDame(path + "/images/plDame.png");
 	if (!plDame.IsOk()) return nullptr;
 	wxSize imageSize = pcPawn.GetSize();
 	if (pcDame.GetSize() != imageSize || plPawn.GetSize() != imageSize || plDame.GetSize() != imageSize) return nullptr;

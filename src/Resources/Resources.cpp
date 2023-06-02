@@ -20,7 +20,7 @@ const wxColour &Resources::getColor(const std::string &key, const wxColour &def)
 }
 
 bool Resources::fillColorsMap(ColorsMap &colors, const std::string &path, const std::string &theme) {
-	std::ifstream file(path + "themes/" + theme);
+	std::ifstream file(path + "/themes/" + theme);
 	if (file.is_open()) {
 		std::string line;
 		while (std::getline(file, line)) {
