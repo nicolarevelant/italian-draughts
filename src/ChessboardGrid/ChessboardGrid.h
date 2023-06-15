@@ -26,31 +26,30 @@ public:
 	 * @param winId Window ID, or wxID_ANY
 	 * @param pos Position relative to the parent
 	 */
-	ChessboardGrid(const wxColour &darkColor, const wxColour &lightColor, int squareSize,
-	               wxWindow *parent, wxWindowID winId = wxID_ANY,
-	               const wxPoint &pos = wxDefaultPosition);
+	ChessboardGrid(const wxColour &darkColor, const wxColour &lightColor, int squareSize, wxWindow *parent,
+	               wxWindowID winId = wxID_ANY, const wxPoint &pos = wxDefaultPosition);
 
 	/**
 	 * Creates a new ChessboardGrid using two-step construction
 	 */
-	bool Create(const wxColour &darkColor, const wxColour &lightColor, int squareSize,
-	            wxWindow *parent, wxWindowID winId = wxID_ANY,
-	            const wxPoint &pos = wxDefaultPosition);
+	bool Create(const wxColour &darkColor, const wxColour &lightColor, int squareSize, wxWindow *parent,
+	            wxWindowID winId = wxID_ANY, const wxPoint &pos = wxDefaultPosition);
 
 	/**
 	 * Updates the icons
-	 * @param pcPawn PC pawn
-	 * @param pcDame PC dame
-	 * @param plPawn PL pawn
-	 * @param plDame PL dame
+	 * @param firstPawn First player's pawn
+	 * @param firstDame First player's dame
+	 * @param secondPawn Second player's pawn
+	 * @param secondDame Second player's dame
 	 */
-	void updateIcons(const wxBitmap &pcPawn, const wxBitmap &pcDame, const wxBitmap &plPawn, const wxBitmap &plDame);
+	void updateIcons(const wxBitmap &firstPawn, const wxBitmap &firstDame, const wxBitmap &secondPawn, const wxBitmap &secondDame);
 
 	/**
 	 * Updates the disposition of the pieces in the chessboard and clears every border
 	 * @param newDisposition The new disposition to apply
+	 * @param pcIsFirstPlayer True if PC is the first player
 	 */
-	void updateDisposition(const GameUtils::Disposition &newDisposition);
+	void updateDisposition(const GameUtils::Disposition &newDisposition, bool pcIsFirstPlayer);
 
 	/**
 	 * Set a new border for the square located at an specific location
@@ -68,7 +67,7 @@ private:
 	ChessboardGrid(const ChessboardGrid &); // prevents copy-constructor
 	std::array<ChessboardSquare *, 64> chessboard{};
 
-	wxBitmap m_pcPawn, m_pcDame, m_plPawn, m_plDame;
+	wxBitmap mFirstPawn = wxNullBitmap, mFirstDame = wxNullBitmap, mSecondPawn = wxNullBitmap, mSecondDame = wxNullBitmap;
 	GameUtils::MoveList moves; // list of moves the player can do
 
 	int m_squareSize{};

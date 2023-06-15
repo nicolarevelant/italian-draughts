@@ -43,6 +43,12 @@ public:
 	virtual ~MatchManager();
 
 	/**
+	 * Reset the current match
+	 * @return False when the algorithm thread is running
+	 */
+	bool newMatch();
+
+	/**
 	 * Set a update listener that will be called when:
 	 * <ul>
 	 *  <li>User/PC make a move</li>
@@ -61,15 +67,15 @@ public:
 	bool changeDifficulty(int newDifficulty);
 
 	/**
+	 * Flip first player between PC and player
+	 * @return
+	 */
+	bool flipFirstPlayer();
+
+	/**
 	 * @return Current difficulty
 	 */
 	int getDifficulty() const;
-
-	/**
-	 * Reset the current match
-	 * @return False when the algorithm thread is running
-	 */
-	bool newMatch();
 
 	/**
 	 * @return True if the player have moved at least 1 piece, and the game's not over
@@ -79,16 +85,26 @@ public:
 private:
 	MatchManager(const MatchManager &); // prevents copy-constructor
 	GameUtils::Disposition m_disposition{};
+	GameUtils::AlgorithmThread *algorithmThread;
 	ChessboardGrid *chessboardGrid;
 	wxPen focusBorder, possibleMoveBorder;
 	GameUtils::MoveList moves{};
-	bool m_isEnd, m_isPlaying, m_threadRunning;
+	bool mIsEnd, mIsPlaying, mIsPcFirstPlayer;
 	int gameDifficulty = minGD, selectedPos = selectedNone;
 
 	std::function<void(enum UpdateType updateType)> m_onUpdate;
 
 	void onChessboardSquareClick(wxMouseEvent &evt);
 
+	/**
+	 * Start the game algorithm to make a move
+	 */
+	void makePCMove();
+
+	/**
+	 * Event triggered when the algorithm thread finished
+	 * @param evt Event containing the PC's move
+	 */
 	void onThreadFinish(wxCommandEvent &evt);
 
 	/**

@@ -66,7 +66,8 @@ wxMenuBar *Frame::createMenuBar() {
 	menuFile->Append(wxID_EXIT, _("&Exit"), _("Leave the game"));
 
 	auto *menuSettings = new wxMenu;
-	menuSettings->Append(CHANGE_GD, _("&Change difficulty"), _("Change difficulty"));
+	menuSettings->Append(CHANGE_GD, _("Change &difficulty"), _("Change difficulty"));
+	menuSettings->Append(TOGGLE_FIRST_PLAYER, _("&Toggle first player"), _("Toggle first player"));
 
 	auto *menuHelp = new wxMenu;
 	menuHelp->Append(wxID_ABOUT, _("About " PROJECT_PRETTY_NAME), _("Open about dialog"));
@@ -79,6 +80,7 @@ wxMenuBar *Frame::createMenuBar() {
 	menuBar->Bind(wxEVT_MENU, &Frame::newMatchClicked, this, NEW_MATCH);
 	menuBar->Bind(wxEVT_MENU, &Frame::closeFrame, this, wxID_EXIT);
 	menuBar->Bind(wxEVT_MENU, &Frame::changeDifficultyClicked, this, CHANGE_GD);
+	menuBar->Bind(wxEVT_MENU, &Frame::flipFirstPlayer, this, TOGGLE_FIRST_PLAYER);
 	menuBar->Bind(wxEVT_MENU, &Frame::aboutClicked, this, wxID_ABOUT);
 
 	return menuBar;
@@ -86,16 +88,16 @@ wxMenuBar *Frame::createMenuBar() {
 
 wxPanel *Frame::createChessboard(wxWindow *parent, const std::string &path) {
 	// load images
-	wxBitmap pcPawn{path + "/images/pcPawn.png"};
-	if (!pcPawn.IsOk()) return nullptr;
-	wxBitmap pcDame(path + "/images/pcDame.png");
-	if (!pcDame.IsOk()) return nullptr;
-	wxBitmap plPawn(path + "/images/plPawn.png");
-	if (!plPawn.IsOk()) return nullptr;
-	wxBitmap plDame(path + "/images/plDame.png");
-	if (!plDame.IsOk()) return nullptr;
-	wxSize imageSize = pcPawn.GetSize();
-	if (pcDame.GetSize() != imageSize || plPawn.GetSize() != imageSize || plDame.GetSize() != imageSize) return nullptr;
+	wxBitmap firstPawn{path + "/images/firstPawn.png"};
+	if (!firstPawn.IsOk()) return nullptr;
+	wxBitmap firstDame(path + "/images/firstDame.png");
+	if (!firstDame.IsOk()) return nullptr;
+	wxBitmap secondPawn(path + "/images/secondPawn.png");
+	if (!secondPawn.IsOk()) return nullptr;
+	wxBitmap secondDame(path + "/images/secondDame.png");
+	if (!secondDame.IsOk()) return nullptr;
+	wxSize imageSize = firstPawn.GetSize();
+	if (firstDame.GetSize() != imageSize || secondPawn.GetSize() != imageSize || secondDame.GetSize() != imageSize) return nullptr;
 	if (imageSize.GetWidth() != imageSize.GetHeight()) return nullptr;
 
 	auto *chessboardPanel = new wxPanel(parent, wxID_ANY);
@@ -105,7 +107,7 @@ wxPanel *Frame::createChessboard(wxWindow *parent, const std::string &path) {
 	                                resources.getColor("light", DEF_LIGHT_COLOR),
 	                                imageSize.GetWidth(), chessboardPanel, wxID_ANY,
 	                                wxPoint(CHESSBOARD_BORDER_H, CHESSBOARD_BORDER_V));
-	grid->updateIcons(pcPawn, pcDame, plPawn, plDame);
+	grid->updateIcons(firstPawn, firstDame, secondPawn, secondDame);
 	int width, height;
 	grid->GetSize(&width, &height);
 	chessboardPanel->SetMinSize(wxSize(width + CHESSBOARD_BORDER_H * 2, height + CHESSBOARD_BORDER_V * 2));
@@ -173,6 +175,15 @@ void Frame::changeDifficultyClicked(wxCommandEvent &) {
 			return;
 		}
 	}
+}
+
+void Frame::flipFirstPlayer(wxCommandEvent &) {
+	if (chessboardManager->isPlaying()) {
+		wxMessageDialog dialog(this, _("Are you sure you want to leave the game?"), _("New match"), wxYES_NO);
+		if (dialog.ShowModal() != wxID_YES) return;
+	}
+
+	chessboardManager->flipFirstPlayer();
 }
 
 void Frame::aboutClicked(wxCommandEvent &) {
