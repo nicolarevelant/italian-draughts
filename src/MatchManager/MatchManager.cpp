@@ -18,9 +18,10 @@ MatchManager::MatchManager(ChessboardGrid *chessboard, const wxColour &focusColo
 	chessboard->Bind(wxEVT_MENU, &MatchManager::onThreadFinish, this, THREAD_ID);
 
 	chessboardGrid = chessboard;
-	m_threadRunning = false;
-	m_isPlaying = false;
-	m_isEnd = false;
+	algorithmThread = nullptr;
+	mIsPlaying = false;
+	mIsEnd = false;
+	mIsPcFirstPlayer = false;
 }
 
 MatchManager::~MatchManager() {
@@ -29,22 +30,51 @@ MatchManager::~MatchManager() {
 	}
 }
 
+bool MatchManager::newMatch() {
+	if (algorithmThread) {
+		algorithmThread->Delete();
+		algorithmThread = nullptr;
+	}
+
+	setDefaultLayout();
+	chessboardGrid->updateDisposition(m_disposition, mIsPcFirstPlayer);
+
+	// deletes all moves before re-assignment
+	for (GameUtils::Move *move: moves)
+		delete move;
+
+	mIsEnd = false;
+	if (mIsPcFirstPlayer) {
+		moves.clear();
+		makePCMove();
+	} else {
+		mIsPlaying = false;
+		moves = GameUtils::findMoves(m_disposition, true);
+		notifyUpdate(TURN_PLAYER);
+	}
+
+	return true;
+}
+
 void MatchManager::setOnUpdateListener(const std::function<void(enum UpdateType)> &listener) {
 	m_onUpdate = listener;
 
 	// if the game is over it doesn't call the listener
-	if (!m_isEnd) notifyUpdate(m_threadRunning ? TURN_PC : TURN_PLAYER);
+	if (!mIsEnd) notifyUpdate(algorithmThread ? TURN_PC : TURN_PLAYER);
 }
 
 bool MatchManager::changeDifficulty(int newDifficulty) {
-	if (m_threadRunning) return false;
-
 	if (newDifficulty < minGD || newDifficulty > maxGD)
 		return false;
 
 	gameDifficulty = newDifficulty;
-	if (isPlaying() || m_isEnd) newMatch();
-	else notifyUpdate(TURN_PLAYER);
+	newMatch();
+	return true;
+}
+
+bool MatchManager::flipFirstPlayer() {
+	mIsPcFirstPlayer = !mIsPcFirstPlayer;
+	newMatch();
 	return true;
 }
 
@@ -52,29 +82,12 @@ int MatchManager::getDifficulty() const {
 	return gameDifficulty;
 }
 
-bool MatchManager::newMatch() {
-	if (m_threadRunning) return false;
-
-	setDefaultLayout();
-	chessboardGrid->updateDisposition(m_disposition);
-	m_isEnd = false;
-	m_isPlaying = false;
-
-	// deletes all moves before re-assignment
-	for (GameUtils::Move *move: moves)
-		delete move;
-
-	moves = GameUtils::findMoves(m_disposition, true);
-	notifyUpdate(TURN_PLAYER);
-	return true;
-}
-
 bool MatchManager::isPlaying() const {
-	return m_isPlaying;
+	return mIsPlaying;
 }
 
 void MatchManager::onChessboardSquareClick(wxMouseEvent &event) {
-	if (m_threadRunning || m_isEnd) return;
+	if (algorithmThread || mIsEnd) return;
 
 	int currentPos = event.GetId();
 
@@ -126,32 +139,39 @@ void MatchManager::onChessboardSquareClick(wxMouseEvent &event) {
 	}
 
 	// legal move
-	chessboardGrid->updateDisposition(m_disposition = move->disposition);
+	chessboardGrid->updateDisposition(m_disposition = move->disposition, mIsPcFirstPlayer);
 	selectedPos = selectedNone;
 
-	auto *thread = new GameUtils::AlgorithmThread(chessboardGrid, m_disposition, gameDifficulty, THREAD_ID);
-	if (thread->Create() != wxTHREAD_NO_ERROR || thread->Run() != wxTHREAD_NO_ERROR) {
+	makePCMove();
+}
+
+void MatchManager::makePCMove() {
+	mIsPlaying = true;
+	notifyUpdate(TURN_PC);
+	algorithmThread = new GameUtils::AlgorithmThread(chessboardGrid, m_disposition, gameDifficulty, THREAD_ID);
+	if (algorithmThread->Create() != wxTHREAD_NO_ERROR || algorithmThread->Run() != wxTHREAD_NO_ERROR) {
+		std::cerr << "Cannot execute thread" << std::endl;
 		exit(1);
 	}
-
-	m_isPlaying = true;
-	m_threadRunning = true;
-	notifyUpdate(TURN_PC);
 }
 
 void MatchManager::onThreadFinish(wxCommandEvent &evt) {
-	m_threadRunning = false;
+	if (!algorithmThread) {
+		std::cerr << "Unwanted thread finished" << std::endl;
+		delete static_cast<GameUtils::Move *>(evt.GetClientData());
+	}
+	algorithmThread = nullptr;
 
 	auto *pcMove = static_cast<GameUtils::Move *>(evt.GetClientData());
 	if (pcMove == nullptr) {
 		// PC cannot do anything, player won
-		m_isEnd = true;
-		m_isPlaying = false;
+		mIsEnd = true;
+		mIsPlaying = false;
 		notifyUpdate(PLAYER_WON);
 		return;
 	}
 
-	chessboardGrid->updateDisposition(m_disposition = pcMove->disposition);
+	chessboardGrid->updateDisposition(m_disposition = pcMove->disposition, mIsPcFirstPlayer);
 	delete pcMove;
 
 	// deletes all moves before re-assignment
@@ -161,8 +181,8 @@ void MatchManager::onThreadFinish(wxCommandEvent &evt) {
 	moves = GameUtils::findMoves(m_disposition, true);
 	if (moves.empty()) {
 		// Player cannot do anything, PC won
-		m_isEnd = true;
-		m_isPlaying = false;
+		mIsEnd = true;
+		mIsPlaying = false;
 		notifyUpdate(PC_WON);
 		return;
 	}

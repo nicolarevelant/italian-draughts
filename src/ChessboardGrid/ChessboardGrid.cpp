@@ -46,19 +46,19 @@ bool ChessboardGrid::Create(const wxColour &darkColor, const wxColour &lightColo
 	return true;
 }
 
-void ChessboardGrid::updateIcons(const wxBitmap &pcPawn, const wxBitmap &pcDame,
-								 const wxBitmap &plPawn, const wxBitmap &plDame) {
-	m_pcPawn = pcPawn;
-	m_pcDame = pcDame;
-	m_plPawn = plPawn;
-	m_plDame = plDame;
+void ChessboardGrid::updateIcons(const wxBitmap &firstPawn, const wxBitmap &firstDame,
+								 const wxBitmap &secondPawn, const wxBitmap &secondDame) {
+	mFirstPawn = firstPawn;
+	mFirstDame = firstDame;
+	mSecondPawn = secondPawn;
+	mSecondDame = secondDame;
 }
 
 void ChessboardGrid::OnItemMouseClicked(wxMouseEvent &evt) {
 	wxPostEvent(this, evt);
 }
 
-void ChessboardGrid::updateDisposition(const GameUtils::Disposition &newDisposition) {
+void ChessboardGrid::updateDisposition(const GameUtils::Disposition &newDisposition, bool pcIsFirstPlayer) {
 	for (int i = 0; i < 64; i++) {
 		chessboard[i]->SetBorder();
 		switch (newDisposition[i]) {
@@ -66,16 +66,16 @@ void ChessboardGrid::updateDisposition(const GameUtils::Disposition &newDisposit
 				chessboard[i]->SetBitmap(wxNullBitmap);
 				break;
 			case GameUtils::PC_PAWN:
-				chessboard[i]->SetBitmap(m_pcPawn);
+				chessboard[i]->SetBitmap(pcIsFirstPlayer ? mFirstPawn : mSecondPawn);
 				break;
 			case GameUtils::PC_DAME:
-				chessboard[i]->SetBitmap(m_pcDame);
+				chessboard[i]->SetBitmap(pcIsFirstPlayer ? mFirstDame : mSecondDame);
 				break;
 			case GameUtils::PL_PAWN:
-				chessboard[i]->SetBitmap(m_plPawn);
+				chessboard[i]->SetBitmap(pcIsFirstPlayer ? mSecondPawn : mFirstPawn);
 				break;
 			case GameUtils::PL_DAME:
-				chessboard[i]->SetBitmap(m_plDame);
+				chessboard[i]->SetBitmap(pcIsFirstPlayer ? mSecondDame : mFirstDame);
 				break;
 		}
 	}

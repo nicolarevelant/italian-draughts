@@ -12,9 +12,15 @@ GameUtils::AlgorithmThread::AlgorithmThread(wxEvtHandler *evtHandler, const Disp
 }
 
 void *GameUtils::AlgorithmThread::Entry() {
-	wxCommandEvent evt(wxEVT_MENU, m_id);
-	evt.SetClientData(GameAlgorithm::calculateBestMove(m_disposition, m_gameDifficult));
-	m_evtHandler->AddPendingEvent(evt);
+	auto *data = GameAlgorithm::calculateBestMove(m_disposition, m_gameDifficult);
+
+	if (TestDestroy()) {
+		free(data);
+	} else {
+		auto *evt = new wxCommandEvent(wxEVT_MENU, m_id);
+		evt->SetClientData(data);
+		wxQueueEvent(m_evtHandler, evt);
+	}
 
 	return nullptr;
 }

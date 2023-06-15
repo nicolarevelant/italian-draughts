@@ -9,7 +9,6 @@
 #include "../ChessboardGrid/ChessboardGrid.h"
 #include "wx/wx.h"
 
-#define DEF_BORDER_COLOR wxColour()
 #define DEF_DARK_COLOR wxColour(32, 32, 32)
 #define DEF_LIGHT_COLOR wxColour(140, 140, 140)
 
@@ -38,7 +37,8 @@ private:
 
 	enum MenuItems {
 		NEW_MATCH = 1,
-		CHANGE_GD
+		CHANGE_GD,
+		TOGGLE_FIRST_PLAYER,
 	};
 
 	Resources resources{DATA_PATH};
@@ -81,6 +81,11 @@ private:
 	 * Change difficulty
 	 */
 	void changeDifficultyClicked(wxCommandEvent &);
+
+	/**
+	 * Change first player
+	 */
+	void flipFirstPlayer(wxCommandEvent &);
 
 	/**
 	 * Shows about dialog
