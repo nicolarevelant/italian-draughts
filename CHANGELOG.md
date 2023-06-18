@@ -1,3 +1,8 @@
+# 1.3.3
+
+- Follow GNU install dirs for installation path
+- Add the button to change the first player
+
 # 1.3.2
 
 - Improve documentation
