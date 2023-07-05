@@ -44,8 +44,23 @@ public:
 		if (locale)
 			std::setlocale(LC_ALL, locale);
 
-		(new Frame(nullptr, theme))->Show(true);
+		auto *frame = new Frame();
+		if (frame->Create(nullptr, theme)) {
+			frame->Show(true);
+		} else {
+			frame->Destroy();
+			std::cerr << "Cannot open GUI" << std::endl;
+		}
 		return true;
+	}
+
+	bool OnExceptionInMainLoop() override {
+		std::cerr << "Exception in main loop" << std::endl;
+		return false;
+	}
+
+	void OnUnhandledException() override {
+		std::cerr << "Unhandled Exception" << std::endl;
 	}
 
 	void printHelpMessage() {

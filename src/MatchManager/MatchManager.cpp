@@ -3,16 +3,9 @@
 
 #include "MatchManager.h"
 
-MatchManager::MatchManager(ChessboardGrid *chessboard, const wxColour &focusColor,
-                           const wxColour &possibleMoveColor) {
+MatchManager::MatchManager(ChessboardGrid *chessboard) {
 	if (chessboard == nullptr)
 		throw std::exception();
-
-	focusBorder.SetColour(focusColor);
-	focusBorder.SetWidth(BORDER_WIDTH);
-
-	possibleMoveBorder.SetColour(possibleMoveColor);
-	possibleMoveBorder.SetWidth(BORDER_WIDTH);
 
 	chessboard->Bind(wxEVT_LEFT_UP, &MatchManager::onChessboardSquareClick, this);
 	chessboard->Bind(wxEVT_MENU, &MatchManager::onThreadFinish, this, THREAD_ID);
@@ -56,8 +49,8 @@ bool MatchManager::newMatch() {
 	return true;
 }
 
-void MatchManager::setOnUpdateListener(const std::function<void(enum UpdateType)> &listener) {
-	m_onUpdate = listener;
+void MatchManager::setOnUpdateListener(const UpdateCallback &updateCB) {
+	m_onUpdate = updateCB;
 
 	// if the game is over it doesn't call the listener
 	if (!mIsEnd) notifyUpdate(algorithmThread ? TURN_PC : TURN_PLAYER);
@@ -94,7 +87,7 @@ void MatchManager::onChessboardSquareClick(wxMouseEvent &event) {
 	if (selectedPos == selectedNone) {
 		if ((m_disposition[currentPos] == GameUtils::PL_PAWN || m_disposition[currentPos] == GameUtils::PL_DAME)) {
 			if (highlightPossibleMoves(currentPos)) {
-				chessboardGrid->SetSquareBorder(currentPos, focusBorder);
+				chessboardGrid->SetSquareSelectedOverlay(currentPos);
 				selectedPos = currentPos;
 			} else {
 				notifyUpdate(ILLEGAL_SELECTION);
@@ -105,14 +98,14 @@ void MatchManager::onChessboardSquareClick(wxMouseEvent &event) {
 
 	// change selection
 	if ((m_disposition[currentPos] == GameUtils::PL_PAWN || m_disposition[currentPos] == GameUtils::PL_DAME)) {
-		chessboardGrid->ClearSquareBorders(); // it clears selectedPos and possible moves
+		chessboardGrid->ClearSquareOverlay(); // it clears selectedPos and possible moves
 		if (currentPos == selectedPos) {
 			selectedPos = selectedNone;
 			return;
 		}
 
 		if (highlightPossibleMoves(currentPos)) {
-			chessboardGrid->SetSquareBorder(currentPos, focusBorder);
+			chessboardGrid->SetSquareSelectedOverlay(currentPos);
 			selectedPos = currentPos;
 		} else {
 			selectedPos = selectedNone;
@@ -124,7 +117,7 @@ void MatchManager::onChessboardSquareClick(wxMouseEvent &event) {
 
 	// illegal selection, deselect the current selection
 	if (m_disposition[currentPos] != GameUtils::EMPTY || currentPos % 2 != (currentPos / 8) % 2) {
-		chessboardGrid->ClearSquareBorders(); // it clears selectedPos and possible moves
+		chessboardGrid->ClearSquareOverlay(); // it clears selectedPos and possible moves
 		selectedPos = selectedNone;
 		return;
 	}
@@ -132,7 +125,7 @@ void MatchManager::onChessboardSquareClick(wxMouseEvent &event) {
 	GameUtils::Move *move = findPlayerMove(selectedPos, currentPos);
 	if (move == nullptr) {
 		// illegal move
-		chessboardGrid->ClearSquareBorders();
+		chessboardGrid->ClearSquareOverlay();
 		selectedPos = selectedNone;
 		notifyUpdate(ILLEGAL_MOVE);
 		return;
@@ -232,7 +225,7 @@ bool MatchManager::highlightPossibleMoves(int from) {
 		for (int i = 0; i < 64; i++) {
 			if (m_disposition[i] == GameUtils::EMPTY && move->disposition[i] != GameUtils::EMPTY) {
 				// possible move
-				chessboardGrid->SetSquareBorder(i, possibleMoveBorder);
+				chessboardGrid->SetSquarePossibleMoveOverlay(i);
 			}
 		}
 	}

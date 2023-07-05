@@ -31,16 +31,16 @@ public:
 	            wxWindowID windowId = wxID_ANY);
 
 	/**
-	 * Set a new border as wxPen
-	 * @param border A new wxPen border
+	 * Set the background bitmap (drawn before the other one)
+	 * @param bitmap The new background bitmap
 	 */
-	void SetBorder(const wxPen &border = wxNullPen);
+	void SetBackgroundBitmap(const wxBitmap &bitmap = wxNullBitmap);
 
 	/**
-	 * Set a new image as wxBitmap
-	 * @param bitmap A new wxBitmap image
+	 * Set the foreground bitmap (drawn after the other one)
+	 * @param bitmap The new foreground bitmap
 	 */
-	void SetBitmap(const wxBitmap &bitmap);
+	void SetForegroundBitmap(const wxBitmap &bitmap = wxNullBitmap);
 
 protected:
 	wxSize DoGetBestClientSize() const override;
@@ -48,10 +48,8 @@ protected:
 private:
 	ChessboardSquare(const ChessboardSquare &); // prevents copy-constructor
 
-	int m_size = 0;
-	wxBitmap m_bitmap = wxNullBitmap;
-	const wxBrush m_transparentBrush{wxTransparentColour, wxBRUSHSTYLE_TRANSPARENT};
-	wxPen m_border = wxNullPen;
+	int mSize{};
+	wxBitmap mBackBitmap, mForeBitmap;
 
 	/**
 	 * Paint event

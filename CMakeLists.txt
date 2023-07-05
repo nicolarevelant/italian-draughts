@@ -11,6 +11,10 @@ set(PROJECT_LICENSE "GNU General Public License, version 3 or later")
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic")
 
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+	set(DEBUG 1)
+endif ()
+
 if (CMAKE_BUILD_TYPE STREQUAL "Debug" AND NOT DEFINED DATA_PATH)
 	set(DATA_PATH "${CMAKE_SOURCE_DIR}")
 endif ()
@@ -40,6 +44,6 @@ else ()
 	# Install images
 	install(DIRECTORY images DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}")
 
-	# Install themes
-	install(DIRECTORY themes DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}")
+	# Install colors
+	install(DIRECTORY colors DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}")
 endif ()
