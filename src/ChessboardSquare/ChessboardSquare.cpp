@@ -14,33 +14,32 @@ ChessboardSquare::ChessboardSquare(int size, wxWindow *parent, wxWindowID window
 
 bool ChessboardSquare::Create(int size, wxWindow *parent, wxWindowID windowId) {
 	if (wxWindow::Create(parent, windowId)) {
-		m_size = size;
+		mSize = size;
 		return true;
 	}
 	return false;
 }
 
 wxSize ChessboardSquare::DoGetBestClientSize() const {
-	return {m_size, m_size};
+	return {mSize, mSize};
 }
 
 void ChessboardSquare::OnPaint(wxPaintEvent &) {
 	wxPaintDC dc(this);
 
-	dc.SetBrush(m_transparentBrush);
-	dc.SetPen(m_border);
-	dc.DrawRectangle(0, 0, m_size, m_size);
+	if (dc.CanDrawBitmap() && mBackBitmap.IsOk()) {
+		dc.DrawBitmap(mBackBitmap, 0, 0);
+	}
 
-	if (dc.CanDrawBitmap() && m_bitmap.IsOk())
-		dc.DrawBitmap(m_bitmap, 0, 0);
+	if (dc.CanDrawBitmap() && mForeBitmap.IsOk()) {
+		dc.DrawBitmap(mForeBitmap, 0, 0);
+	}
 }
 
-void ChessboardSquare::SetBorder(const wxPen &brd) {
-	m_border = brd;
+void ChessboardSquare::SetBackgroundBitmap(const wxBitmap &bitmap) {
+	mBackBitmap = bitmap;
 }
 
-void ChessboardSquare::SetBitmap(const wxBitmap &bmp) {
-	m_bitmap = bmp;
+void ChessboardSquare::SetForegroundBitmap(const wxBitmap &bitmap) {
+	mForeBitmap = bitmap;
 }
-
-

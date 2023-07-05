@@ -31,14 +31,15 @@ public:
 		ILLEGAL_MOVE
 	};
 
+	typedef std::function<void(enum UpdateType updateType)> UpdateCallback;
+
 	/**
 	 * Starts a new match using a chessboard grid
 	 * @param chessboard Chessboard grid used as interface between player and PC
 	 * @param focusColor Color used to highlight selected piece
 	 * @param possibleMoveColor Color used to highlight possible moves
 	 */
-	explicit MatchManager(ChessboardGrid *chessboard, const wxColour &focusColor,
-	                      const wxColour &possibleMoveColor);
+	explicit MatchManager(ChessboardGrid *chessboard);
 
 	virtual ~MatchManager();
 
@@ -57,7 +58,7 @@ public:
 	 * </ul>
 	 * @param listener Method of Class called on update, if nullptr it removes the current listener
 	 */
-	void setOnUpdateListener(const std::function<void(enum UpdateType updateType)> &listener);
+	void setOnUpdateListener(const UpdateCallback &listener);
 
 	/**
 	 * Reset match and change difficulty
@@ -87,12 +88,11 @@ private:
 	GameUtils::Disposition m_disposition{};
 	GameUtils::AlgorithmThread *algorithmThread;
 	ChessboardGrid *chessboardGrid;
-	wxPen focusBorder, possibleMoveBorder;
 	GameUtils::MoveList moves{};
 	bool mIsEnd, mIsPlaying, mIsPcFirstPlayer;
 	int gameDifficulty = minGD, selectedPos = selectedNone;
 
-	std::function<void(enum UpdateType updateType)> m_onUpdate;
+	UpdateCallback m_onUpdate;
 
 	void onChessboardSquareClick(wxMouseEvent &evt);
 

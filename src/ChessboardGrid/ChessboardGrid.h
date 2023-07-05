@@ -8,11 +8,17 @@
 #include "GameUtils/GameUtils.h"
 #include <wx/wx.h>
 
+#define DEF_DARK_COLOR wxColour(32, 32, 32)
+#define DEF_LIGHT_COLOR wxColour(140, 140, 140)
+
 /**
  * The mission of this class is to provide a wxPanel composed by a 8x8 grid
  */
 class ChessboardGrid : public wxPanel {
 public:
+	typedef std::function<const wxBitmap &(const std::string &, const wxBitmap &)> ImageProviderCB;
+	typedef std::function<const wxColour &(const std::string &, const wxColour &)> ColorProviderCB;
+
 	ChessboardGrid();
 
 	~ChessboardGrid() override;
@@ -26,23 +32,14 @@ public:
 	 * @param winId Window ID, or wxID_ANY
 	 * @param pos Position relative to the parent
 	 */
-	ChessboardGrid(const wxColour &darkColor, const wxColour &lightColor, int squareSize, wxWindow *parent,
+	ChessboardGrid(const ImageProviderCB &images, const ColorProviderCB &colors, wxWindow *parent,
 	               wxWindowID winId = wxID_ANY, const wxPoint &pos = wxDefaultPosition);
 
 	/**
 	 * Creates a new ChessboardGrid using two-step construction
 	 */
-	bool Create(const wxColour &darkColor, const wxColour &lightColor, int squareSize, wxWindow *parent,
+	bool Create(const ImageProviderCB &images, const ColorProviderCB &colors, wxWindow *parent,
 	            wxWindowID winId = wxID_ANY, const wxPoint &pos = wxDefaultPosition);
-
-	/**
-	 * Updates the icons
-	 * @param firstPawn First player's pawn
-	 * @param firstDame First player's dame
-	 * @param secondPawn Second player's pawn
-	 * @param secondDame Second player's dame
-	 */
-	void updateIcons(const wxBitmap &firstPawn, const wxBitmap &firstDame, const wxBitmap &secondPawn, const wxBitmap &secondDame);
 
 	/**
 	 * Updates the disposition of the pieces in the chessboard and clears every border
@@ -52,25 +49,29 @@ public:
 	void updateDisposition(const GameUtils::Disposition &newDisposition, bool pcIsFirstPlayer);
 
 	/**
-	 * Set a new border for the square located at an specific location
+	 * Highlight the specified square as selected
 	 * @param index Position of the square
-	 * @param border The new border
 	 */
-	void SetSquareBorder(int index, const wxPen &border);
+	void SetSquareSelectedOverlay(int index);
 
 	/**
-	 * Clears the border of all 64 squares
+	 * Highlight the specified square as possible move
+	 * @param index Position of the square
 	 */
-	void ClearSquareBorders();
+	void SetSquarePossibleMoveOverlay(int index);
+
+	/**
+	 * Clears the foreground bitmap of all 64 squares
+	 */
+	void ClearSquareOverlay();
 
 private:
 	ChessboardGrid(const ChessboardGrid &); // prevents copy-constructor
 	std::array<ChessboardSquare *, 64> chessboard{};
 
 	wxBitmap mFirstPawn = wxNullBitmap, mFirstDame = wxNullBitmap, mSecondPawn = wxNullBitmap, mSecondDame = wxNullBitmap;
+	wxBitmap mSelected = wxNullBitmap, mPossibleMove = wxNullBitmap;
 	GameUtils::MoveList moves; // list of moves the player can do
-
-	int m_squareSize{};
 
 	void OnItemMouseClicked(wxMouseEvent &evt);
 };

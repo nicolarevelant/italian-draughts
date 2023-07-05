@@ -9,9 +9,6 @@
 #include "../ChessboardGrid/ChessboardGrid.h"
 #include "wx/wx.h"
 
-#define DEF_DARK_COLOR wxColour(32, 32, 32)
-#define DEF_LIGHT_COLOR wxColour(140, 140, 140)
-
 #define CHESSBOARD_BORDER_H 40
 #define CHESSBOARD_BORDER_V 40
 #define CHESSBOARD_MARGIN_H 60
@@ -57,7 +54,11 @@ private:
 	 * @param parent Parent
 	 * @return The new wxPanel
 	 */
-	wxPanel *createChessboard(wxWindow *parent, const std::string &path);
+	wxPanel *createChessboard(wxWindow *parent);
+
+	const wxBitmap &getBitmap(const std::string &key, const wxBitmap &def);
+
+	const wxColour &getColor(const std::string &key, const wxColour &def);
 
 	// events
 

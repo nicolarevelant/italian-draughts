@@ -10,7 +10,8 @@
 
 class Resources {
 public:
-	typedef std::map<std::string, wxColour> ColorsMap;
+	typedef std::map<std::string, wxColour> ColorMap;
+	typedef std::map<std::string, wxBitmap> BitmapMap;
 
 	/**
 	 * Initialize a new object with the default theme
@@ -27,11 +28,16 @@ public:
 
 	const wxColour &getColor(const std::string &key, const wxColour &def = wxNullColour) const;
 
+	const wxBitmap &getBitmap(const std::string &key, const wxBitmap &def = wxNullBitmap) const;
+
 private:
 	Resources(const Resources &); // prevents copy-constructor
-	ColorsMap m_colors;
+	ColorMap mColors;
+	BitmapMap mBitmaps;
 
-	static bool fillColorsMap(ColorsMap &colors, const std::string &path, const std::string &theme = "default");
+	static bool fillColorMap(ColorMap &colors, const std::string &path, const std::string &theme = "default");
+
+	static bool fillBitmapMap(BitmapMap &bitmaps, const std::string &path, const std::string &theme = "default");
 };
 
 

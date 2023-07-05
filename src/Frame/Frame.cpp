@@ -19,9 +19,10 @@ bool Frame::Create(wxWindow *parent, const std::string &theme) {
 		resources.addTheme(DATA_PATH, theme);
 
 	// create chessboard panel that contains the chessboard grid
-	auto *chessboardPanel = createChessboard(this, DATA_PATH);
-	if (chessboardPanel == nullptr)
+	auto *chessboardPanel = createChessboard(this);
+	if (!chessboardPanel) {
 		return false;
+	}
 
 	// window sizer
 	auto *mainSizer = new wxBoxSizer(wxHORIZONTAL);
@@ -86,37 +87,38 @@ wxMenuBar *Frame::createMenuBar() {
 	return menuBar;
 }
 
-wxPanel *Frame::createChessboard(wxWindow *parent, const std::string &path) {
-	// load images
-	wxBitmap firstPawn{path + "/images/firstPawn.png"};
-	if (!firstPawn.IsOk()) return nullptr;
-	wxBitmap firstDame(path + "/images/firstDame.png");
-	if (!firstDame.IsOk()) return nullptr;
-	wxBitmap secondPawn(path + "/images/secondPawn.png");
-	if (!secondPawn.IsOk()) return nullptr;
-	wxBitmap secondDame(path + "/images/secondDame.png");
-	if (!secondDame.IsOk()) return nullptr;
-	wxSize imageSize = firstPawn.GetSize();
-	if (firstDame.GetSize() != imageSize || secondPawn.GetSize() != imageSize || secondDame.GetSize() != imageSize) return nullptr;
-	if (imageSize.GetWidth() != imageSize.GetHeight()) return nullptr;
-
+wxPanel *Frame::createChessboard(wxWindow *parent) {
 	auto *chessboardPanel = new wxPanel(parent, wxID_ANY);
 	chessboardPanel->SetBackgroundColour(resources.getColor("border"));
 
-	auto *grid = new ChessboardGrid(resources.getColor("dark", DEF_DARK_COLOR),
-	                                resources.getColor("light", DEF_LIGHT_COLOR),
-	                                imageSize.GetWidth(), chessboardPanel, wxID_ANY,
-	                                wxPoint(CHESSBOARD_BORDER_H, CHESSBOARD_BORDER_V));
-	grid->updateIcons(firstPawn, firstDame, secondPawn, secondDame);
+	auto *grid = new ChessboardGrid();
+	if (!grid->Create(std::bind(&Frame::getBitmap, this, std::placeholders::_1, std::placeholders::_2),
+									std::bind(&Frame::getColor, this, std::placeholders::_1, std::placeholders::_2),
+									chessboardPanel, wxID_ANY, wxPoint(CHESSBOARD_BORDER_H, CHESSBOARD_BORDER_V))) {
+#ifdef DEBUG
+		std::cerr << "Cannot create ChessboardGrid" << std::endl;
+#endif
+		grid->Destroy();
+		return nullptr;
+	}
+
 	int width, height;
 	grid->GetSize(&width, &height);
-	chessboardPanel->SetMinSize(wxSize(width + CHESSBOARD_BORDER_H * 2, height + CHESSBOARD_BORDER_V * 2));
+	chessboardPanel->SetInitialSize(wxSize(width + CHESSBOARD_BORDER_H * 2, height + CHESSBOARD_BORDER_V * 2));
 
-	chessboardManager = new MatchManager(grid, resources.getColor("focus-border"),
-	                                     resources.getColor("possible-move-border"));
+	chessboardManager = new MatchManager(grid);
 
 	return chessboardPanel;
 }
+
+const wxBitmap &Frame::getBitmap(const std::string &key, const wxBitmap &def) {
+	return resources.getBitmap(key, def);
+}
+
+const wxColour &Frame::getColor(const std::string &key, const wxColour &def) {
+	return resources.getColor(key, def);
+}
+
 
 // Events
 
