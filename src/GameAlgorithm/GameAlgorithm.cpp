@@ -2,6 +2,7 @@
 // Copyright (C) 2023  Nicola Revelant
 
 #include <climits>
+#include <random>
 #include "GameAlgorithm.h"
 
 GameUtils::Move *GameAlgorithm::calculateBestMove(const GameUtils::Disposition &disposition, int depth) {
@@ -12,6 +13,7 @@ GameUtils::Move *GameAlgorithm::calculateBestMove(const GameUtils::Disposition &
 	int alpha = INT_MIN, beta = INT_MAX;
 
 	std::vector<GameUtils::Move *> moves = GameUtils::findMoves(disposition, false);
+	std::shuffle(moves.begin(), moves.end(), std::random_device());
 	for (GameUtils::Move *move: moves) {
 		int score = minimax(move, move->score, false, depth, alpha, beta);
 		if (score > bestScore) {
