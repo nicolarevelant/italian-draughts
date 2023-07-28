@@ -2,7 +2,9 @@
 // Copyright (C) 2023  Nicola Revelant
 
 #include "Frame.h"
-#include "wx/aboutdlg.h"
+#include <wx/aboutdlg.h>
+#include <wx/artprov.h>
+#include "logo/italian-draughts.xpm"
 
 Frame::Frame() = default;
 
@@ -191,6 +193,7 @@ void Frame::flipFirstPlayer(wxCommandEvent &) {
 void Frame::aboutClicked(wxCommandEvent &) {
 	wxAboutDialogInfo dialog;
 	dialog.SetName(wxFrame::GetTitle());
+	dialog.SetIcon(italianDraughtsLogo);
 	dialog.SetVersion(PROJECT_VERSION);
 	dialog.SetDescription(PROJECT_DESCRIPTION);
 	dialog.SetCopyright(PROJECT_COPYRIGHT);

@@ -4,9 +4,9 @@
 #ifndef ITALIAN_DRAUGHTS_FRAME_H
 #define ITALIAN_DRAUGHTS_FRAME_H
 
-#include "../Resources/Resources.h"
+#include "Resources/Resources.h"
 #include "MatchManager/MatchManager.h"
-#include "../ChessboardGrid/ChessboardGrid.h"
+#include "ChessboardGrid/ChessboardGrid.h"
 #include "wx/wx.h"
 
 #define CHESSBOARD_BORDER_H 40

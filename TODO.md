@@ -2,12 +2,13 @@
 
 ## Under development
 
-- Fix missing icon in window and about dialog
+- Porting for Microsoft Windows and Apple macOS
 
 ## Ideas
 
-- Porting for Microsoft Windows and Apple macOS
+- empty
 
-# Done
+## Done
 
 - Randomize PC's moves with same score
+- Fix missing icon in about dialog (the window icon is platform dependent)

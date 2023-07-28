@@ -5,7 +5,7 @@ find_package(wxWidgets REQUIRED base core)
 include(${wxWidgets_USE_FILE})
 
 # for configure_file command and for indexing header files
-include_directories(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_SOURCE_DIR}/src)
+include_directories(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_SOURCE_DIR}/src ${CMAKE_SOURCE_DIR})
 
 # build static libraries and link dependencies
 add_subdirectory(GameAlgorithm)

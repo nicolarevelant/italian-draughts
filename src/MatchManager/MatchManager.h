@@ -9,7 +9,6 @@
 
 #define DEF_MIN_GD 1
 #define DEF_MAX_GD 10
-#define BORDER_WIDTH 3
 #define THREAD_ID 1
 
 /**
