@@ -1,3 +1,9 @@
+# 1.3.4
+
+- Randomize PC's moves with same score
+- Add icon for About dialog
+- Support for themed bitmaps
+
 # 1.3.3
 
 - Follow GNU install dirs for installation path
