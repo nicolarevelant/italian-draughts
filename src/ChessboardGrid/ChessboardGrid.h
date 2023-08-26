@@ -7,6 +7,7 @@
 #include "ChessboardSquare/ChessboardSquare.h"
 #include "GameUtils/GameUtils.h"
 #include <wx/wx.h>
+#include <functional>
 
 #define DEF_DARK_COLOR wxColour(32, 32, 32)
 #define DEF_LIGHT_COLOR wxColour(140, 140, 140)

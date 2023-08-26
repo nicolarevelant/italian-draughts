@@ -3,6 +3,7 @@
 
 #include <climits>
 #include <random>
+#include <algorithm>
 #include "GameAlgorithm.h"
 
 GameUtils::Move *GameAlgorithm::calculateBestMove(const GameUtils::Disposition &disposition, int depth) {
