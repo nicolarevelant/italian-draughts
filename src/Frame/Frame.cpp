@@ -173,8 +173,8 @@ void Frame::changeDifficultyClicked(wxCommandEvent &) {
 		wxTextEntryDialog dialog(this, message, _("Game difficulty"));
 		if (dialog.ShowModal() != wxID_OK) return;
 
-		int value;
-		if (dialog.GetValue().ToInt(&value) && value >= MatchManager::minGD && value <= MatchManager::maxGD &&
+		long value;
+		if (dialog.GetValue().ToLong(&value) && value >= MatchManager::minGD && value <= MatchManager::maxGD &&
 		    chessboardManager->changeDifficulty(value)) {
 			return;
 		}
