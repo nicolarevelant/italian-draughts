@@ -1,7 +1,7 @@
 # Build the libraries and the executable
 
 # wxWidgets
-find_package(wxWidgets REQUIRED base core)
+find_package(wxWidgets REQUIRED base core adv)
 include(${wxWidgets_USE_FILE})
 
 # for configure_file command and for indexing header files
