@@ -2,8 +2,9 @@
 // Copyright (C) 2023  Nicola Revelant
 
 #include "Frame.h"
+#include <functional>
 #include <wx/aboutdlg.h>
-#include <wx/artprov.h>
+
 #include "logo/italian-draughts.xpm"
 
 Frame::Frame() = default;

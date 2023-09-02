@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2023  Nicola Revelant
 
+#include <algorithm>
 #include <climits>
 #include <random>
-#include <algorithm>
+#include <vector>
 #include "GameAlgorithm.h"
 
 GameUtils::Move *GameAlgorithm::calculateBestMove(const GameUtils::Disposition &disposition, int depth) {
