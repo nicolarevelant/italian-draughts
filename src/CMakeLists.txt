@@ -1,5 +1,9 @@
 # Build the libraries and the executable
 
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic")
+
 # wxWidgets
 find_package(wxWidgets REQUIRED base core adv)
 include(${wxWidgets_USE_FILE})

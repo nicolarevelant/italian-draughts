@@ -8,9 +8,6 @@ set(PROJECT_PRETTY_NAME "Italian Draughts")
 set(PROJECT_COPYRIGHT "Copyright (C) 2023 Nicola Revelant")
 set(PROJECT_LICENSE "GNU General Public License, version 3 or later")
 
-set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic")
-
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
 	set(DEBUG 1)
 endif ()
