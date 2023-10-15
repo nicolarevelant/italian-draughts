@@ -33,7 +33,7 @@ else ()
 	include(GNUInstallDirs)
 
 	# Compile and compress the manual pages
-	add_subdirectory(man)
+	add_subdirectory(doc)
 
 	# Install target
 	install(TARGETS ${PROJECT_NAME})

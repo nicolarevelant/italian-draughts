@@ -1,4 +1,5 @@
 # Converts manual pages using scdoc and then compresses them
+
 # Creates a static library to represent the manual pages
 add_custom_target(ManualPages
 		COMMENT "Compiling and compressing manual pages"
