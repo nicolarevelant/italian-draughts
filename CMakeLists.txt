@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.20)
 project(italian-draughts
 		VERSION 1.3.4
-		DESCRIPTION "Play Italian Draughts against the computer"
+		DESCRIPTION "Italian Draughts, a strategy board game"
 		LANGUAGES CXX)
 
 set(PROJECT_PRETTY_NAME "Italian Draughts")
