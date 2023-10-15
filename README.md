@@ -1,6 +1,6 @@
 # Italian Draughts
 
-Play Italian Draughts against the computer.
+Play Italian Draughts against the computer with 10 difficulty levels.
 
 Instructions on how to play can be found
 [here](https://en.wikipedia.org/wiki/Italian_draughts).
@@ -33,16 +33,15 @@ cmake --build build -- -j8
 sudo cmake --install build
 ```
 
-The installation path can be changed using the ``-DCMAKE_INSTALL_PREFIX=<installation path>``
-argument for ``cmake``.
+The installation path can be changed using the `CMAKE_INSTALL_PREFIX` cmake variable.
 
-To set a custom application data path (instead of ``<installation path>/share/italian-draughts``)
+To set a custom application data path (instead of ``${CMAKE_INSTALL_PREFIX}/share/italian-draughts``)
 you can set the `DATA_PATH` cmake variable.
 
-If CMAKE_BUILD_TYPE equals Debug and DATA_PATH is not set then DATA_PATH is set
+If `CMAKE_BUILD_TYPE` equals **Debug** and `DATA_PATH` is not set then `DATA_PATH` is set
 to the absolute path of the project root directory.
 
-If you set a custom DATA_PATH (or CMAKE_BUILD_TYPE equals Debug) the manual pages
+If you set a custom `DATA_PATH` (or `CMAKE_BUILD_TYPE` equals **Debug**) the manual pages
 and the installation target will be ignored.
 
 Windows and macOS are not supported yet.
