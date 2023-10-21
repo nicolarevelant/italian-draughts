@@ -4,43 +4,30 @@ project(italian-draughts
 		DESCRIPTION "Italian Draughts, a strategy board game"
 		LANGUAGES CXX)
 
+option(DOCS "Generate manual pages" OFF)
+
+set(DATA_PATH ${CMAKE_INSTALL_PREFIX}/share/${PROJECT_NAME} CACHE STRING "Application data path")
+
+message("Install prefix: ${CMAKE_INSTALL_PREFIX}")
+message("Build type: ${CMAKE_BUILD_TYPE}")
+message("DATA_PATH: ${DATA_PATH}")
+
 set(PROJECT_PRETTY_NAME "Italian Draughts")
 set(PROJECT_COPYRIGHT "Copyright (C) 2023 Nicola Revelant")
 set(PROJECT_LICENSE "GNU General Public License, version 3 or later")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG")
 
-if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-	set(DEBUG 1)
-endif ()
+include(GNUInstallDirs)
 
-if (CMAKE_BUILD_TYPE STREQUAL "Debug" AND NOT DEFINED DATA_PATH)
-	set(DATA_PATH "${CMAKE_SOURCE_DIR}")
-endif ()
+add_subdirectory(src)
 
-message("Build type: ${CMAKE_BUILD_TYPE}")
-
-if (DEFINED DATA_PATH)
-	message(WARNING "Using custom application data path, ignoring manual pages and install rules\nData path: ${DATA_PATH}")
-
-	# Create the executable
-	add_subdirectory(src)
-else ()
-	# System configuration path (used by configure_file)
-	set(DATA_PATH ${CMAKE_INSTALL_PREFIX}/share/${PROJECT_NAME})
-
-	# Create the target
-	add_subdirectory(src)
-
-	include(GNUInstallDirs)
-
-	# Compile and compress the manual pages
+if (DOCS)
+	message("Install documentation: ON")
 	add_subdirectory(doc)
-
-	# Install target
-	install(TARGETS ${PROJECT_NAME})
-
-	# Install images
-	install(DIRECTORY images DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}")
-
-	# Install colors
-	install(DIRECTORY colors DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}")
+else ()
+	message("Install documentation: OFF")
 endif ()
+
+install(TARGETS ${PROJECT_NAME})
+install(DIRECTORY images DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}")
+install(DIRECTORY colors DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}")

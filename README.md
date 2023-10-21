@@ -21,28 +21,35 @@ Other branches do not guarantee it compiles (specially those starting with dev/)
 When a new version is available the corresponding commit will be tagged
 with the version code (MAJOR.MINOR.PATCH).
 
+## Dependencies
+
+At build-time:
+
+- scdoc (compile manual pages)
+- CMake
+- Ninja (or make)
+
+At runtime and build-time:
+
+- wxWidgets
+
 ## Installation
 
 To install into ``/usr/local``, run:
 
 ```bash
-git clone https://github.com/nicolarevelant/italian-draughts.git
-cd italian-draughts
-cmake -B build -DCMAKE_BUILD_TYPE=Release
-cmake --build build -- -j8
+cmake -B build -GNinja -DCMAKE_BUILD_TYPE=Release
+cmake --build build
 sudo cmake --install build
 ```
 
-The installation path can be changed using the `CMAKE_INSTALL_PREFIX` cmake variable.
+CMake cache variables:
 
-To set a custom application data path (instead of ``${CMAKE_INSTALL_PREFIX}/share/italian-draughts``)
-you can set the `DATA_PATH` cmake variable.
-
-If `CMAKE_BUILD_TYPE` equals **Debug** and `DATA_PATH` is not set then `DATA_PATH` is set
-to the absolute path of the project root directory.
-
-If you set a custom `DATA_PATH` (or `CMAKE_BUILD_TYPE` equals **Debug**) the manual pages
-and the installation target will be ignored.
+| Variable name | Description | Type | Default value |
+| - | - | - | - |
+| CMAKE_INSTALL_PREFIX | Installation path | String | ``/usr/local`` |
+| DATA_PATH | Application data path | String | ``${CMAKE_INSTALL_PREFIX}/share/italian-draughts`` |
+| DOCS | Install documentation | Boolean | OFF
 
 Windows and macOS are not supported yet.
 
