@@ -4,8 +4,12 @@
 #include "MatchManager.h"
 
 MatchManager::MatchManager(ChessboardGrid *chessboard) {
-	if (chessboard == nullptr)
+	if (chessboard == nullptr) {
+#ifdef DEBUG
+		std::cerr << "Cannot create MatchManager: chessboard == nullptr" << std::endl;
+#endif
 		throw std::exception();
+	}
 
 	chessboard->Bind(wxEVT_LEFT_UP, &MatchManager::onChessboardSquareClick, this);
 	chessboard->Bind(wxEVT_MENU, &MatchManager::onThreadFinish, this, THREAD_ID);
@@ -150,8 +154,11 @@ void MatchManager::makePCMove() {
 
 void MatchManager::onThreadFinish(wxCommandEvent &evt) {
 	if (!algorithmThread) {
+#ifdef DEBUG
 		std::cerr << "Unwanted thread finished" << std::endl;
+#endif
 		delete static_cast<GameUtils::Move *>(evt.GetClientData());
+		exit(1);
 	}
 	algorithmThread = nullptr;
 

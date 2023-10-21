@@ -8,8 +8,12 @@ ChessboardSquare::ChessboardSquare() {
 }
 
 ChessboardSquare::ChessboardSquare(int size, wxWindow *parent, wxWindowID windowId) : ChessboardSquare() {
-	if (!Create(size, parent, windowId))
+	if (!Create(size, parent, windowId)) {
+#ifdef DEBUG
+		std::cerr << "Cannot create ChessboardSquare" << std::endl;
+#endif
 		throw std::exception();
+	}
 }
 
 bool ChessboardSquare::Create(int size, wxWindow *parent, wxWindowID windowId) {

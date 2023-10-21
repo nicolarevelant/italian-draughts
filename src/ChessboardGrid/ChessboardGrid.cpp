@@ -10,8 +10,12 @@ ChessboardGrid::~ChessboardGrid() = default;
 
 ChessboardGrid::ChessboardGrid(const ImageProviderCB &images, const ColorProviderCB &colors,
 							   wxWindow *parent, wxWindowID winId, const wxPoint &pos) : ChessboardGrid() {
-	if (!Create(images, colors, parent, winId, pos))
+	if (!Create(images, colors, parent, winId, pos)) {
+#ifdef DEBUG
+		std::cerr << "Cannot create ChessboardGrid" << std::endl;
+#endif
 		throw std::exception();
+	}
 }
 
 bool ChessboardGrid::Create(const ImageProviderCB &images, const ColorProviderCB &colors,

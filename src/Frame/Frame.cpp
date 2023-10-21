@@ -10,8 +10,12 @@
 Frame::Frame() = default;
 
 Frame::Frame(wxWindow *parent, const std::string &theme) : Frame() {
-	if (!Create(parent, theme))
+	if (!Create(parent, theme)) {
+#ifdef DEBUG
+		std::cerr << "Cannot create Frame" << std::endl;
+#endif
 		throw std::exception();
+	}
 }
 
 bool Frame::Create(wxWindow *parent, const std::string &theme) {
