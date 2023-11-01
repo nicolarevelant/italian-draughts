@@ -82,10 +82,10 @@ void ChessboardGrid::updateDisposition(const GameUtils::Disposition &newDisposit
 			case GameUtils::PC_DAME:
 				chessboard[i]->SetBackgroundBitmap(pcIsFirstPlayer ? mFirstDame : mSecondDame);
 				break;
-			case GameUtils::PL_PAWN:
+			case GameUtils::PLAYER_PAWN:
 				chessboard[i]->SetBackgroundBitmap(pcIsFirstPlayer ? mSecondPawn : mFirstPawn);
 				break;
-			case GameUtils::PL_DAME:
+			case GameUtils::PLAYER_DAME:
 				chessboard[i]->SetBackgroundBitmap(pcIsFirstPlayer ? mSecondDame : mFirstDame);
 				break;
 		}

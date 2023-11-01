@@ -89,7 +89,7 @@ void MatchManager::onChessboardSquareClick(wxMouseEvent &event) {
 	int currentPos = event.GetId();
 
 	if (selectedPos == selectedNone) {
-		if ((m_disposition[currentPos] == GameUtils::PL_PAWN || m_disposition[currentPos] == GameUtils::PL_DAME)) {
+		if ((m_disposition[currentPos] == GameUtils::PLAYER_PAWN || m_disposition[currentPos] == GameUtils::PLAYER_DAME)) {
 			if (highlightPossibleMoves(currentPos)) {
 				chessboardGrid->SetSquareSelectedOverlay(currentPos);
 				selectedPos = currentPos;
@@ -101,7 +101,7 @@ void MatchManager::onChessboardSquareClick(wxMouseEvent &event) {
 	}
 
 	// change selection
-	if ((m_disposition[currentPos] == GameUtils::PL_PAWN || m_disposition[currentPos] == GameUtils::PL_DAME)) {
+	if ((m_disposition[currentPos] == GameUtils::PLAYER_PAWN || m_disposition[currentPos] == GameUtils::PLAYER_DAME)) {
 		chessboardGrid->ClearSquareOverlay(); // it clears selectedPos and possible moves
 		if (currentPos == selectedPos) {
 			selectedPos = selectedNone;
@@ -196,7 +196,7 @@ void MatchManager::setDefaultLayout() {
 			if (i < (8 * 3)) {
 				m_disposition[i] = GameUtils::PC_PAWN;
 			} else if (i >= (8 * 5)) {
-				m_disposition[i] = GameUtils::PL_PAWN;
+				m_disposition[i] = GameUtils::PLAYER_PAWN;
 			} else {
 				m_disposition[i] = GameUtils::EMPTY;
 			}
@@ -217,7 +217,7 @@ GameUtils::Move *MatchManager::findPlayerMove(int oldIndex, int newIndex) {
 
 		// here only if this move change the old position that becomes empty
 		newValue = move->disposition[newIndex];
-		if (newValue == GameUtils::PL_PAWN || newValue == GameUtils::PL_DAME)
+		if (newValue == GameUtils::PLAYER_PAWN || newValue == GameUtils::PLAYER_DAME)
 			return move; // this is the correct move from oldIndex to newIndex
 	}
 

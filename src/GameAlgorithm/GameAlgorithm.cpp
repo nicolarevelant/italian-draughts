@@ -7,6 +7,14 @@
 #include <vector>
 #include "GameAlgorithm.h"
 
+struct {
+	bool operator()(GameUtils::Move *a, GameUtils::Move *b) const { return a->score < b->score; }
+} sortAscending;
+
+struct {
+	bool operator()(GameUtils::Move *a, GameUtils::Move *b) const { return a->score > b->score; }
+} sortDiscending;
+
 GameUtils::Move *GameAlgorithm::calculateBestMove(const GameUtils::Disposition &disposition, int depth) {
 	if (depth < 0) return nullptr;
 
@@ -16,16 +24,22 @@ GameUtils::Move *GameAlgorithm::calculateBestMove(const GameUtils::Disposition &
 
 	std::vector<GameUtils::Move *> moves = GameUtils::findMoves(disposition, false);
 	std::shuffle(moves.begin(), moves.end(), std::random_device());
+	std::sort(moves.begin(), moves.end(), sortAscending);
 	for (GameUtils::Move *move: moves) {
 		int score = minimax(move, move->score, false, depth, alpha, beta);
+		if (score == INT_MAX) {
+			bestScore = INT_MAX;
+			res_move = move;
+			break;
+		}
+
 		if (score > bestScore) {
 			bestScore = score;
 			res_move = move;
 		}
+
 		if (score > alpha) {
 			alpha = score;
-			if (beta <= alpha)
-				break; // ignore subtree
 		}
 	}
 
@@ -33,7 +47,6 @@ GameUtils::Move *GameAlgorithm::calculateBestMove(const GameUtils::Disposition &
 		return nullptr;
 	} else if (res_move == nullptr) {
 		// bestScore equals INT_MIN
-		//res_move = moves.at(0); // all moves have the minimum score
 		res_move = moves.front();
 	}
 
@@ -54,15 +67,17 @@ int GameAlgorithm::minimax(const GameUtils::Move *start_move, int oldScore, bool
 	if (maximizing) {
 		bestScore = INT_MIN;
 		std::vector<GameUtils::Move *> moves = GameUtils::findMoves(start_move->disposition, false);
+		std::sort(moves.begin(), moves.end(), sortAscending);
 		for (GameUtils::Move *move: moves) {
 			score = minimax(move, oldScore + move->score, false, depth - 1, alpha, beta);
 			if (score > bestScore) {
 				bestScore = score;
-			}
-			if (score > alpha) {
-				alpha = score;
-				if (beta <= alpha)
-					break; // ignore subtree
+
+				if (score > alpha) {
+					alpha = score;
+					if (beta <= alpha)
+						break; // ignore other moves because parent won't choose this path
+				}
 			}
 		}
 
@@ -74,15 +89,17 @@ int GameAlgorithm::minimax(const GameUtils::Move *start_move, int oldScore, bool
 
 	bestScore = INT_MAX;
 	std::vector<GameUtils::Move *> moves = GameUtils::findMoves(start_move->disposition, true);
+	std::sort(moves.begin(), moves.end(), sortDiscending);
 	for (GameUtils::Move *move: moves) {
 		score = minimax(move, oldScore - move->score, true, depth - 1, alpha, beta);
 		if (score < bestScore) {
 			bestScore = score;
-		}
-		if (score < beta) {
-			beta = score;
-			if (beta <= alpha)
-				break; // ignore subtree
+
+			if (score < beta) {
+				beta = score;
+				if (beta <= alpha)
+					break; // ignore other moves because parent won't choose this path
+			}
 		}
 	}
 

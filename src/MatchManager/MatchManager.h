@@ -7,8 +7,9 @@
 #include "ChessboardGrid/ChessboardGrid.h"
 #include "GameUtils/GameUtils.h"
 
-#define DEF_MIN_GD 1
-#define DEF_MAX_GD 10
+#define DEF_MIN_GD 0
+#define DEF_MAX_GD 12
+#define DEFAULT_DIFFICULTY 3
 #define THREAD_ID 1
 
 /**
@@ -89,7 +90,7 @@ private:
 	ChessboardGrid *chessboardGrid;
 	GameUtils::MoveList moves{};
 	bool mIsEnd, mIsPlaying, mIsPcFirstPlayer;
-	int gameDifficulty = minGD, selectedPos = selectedNone;
+	int gameDifficulty = DEFAULT_DIFFICULTY, selectedPos = selectedNone;
 
 	UpdateCallback m_onUpdate;
 

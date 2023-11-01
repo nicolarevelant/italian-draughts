@@ -20,11 +20,11 @@ class GameUtils {
 public:
 
 	enum PieceType {
-		EMPTY = 0, // no piece
-		PC_PAWN,   // pc pawn
-		PC_DAME,   // pc dame
-		PL_PAWN,   // player pawn
-		PL_DAME    // player dame
+		EMPTY = 0,
+		PC_PAWN,
+		PC_DAME,
+		PLAYER_PAWN,
+		PLAYER_DAME
 	};
 
 	/**
@@ -34,11 +34,11 @@ public:
 
 	class AlgorithmThread : public wxThread {
 	public:
-		AlgorithmThread(wxEvtHandler *evtHandler, const Disposition &disposition, int gameDifficult, int id);
+		AlgorithmThread(wxEvtHandler *evtHandler, const Disposition &disposition, int gameDifficulty, int id);
 
 	private:
-		const Disposition &m_disposition;
-		int m_gameDifficult, m_id;
+		const Disposition &mDisposition;
+		int mGameDifficulty, mThreadID;
 
 		void *Entry() override;
 
@@ -84,7 +84,7 @@ private:
 	GameUtils() = default;
 
 	static bool addMoveStep(MoveList &moves, const Disposition &disposition,
-	                        int s_row, int s_col, bool row_offset, bool col_offset, int score);
+	                        int source_position, bool row_offset, bool col_offset, int score);
 };
 
 
