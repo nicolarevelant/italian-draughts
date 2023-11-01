@@ -4,7 +4,7 @@ project(italian-draughts
 		DESCRIPTION "Italian Draughts, a strategy board game"
 		LANGUAGES CXX)
 
-option(DOCS "Generate manual pages" OFF)
+option(DOCS "Generate and install documentation" OFF)
 
 set(DATA_PATH ${CMAKE_INSTALL_PREFIX}/share/${PROJECT_NAME} CACHE STRING "Application data path")
 
