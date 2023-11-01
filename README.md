@@ -1,6 +1,6 @@
 # Italian Draughts
 
-Play Italian Draughts against the computer with 10 difficulty levels.
+Play Italian Draughts against the computer with 13 difficulty levels.
 
 Instructions on how to play can be found
 [here](https://en.wikipedia.org/wiki/Italian_draughts).
