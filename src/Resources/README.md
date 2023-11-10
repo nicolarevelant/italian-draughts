@@ -18,13 +18,20 @@ Please refer to [wxWidgets wiki](https://docs.wxwidgets.org/3.2.1/overview_i18n.
 
 This program can be started with a specific theme, or it will use the default one.
 
-Assuming the chosen theme is **theme** this program reads from the following path
-in a simple format as described below. If the file does not exist, it is unreadable or
-colors are not available, they fall back to the default ones.
+Assuming the chosen theme is **theme**, for each resource type this program reads from
+the following path in a simple format as described below.
 
-- /etc/italian-draughts/themes/**theme**
+For each entry if the file does not exist, it is unreadable or the entry is not available,
+it fall back to the default one.
+
+- /etc/italian-draughts/**resource_type**/**theme**
 
 ### File format
 
 Each line can start with a "#" to indicate a comment or be a key=value pair divided by a "=" without
 whitespaces of any type.
+
+### Resource types
+
+- colors: UI colors
+- images: Bitmaps in PNG format (keys does not include extension)
