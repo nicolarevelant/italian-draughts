@@ -2,7 +2,11 @@
 // Copyright (C) 2023  Nicola Revelant
 
 #include "GameUtils.h"
-#include "GameAlgorithm/GameAlgorithm.h"
+
+#include <algorithm>
+#include <climits>
+#include <random>
+#include <vector>
 
 GameUtils::AlgorithmThread::AlgorithmThread(wxEvtHandler *evtHandler, const Disposition &disposition, int gameDifficulty,
                                             int id) : wxThread(wxTHREAD_DETACHED), mDisposition(disposition) {
@@ -12,7 +16,7 @@ GameUtils::AlgorithmThread::AlgorithmThread(wxEvtHandler *evtHandler, const Disp
 }
 
 void *GameUtils::AlgorithmThread::Entry() {
-	auto *data = GameAlgorithm::calculateBestMove(mDisposition, mGameDifficulty);
+	auto *data = calculateBestMove(mDisposition, mGameDifficulty);
 
 	if (TestDestroy()) {
 		free(data);
@@ -184,4 +188,106 @@ bool GameUtils::addMoveStep(MoveList &moves, const Disposition &disposition, int
 		moves.push_back(new Move(copy, false, score));
 
 	return true;
+}
+
+struct {
+	bool operator()(GameUtils::Move *a, GameUtils::Move *b) const { return a->score < b->score; }
+} sortAscending;
+
+struct {
+	bool operator()(GameUtils::Move *a, GameUtils::Move *b) const { return a->score > b->score; }
+} sortDiscending;
+
+GameUtils::Move *GameUtils::calculateBestMove(const GameUtils::Disposition &disposition, int depth) {
+	if (depth < 0) return nullptr;
+
+	GameUtils::Move *res_move = nullptr;
+	int bestScore = INT_MIN;
+	int alpha = INT_MIN, beta = INT_MAX;
+
+	std::vector<GameUtils::Move *> moves = GameUtils::findMoves(disposition, false);
+	std::shuffle(moves.begin(), moves.end(), std::random_device());
+	std::sort(moves.begin(), moves.end(), sortAscending);
+	for (GameUtils::Move *move: moves) {
+		int score = minimax(move, move->score, false, depth, alpha, beta);
+		if (score == INT_MAX) {
+			bestScore = INT_MAX;
+			res_move = move;
+			break;
+		}
+
+		if (score > bestScore) {
+			bestScore = score;
+			res_move = move;
+		}
+
+		if (score > alpha) {
+			alpha = score;
+		}
+	}
+
+	if (moves.empty()) {
+		return nullptr;
+	} else if (res_move == nullptr) {
+		// bestScore equals INT_MIN
+		res_move = moves.front();
+	}
+
+	for (GameUtils::Move *move: moves) {
+		if (move != res_move)
+			delete move;
+	}
+
+	return res_move;
+}
+
+int GameUtils::minimax(const GameUtils::Move *start_move, int oldScore, bool maximizing, int depth, int alpha,
+                           int beta) {
+	if (depth == 0) return oldScore; // depth limit reached
+
+	int bestScore, score;
+
+	if (maximizing) {
+		bestScore = INT_MIN;
+		std::vector<GameUtils::Move *> moves = GameUtils::findMoves(start_move->disposition, false);
+		std::sort(moves.begin(), moves.end(), sortAscending);
+		for (GameUtils::Move *move: moves) {
+			score = minimax(move, oldScore + move->score, false, depth - 1, alpha, beta);
+			if (score > bestScore) {
+				bestScore = score;
+
+				if (score > alpha) {
+					alpha = score;
+					if (beta <= alpha)
+						break; // ignore other moves because parent won't choose this path
+				}
+			}
+		}
+
+		for (GameUtils::Move *move: moves) {
+			delete move;
+		}
+		return bestScore;
+	}
+
+	bestScore = INT_MAX;
+	std::vector<GameUtils::Move *> moves = GameUtils::findMoves(start_move->disposition, true);
+	std::sort(moves.begin(), moves.end(), sortDiscending);
+	for (GameUtils::Move *move: moves) {
+		score = minimax(move, oldScore - move->score, true, depth - 1, alpha, beta);
+		if (score < bestScore) {
+			bestScore = score;
+
+			if (score < beta) {
+				beta = score;
+				if (beta <= alpha)
+					break; // ignore other moves because parent won't choose this path
+			}
+		}
+	}
+
+	for (GameUtils::Move *move: moves) {
+		delete move;
+	}
+	return bestScore;
 }

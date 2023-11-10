@@ -2,7 +2,7 @@
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_EXTENSIONS OFF)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -Wextra -Wpedantic")
 
 # wxWidgets
 find_package(wxWidgets REQUIRED base core adv)
@@ -12,9 +12,7 @@ include(${wxWidgets_USE_FILE})
 include_directories(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_SOURCE_DIR}/src ${CMAKE_SOURCE_DIR})
 
 # build static libraries and link dependencies
-add_subdirectory(GameAlgorithm)
 add_subdirectory(GameUtils)
-target_link_libraries(GameUtils PRIVATE GameAlgorithm)
 add_subdirectory(MatchManager)
 target_link_libraries(MatchManager PRIVATE GameUtils)
 add_subdirectory(ChessboardSquare)

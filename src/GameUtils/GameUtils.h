@@ -18,7 +18,6 @@
  */
 class GameUtils {
 public:
-
 	enum PieceType {
 		EMPTY = 0,
 		PC_PAWN,
@@ -47,9 +46,8 @@ public:
 	};
 
 	struct Move {
-		Move(const Disposition disposition, bool eatenFromPawn, int score) : disposition(disposition),
-		                                                                     eatenFromPawn(eatenFromPawn),
-		                                                                     score(score) {}
+		Move(const Disposition disposition, bool eatenFromPawn, int score) :
+			disposition(disposition), eatenFromPawn(eatenFromPawn), score(score) {}
 
 		/**
 		 * The disposition after the move
@@ -80,12 +78,34 @@ public:
 	 */
 	static MoveList findMoves(const Disposition &disposition, bool player);
 
+	/**
+	 * Calculates the best move for the computer
+	 * @param disposition Current pieces' disposition
+	 * @param depth How many recursion levels are allowed
+	 * @return A possible move for the computer, or nullptr
+	 */
+	static GameUtils::Move *calculateBestMove(const GameUtils::Disposition &disposition, int depth);
+
 private:
 	GameUtils() = default;
 
+	/**
+	 * Add a move step to find how long the move is
+	 */
 	static bool addMoveStep(MoveList &moves, const Disposition &disposition,
-	                        int source_position, bool row_offset, bool col_offset, int score);
+							int source_position, bool row_offset, bool col_offset, int score);
+
+	/**
+	 * Calculates the score of the best move
+	 * @param start_move
+	 * @param oldScore The current score
+	 * @param maximizing True if PC
+	 * @param depth How many levels of recursion to do
+	 * @param alpha Used by alpha-beta pruning
+	 * @param beta Used by alpha-beta pruning
+	 * @return The score after the best move, or INT_MIN if maximizing, or INT_MAX otherwise
+	 */
+	static int minimax(const GameUtils::Move *start_move, int oldScore, bool maximizing, int depth, int alpha, int beta);
 };
 
-
-#endif //ITALIAN_DRAUGHTS_MINIMAX_THREAD_H
+#endif // ITALIAN_DRAUGHTS_MINIMAX_THREAD_H

@@ -100,8 +100,8 @@ wxPanel *Frame::createChessboard(wxWindow *parent) {
 
 	auto *grid = new ChessboardGrid();
 	if (!grid->Create(std::bind(&Frame::getBitmap, this, std::placeholders::_1, std::placeholders::_2),
-									std::bind(&Frame::getColor, this, std::placeholders::_1, std::placeholders::_2),
-									chessboardPanel, wxID_ANY, wxPoint(CHESSBOARD_BORDER_H, CHESSBOARD_BORDER_V))) {
+					  std::bind(&Frame::getColor, this, std::placeholders::_1, std::placeholders::_2),
+					  chessboardPanel, wxID_ANY, wxPoint(CHESSBOARD_BORDER_H, CHESSBOARD_BORDER_V))) {
 #ifdef DEBUG
 		std::cerr << "Cannot create ChessboardGrid" << std::endl;
 #endif
