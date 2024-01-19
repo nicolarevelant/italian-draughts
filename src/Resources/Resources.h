@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2023  Nicola Revelant
 
-#ifndef ITALIAN_DRAUGHTS_STRING_RESOURCES_H
-#define ITALIAN_DRAUGHTS_STRING_RESOURCES_H
+#ifndef RESOURCES_H
+#define RESOURCES_H
 
 #include "wx/wx.h"
 #include <bits/stdc++.h>
@@ -41,4 +41,4 @@ private:
 };
 
 
-#endif //ITALIAN_DRAUGHTS_STRING_RESOURCES_H
+#endif // RESOURCES_H

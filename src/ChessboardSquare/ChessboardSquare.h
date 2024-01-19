@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2023  Nicola Revelant
 
-#ifndef ITALIAN_DRAUGHTS_CHESSBOARD_SQUARE_H
-#define ITALIAN_DRAUGHTS_CHESSBOARD_SQUARE_H
+#ifndef CHESSBOARD_SQUARE_H
+#define CHESSBOARD_SQUARE_H
 
 #include <wx/wx.h>
 
@@ -58,4 +58,4 @@ private:
 };
 
 
-#endif //ITALIAN_DRAUGHTS_CHESSBOARD_SQUARE_H
+#endif // CHESSBOARD_SQUARE_H

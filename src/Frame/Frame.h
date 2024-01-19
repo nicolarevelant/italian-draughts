@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2023  Nicola Revelant
 
-#ifndef ITALIAN_DRAUGHTS_FRAME_H
-#define ITALIAN_DRAUGHTS_FRAME_H
+#ifndef FRAME_H
+#define FRAME_H
 
 #include "Resources/Resources.h"
 #include "MatchManager/MatchManager.h"
@@ -94,4 +94,4 @@ private:
 	void aboutClicked(wxCommandEvent &);
 };
 
-#endif //ITALIAN_DRAUGHTS_FRAME_H
+#endif // FRAME_H

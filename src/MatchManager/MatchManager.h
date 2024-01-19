@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2023  Nicola Revelant
 
-#ifndef ITALIAN_DRAUGHTS_DRAUGHTS_MATCH_MANAGER_H
-#define ITALIAN_DRAUGHTS_DRAUGHTS_MATCH_MANAGER_H
+#ifndef MATCH_MANAGER_H
+#define MATCH_MANAGER_H
 
 #include "ChessboardGrid/ChessboardGrid.h"
 #include "GameUtils/GameUtils.h"
@@ -85,14 +85,14 @@ public:
 
 private:
 	MatchManager(const MatchManager &); // prevents copy-constructor
-	GameUtils::Disposition m_disposition{};
-	GameUtils::AlgorithmThread *algorithmThread;
-	ChessboardGrid *chessboardGrid;
-	GameUtils::MoveList moves{};
+	GameUtils::Disposition mDisposition{};
+	GameUtils::AlgorithmThread *mAlgorithmThread;
+	ChessboardGrid *mChessboardGrid;
+	GameUtils::MoveList mMoves{};
 	bool mIsEnd, mIsPlaying, mIsPcFirstPlayer;
-	int gameDifficulty = DEFAULT_DIFFICULTY, selectedPos = selectedNone;
+	int mGameDifficulty = DEFAULT_DIFFICULTY, mSelectedPos = selectedNone;
 
-	UpdateCallback m_onUpdate;
+	UpdateCallback mOnUpdate;
 
 	void onChessboardSquareClick(wxMouseEvent &evt);
 
@@ -126,10 +126,10 @@ private:
 	bool highlightPossibleMoves(int from);
 
 	/**
-	 * If onUpdate listener is set, it calls the listener with updateType
+	 * If onUpdate listener is set, notify state change
 	 * @param updateType Update type
 	 */
 	void notifyUpdate(UpdateType updateType);
 };
 
-#endif //ITALIAN_DRAUGHTS_DRAUGHTS_MATCH_MANAGER_H
+#endif // MATCH_MANAGER_H

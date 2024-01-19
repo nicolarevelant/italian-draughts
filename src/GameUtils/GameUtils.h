@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2023  Nicola Revelant
 
-#ifndef ITALIAN_DRAUGHTS_MINIMAX_THREAD_H
-#define ITALIAN_DRAUGHTS_MINIMAX_THREAD_H
+#ifndef GAME_UTILS_H
+#define GAME_UTILS_H
 
 #include "wx/wx.h"
 
@@ -108,4 +108,4 @@ private:
 	static int minimax(const GameUtils::Move *start_move, int oldScore, bool maximizing, int depth, int alpha, int beta);
 };
 
-#endif // ITALIAN_DRAUGHTS_MINIMAX_THREAD_H
+#endif // GAME_UTILS_H
