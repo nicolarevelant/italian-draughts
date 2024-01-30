@@ -26,7 +26,7 @@ This class provides a static method to find all possible moves from a specific
 pieces' disposition and a static method to calculate the best move the PC
 can make (Minimax algorithm)
 
-### GameUtils::AlgorithmThread : wxThread
+### GameUtils::WorkerThread : wxThread
 
 This class provides a simple way to calculate the best move for PC using a
 separate thread that calls the 'calculateBestMove' static method of GameAlgorithm

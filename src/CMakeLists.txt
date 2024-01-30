@@ -1,8 +1,8 @@
 # Build the libraries and the executable
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_EXTENSIONS OFF)
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -Wextra -Wpedantic")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG -Wall -Wextra -Wpedantic -Werror")
 
 # wxWidgets
 find_package(wxWidgets REQUIRED base core adv)
@@ -17,9 +17,9 @@ add_subdirectory(MatchManager)
 target_link_libraries(MatchManager PRIVATE GameUtils)
 add_subdirectory(ChessboardSquare)
 add_subdirectory(ChessboardGrid)
-target_link_libraries(ChessboardGrid PRIVATE ChessboardSquare)
+target_link_libraries(ChessboardGrid PRIVATE MatchManager ChessboardSquare)
 add_subdirectory(Frame)
-target_link_libraries(Frame PRIVATE MatchManager ChessboardGrid)
+target_link_libraries(Frame PRIVATE ChessboardGrid)
 add_subdirectory(Resources)
 
 # create executable, link libraries and configure special header file with Cmake variables

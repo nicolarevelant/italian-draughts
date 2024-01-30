@@ -8,27 +8,6 @@
 #include <random>
 #include <vector>
 
-GameUtils::AlgorithmThread::AlgorithmThread(wxEvtHandler *evtHandler, const Disposition &disposition, int gameDifficulty,
-                                            int id) : wxThread(wxTHREAD_DETACHED), mDisposition(disposition) {
-	m_evtHandler = evtHandler;
-	mGameDifficulty = gameDifficulty;
-	mThreadID = id;
-}
-
-void *GameUtils::AlgorithmThread::Entry() {
-	auto *data = calculateBestMove(mDisposition, mGameDifficulty);
-
-	if (TestDestroy()) {
-		free(data);
-	} else {
-		auto *evt = new wxCommandEvent(wxEVT_MENU, mThreadID);
-		evt->SetClientData(data);
-		wxQueueEvent(m_evtHandler, evt);
-	}
-
-	return nullptr;
-}
-
 GameUtils::MoveList GameUtils::findMoves(const Disposition &disposition, bool player) {
 	MoveList moves;
 

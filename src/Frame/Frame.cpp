@@ -57,14 +57,10 @@ bool Frame::Create(wxWindow *parent, const std::string &theme) {
 	SetClientSize(wxSize(chessboardSize.GetWidth() + CHESSBOARD_MARGIN_H * 2,
 	                     chessboardSize.GetHeight() + CHESSBOARD_MARGIN_V * 2));
 
-	chessboardManager->setOnUpdateListener(std::bind(&Frame::onGameEvent, this, std::placeholders::_1));
-	chessboardManager->newMatch();
+	grid->setOnStateChangeCB(std::bind(&Frame::onGameEvent, this, std::placeholders::_1));
+	grid->newMatch();
 
 	return true;
-}
-
-Frame::~Frame() {
-	delete chessboardManager;
 }
 
 wxMenuBar *Frame::createMenuBar() {
@@ -98,22 +94,17 @@ wxPanel *Frame::createChessboard(wxWindow *parent) {
 	auto *chessboardPanel = new wxPanel(parent, wxID_ANY);
 	chessboardPanel->SetBackgroundColour(resources.getColor("border"));
 
-	auto *grid = new ChessboardGrid();
+	grid = new ChessboardGrid();
 	if (!grid->Create(std::bind(&Frame::getBitmap, this, std::placeholders::_1, std::placeholders::_2),
 					  std::bind(&Frame::getColor, this, std::placeholders::_1, std::placeholders::_2),
 					  chessboardPanel, wxID_ANY, wxPoint(CHESSBOARD_BORDER_H, CHESSBOARD_BORDER_V))) {
 #ifdef DEBUG
 		std::cerr << "Cannot create ChessboardGrid" << std::endl;
 #endif
-		grid->Destroy();
 		return nullptr;
 	}
 
-	int width, height;
-	grid->GetSize(&width, &height);
-	chessboardPanel->SetInitialSize(wxSize(width + CHESSBOARD_BORDER_H * 2, height + CHESSBOARD_BORDER_V * 2));
-
-	chessboardManager = new MatchManager(grid);
+	chessboardPanel->SetInitialSize(grid->GetSize() + wxSize(CHESSBOARD_BORDER_H * 2, CHESSBOARD_BORDER_V * 2));
 
 	return chessboardPanel;
 }
@@ -129,13 +120,13 @@ const wxColour &Frame::getColor(const std::string &key, const wxColour &def) {
 
 // Events
 
-void Frame::onGameEvent(enum MatchManager::UpdateType updateType) {
-	switch (updateType) {
+void Frame::onGameEvent(enum MatchManager::StateChangeType stateChangeType) {
+	switch (stateChangeType) {
 		case MatchManager::TURN_PLAYER:
-			SetStatusText(wxString::Format(_("%s | Difficulty: %d"), _("Your turn"), chessboardManager->getDifficulty()));
+			SetStatusText(wxString::Format(_("%s | Difficulty: %d"), _("Your turn"), grid->getDifficulty()));
 			break;
 		case MatchManager::TURN_PC:
-			SetStatusText(wxString::Format(_("%s | Difficulty: %d"), _("PC turn"), chessboardManager->getDifficulty()));
+			SetStatusText(wxString::Format(_("%s | Difficulty: %d"), _("PC turn"), grid->getDifficulty()));
 			break;
 		case MatchManager::PLAYER_WON:
 			SetStatusText(_("You won"));
@@ -154,12 +145,12 @@ void Frame::onGameEvent(enum MatchManager::UpdateType updateType) {
 }
 
 void Frame::newMatchClicked(wxCommandEvent &) {
-	if (chessboardManager->isPlaying()) {
+	if (grid->isPlaying()) {
 		wxMessageDialog dialog(this, _("Are you sure you want to leave the game?"), _("New match"), wxYES_NO);
 		if (dialog.ShowModal() != wxID_YES) return;
 	}
 
-	chessboardManager->newMatch();
+	grid->newMatch();
 }
 
 void Frame::closeFrame(wxCommandEvent &) {
@@ -167,7 +158,7 @@ void Frame::closeFrame(wxCommandEvent &) {
 }
 
 void Frame::changeDifficultyClicked(wxCommandEvent &) {
-	if (chessboardManager->isPlaying()) {
+	if (grid->isPlaying()) {
 		wxMessageDialog dialog(this, _("Are you sure you want to leave the game?"), _("New match"), wxYES_NO);
 		if (dialog.ShowModal() != wxID_YES) return;
 	}
@@ -180,19 +171,19 @@ void Frame::changeDifficultyClicked(wxCommandEvent &) {
 
 		long value;
 		if (dialog.GetValue().ToLong(&value) && value >= MatchManager::minGD && value <= MatchManager::maxGD &&
-		    chessboardManager->changeDifficulty(value)) {
+		    grid->changeDifficulty(value)) {
 			return;
 		}
 	}
 }
 
 void Frame::flipFirstPlayer(wxCommandEvent &) {
-	if (chessboardManager->isPlaying()) {
+	if (grid->isPlaying()) {
 		wxMessageDialog dialog(this, _("Are you sure you want to leave the game?"), _("New match"), wxYES_NO);
 		if (dialog.ShowModal() != wxID_YES) return;
 	}
 
-	chessboardManager->flipFirstPlayer();
+	grid->flipFirstPlayer();
 }
 
 void Frame::aboutClicked(wxCommandEvent &) {

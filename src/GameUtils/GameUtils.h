@@ -4,8 +4,6 @@
 #ifndef GAME_UTILS_H
 #define GAME_UTILS_H
 
-#include "wx/wx.h"
-
 #include <array>
 #include <vector>
 
@@ -30,20 +28,6 @@ public:
 	 * Pieces' disposition (64 PieceType)
 	 */
 	typedef std::array<PieceType, 64> Disposition;
-
-	class AlgorithmThread : public wxThread {
-	public:
-		AlgorithmThread(wxEvtHandler *evtHandler, const Disposition &disposition, int gameDifficulty, int id);
-
-	private:
-		const Disposition &mDisposition;
-		int mGameDifficulty, mThreadID;
-
-		void *Entry() override;
-
-	protected:
-		wxEvtHandler *m_evtHandler;
-	};
 
 	struct Move {
 		Move(const Disposition disposition, bool eatenFromPawn, int score) :

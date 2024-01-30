@@ -4,13 +4,12 @@
 #ifndef MATCH_MANAGER_H
 #define MATCH_MANAGER_H
 
-#include "ChessboardGrid/ChessboardGrid.h"
 #include "GameUtils/GameUtils.h"
+#include <functional>
 
 #define DEF_MIN_GD 0
 #define DEF_MAX_GD 12
 #define DEFAULT_DIFFICULTY 3
-#define THREAD_ID 1
 
 /**
  * This class handle 1 or more matches using a specific ChessboardGrid
@@ -22,7 +21,7 @@ public:
 	/**
 	 * Enum used to specify why MatchManager has called the update callback
 	 */
-	enum UpdateType {
+	enum StateChangeType {
 		TURN_PLAYER,
 		TURN_PC,
 		PLAYER_WON,
@@ -31,7 +30,14 @@ public:
 		ILLEGAL_MOVE
 	};
 
-	typedef std::function<void(enum UpdateType updateType)> UpdateCallback;
+	class EventListener {
+		public:
+		virtual void onStateChange(enum StateChangeType type) = 0;
+		virtual void onSquareSelected(int index) = 0;
+		virtual void onSquarePossibleMove(int index) = 0;
+		virtual void onSquareClear() = 0;
+		virtual void onUpdateDisposition(GameUtils::Disposition *newDisposition, bool isPcFirstPlayer) = 0;
+	};
 
 	/**
 	 * Starts a new match using a chessboard grid
@@ -39,26 +45,23 @@ public:
 	 * @param focusColor Color used to highlight selected piece
 	 * @param possibleMoveColor Color used to highlight possible moves
 	 */
-	explicit MatchManager(ChessboardGrid *chessboard);
+	explicit MatchManager();
 
 	virtual ~MatchManager();
+
+	/*
+	 * Add the event listener and notify a state change on the new listener
+	*/
+	bool addEventListener(EventListener *listener);
+	bool removeEventListener(EventListener *listener);
+
+	void onChessboardSquareClick(int index);
 
 	/**
 	 * Reset the current match
 	 * @return False when the algorithm thread is running
 	 */
 	bool newMatch();
-
-	/**
-	 * Set a update listener that will be called when:
-	 * <ul>
-	 *  <li>User/PC make a move</li>
-	 *  <li>User/PC won</li>
-	 *  <li>User tries to make an illegal move</li>
-	 * </ul>
-	 * @param listener Method of Class called on update, if nullptr it removes the current listener
-	 */
-	void setOnUpdateListener(const UpdateCallback &listener);
 
 	/**
 	 * Reset match and change difficulty
@@ -85,27 +88,23 @@ public:
 
 private:
 	MatchManager(const MatchManager &); // prevents copy-constructor
+
 	GameUtils::Disposition mDisposition{};
-	GameUtils::AlgorithmThread *mAlgorithmThread;
-	ChessboardGrid *mChessboardGrid;
 	GameUtils::MoveList mMoves{};
 	bool mIsEnd, mIsPlaying, mIsPcFirstPlayer;
 	int mGameDifficulty = DEFAULT_DIFFICULTY, mSelectedPos = selectedNone;
+	std::vector<EventListener *> mListeners;
 
-	UpdateCallback mOnUpdate;
-
-	void onChessboardSquareClick(wxMouseEvent &evt);
+	void changeState(enum StateChangeType type);
+	void selectSquare(int index);
+	void makeSquarePossibleMove(int index);
+	void clearSquares();
+	void updateDisposition(GameUtils::Disposition *newDisposition, bool isPcFirstPlayer);
 
 	/**
 	 * Start the game algorithm to make a move
 	 */
 	void makePCMove();
-
-	/**
-	 * Event triggered when the algorithm thread finished
-	 * @param evt Event containing the PC's move
-	 */
-	void onThreadFinish(wxCommandEvent &evt);
 
 	/**
 	 * Resets m_disposition to the default disposition of the chessboard
@@ -124,12 +123,6 @@ private:
 	 * @return True if you can make at least 1 move
 	 */
 	bool highlightPossibleMoves(int from);
-
-	/**
-	 * If onUpdate listener is set, notify state change
-	 * @param updateType Update type
-	 */
-	void notifyUpdate(UpdateType updateType);
 };
 
 #endif // MATCH_MANAGER_H

@@ -2,23 +2,14 @@
 // Copyright (C) 2023  Nicola Revelant
 
 #include "MatchManager.h"
+#include <vector>
+#include <unistd.h>
 
-MatchManager::MatchManager(ChessboardGrid *chessboard) {
-	if (chessboard == nullptr) {
-#ifdef DEBUG
-		std::cerr << "Cannot create MatchManager: chessboard == nullptr" << std::endl;
-#endif
-		throw std::exception();
-	}
-
-	chessboard->Bind(wxEVT_LEFT_UP, &MatchManager::onChessboardSquareClick, this);
-	chessboard->Bind(wxEVT_MENU, &MatchManager::onThreadFinish, this, THREAD_ID);
-
-	mChessboardGrid = chessboard;
-	mAlgorithmThread = nullptr;
+MatchManager::MatchManager() {
 	mIsPlaying = false;
 	mIsEnd = false;
 	mIsPcFirstPlayer = false;
+	//mOnStateChange(mIsPcFirstPlayer ? TURN_PC : TURN_PLAYER);
 }
 
 MatchManager::~MatchManager() {
@@ -27,14 +18,80 @@ MatchManager::~MatchManager() {
 	}
 }
 
-bool MatchManager::newMatch() {
-	if (mAlgorithmThread) {
-		mAlgorithmThread->Delete();
-		mAlgorithmThread = nullptr;
+bool MatchManager::addEventListener(EventListener *listener) {
+	if (mIsPlaying || mIsEnd) return false;
+	mListeners.push_back(listener);
+	listener->onStateChange(mIsPcFirstPlayer ? TURN_PC : TURN_PLAYER);
+
+	return true;
+}
+
+bool MatchManager::removeEventListener(EventListener *listener) {
+	std::erase(mListeners, listener);
+	return true;
+}
+
+void MatchManager::onChessboardSquareClick(int currentPos) {
+	if (mIsEnd) return;
+
+	if (mSelectedPos == selectedNone) {
+		if ((mDisposition[currentPos] == GameUtils::PLAYER_PAWN || mDisposition[currentPos] == GameUtils::PLAYER_DAME)) {
+			if (highlightPossibleMoves(currentPos)) {
+				selectSquare(currentPos);
+				mSelectedPos = currentPos;
+			} else {
+				changeState(ILLEGAL_SELECTION);
+			}
+		}
+		return;
 	}
 
+	// change selection
+	if ((mDisposition[currentPos] == GameUtils::PLAYER_PAWN || mDisposition[currentPos] == GameUtils::PLAYER_DAME)) {
+		clearSquares(); // it clears selectedPos and possible moves
+		if (currentPos == mSelectedPos) {
+			mSelectedPos = selectedNone;
+			return;
+		}
+
+		if (highlightPossibleMoves(currentPos)) {
+			selectSquare(currentPos);
+			mSelectedPos = currentPos;
+		} else {
+			mSelectedPos = selectedNone;
+			changeState(ILLEGAL_SELECTION);
+		}
+
+		return;
+	}
+
+	// illegal selection, deselect the current selection
+	if (mDisposition[currentPos] != GameUtils::EMPTY || currentPos % 2 != (currentPos / 8) % 2) {
+		clearSquares(); // it clears selectedPos and possible moves
+		mSelectedPos = selectedNone;
+		return;
+	}
+
+	GameUtils::Move *move = findPlayerMove(mSelectedPos, currentPos);
+	if (move == nullptr) {
+		// illegal move
+		clearSquares();
+		mSelectedPos = selectedNone;
+		changeState(ILLEGAL_MOVE);
+		return;
+	}
+
+	// legal move
+	mDisposition = move->disposition;
+	updateDisposition(&mDisposition, mIsPcFirstPlayer);
+	mSelectedPos = selectedNone;
+
+	makePCMove();
+}
+
+bool MatchManager::newMatch() {
 	setDefaultLayout();
-	mChessboardGrid->updateDisposition(mDisposition, mIsPcFirstPlayer);
+	updateDisposition(&mDisposition, mIsPcFirstPlayer);
 
 	// deletes all moves before re-assignment
 	for (GameUtils::Move *move: mMoves)
@@ -47,17 +104,10 @@ bool MatchManager::newMatch() {
 	} else {
 		mIsPlaying = false;
 		mMoves = GameUtils::findMoves(mDisposition, true);
-		notifyUpdate(TURN_PLAYER);
+		changeState(TURN_PLAYER);
 	}
 
 	return true;
-}
-
-void MatchManager::setOnUpdateListener(const UpdateCallback &updateCB) {
-	mOnUpdate = updateCB;
-
-	// if the game is not over notify the current state
-	if (!mIsEnd) notifyUpdate(mAlgorithmThread ? TURN_PC : TURN_PLAYER);
 }
 
 bool MatchManager::changeDifficulty(int newDifficulty) {
@@ -83,95 +133,50 @@ bool MatchManager::isPlaying() const {
 	return mIsPlaying;
 }
 
-void MatchManager::onChessboardSquareClick(wxMouseEvent &event) {
-	if (mAlgorithmThread || mIsEnd) return;
-
-	int currentPos = event.GetId();
-
-	if (mSelectedPos == selectedNone) {
-		if ((mDisposition[currentPos] == GameUtils::PLAYER_PAWN || mDisposition[currentPos] == GameUtils::PLAYER_DAME)) {
-			if (highlightPossibleMoves(currentPos)) {
-				mChessboardGrid->SetSquareSelectedOverlay(currentPos);
-				mSelectedPos = currentPos;
-			} else {
-				notifyUpdate(ILLEGAL_SELECTION);
-			}
-		}
-		return;
+void MatchManager::changeState(StateChangeType type) {
+	for (auto &listener : mListeners) {
+		listener->onStateChange(type);
 	}
+}
 
-	// change selection
-	if ((mDisposition[currentPos] == GameUtils::PLAYER_PAWN || mDisposition[currentPos] == GameUtils::PLAYER_DAME)) {
-		mChessboardGrid->ClearSquareOverlay(); // it clears selectedPos and possible moves
-		if (currentPos == mSelectedPos) {
-			mSelectedPos = selectedNone;
-			return;
-		}
-
-		if (highlightPossibleMoves(currentPos)) {
-			mChessboardGrid->SetSquareSelectedOverlay(currentPos);
-			mSelectedPos = currentPos;
-		} else {
-			mSelectedPos = selectedNone;
-			notifyUpdate(ILLEGAL_SELECTION);
-		}
-
-		return;
+void MatchManager::selectSquare(int index) {
+	for (auto &listener : mListeners) {
+		listener->onSquareSelected(index);
 	}
+}
 
-	// illegal selection, deselect the current selection
-	if (mDisposition[currentPos] != GameUtils::EMPTY || currentPos % 2 != (currentPos / 8) % 2) {
-		mChessboardGrid->ClearSquareOverlay(); // it clears selectedPos and possible moves
-		mSelectedPos = selectedNone;
-		return;
+void MatchManager::makeSquarePossibleMove(int index) {
+	for (auto &listener : mListeners) {
+		listener->onSquarePossibleMove(index);
 	}
+}
 
-	GameUtils::Move *move = findPlayerMove(mSelectedPos, currentPos);
-	if (move == nullptr) {
-		// illegal move
-		mChessboardGrid->ClearSquareOverlay();
-		mSelectedPos = selectedNone;
-		notifyUpdate(ILLEGAL_MOVE);
-		return;
+void MatchManager::clearSquares() {
+	for (auto &listener : mListeners) {
+		listener->onSquareClear();
 	}
+}
 
-	// legal move
-	mChessboardGrid->updateDisposition(mDisposition = move->disposition, mIsPcFirstPlayer);
-	mSelectedPos = selectedNone;
-
-	makePCMove();
+void MatchManager::updateDisposition(GameUtils::Disposition *newDisposition, bool isPcFirstPlayer) {
+	for (auto &listener : mListeners) {
+		listener->onUpdateDisposition(newDisposition, isPcFirstPlayer);
+	}
 }
 
 void MatchManager::makePCMove() {
-	mIsPlaying = true;
-	notifyUpdate(TURN_PC);
-	mAlgorithmThread = new GameUtils::AlgorithmThread(mChessboardGrid, mDisposition, mGameDifficulty, THREAD_ID);
-	if (mAlgorithmThread->Create() != wxTHREAD_NO_ERROR || mAlgorithmThread->Run() != wxTHREAD_NO_ERROR) {
-		std::cerr << "Cannot execute thread" << std::endl;
-		exit(1);
-	}
-}
-
-void MatchManager::onThreadFinish(wxCommandEvent &evt) {
-	if (!mAlgorithmThread) {
-#ifdef DEBUG
-		std::cerr << "Unwanted thread finished" << std::endl;
-#endif
-		delete static_cast<GameUtils::Move *>(evt.GetClientData());
-		exit(1);
-	}
-	mAlgorithmThread = nullptr;
-
-	auto *pcMove = static_cast<GameUtils::Move *>(evt.GetClientData());
+	changeState(TURN_PC);
+	sleep(5);
+	auto *pcMove = GameUtils::calculateBestMove(mDisposition, mGameDifficulty);
 	if (pcMove == nullptr) {
 		// PC cannot do anything, player won
 		mIsEnd = true;
 		mIsPlaying = false;
-		notifyUpdate(PLAYER_WON);
+		changeState(PLAYER_WON);
 		return;
 	}
 
-	mChessboardGrid->updateDisposition(mDisposition = pcMove->disposition, mIsPcFirstPlayer);
+	mDisposition = pcMove->disposition;
+	updateDisposition(&mDisposition, mIsPcFirstPlayer);
 	delete pcMove;
 
 	// deletes all moves before re-assignment
@@ -183,11 +188,11 @@ void MatchManager::onThreadFinish(wxCommandEvent &evt) {
 		// Player cannot do anything, PC won
 		mIsEnd = true;
 		mIsPlaying = false;
-		notifyUpdate(PC_WON);
+		changeState(PC_WON);
 		return;
 	}
 
-	notifyUpdate(TURN_PLAYER);
+	changeState(TURN_PLAYER);
 }
 
 void MatchManager::setDefaultLayout() {
@@ -232,14 +237,10 @@ bool MatchManager::highlightPossibleMoves(int from) {
 		for (int i = 0; i < 64; i++) {
 			if (mDisposition[i] == GameUtils::EMPTY && move->disposition[i] != GameUtils::EMPTY) {
 				// possible move
-				mChessboardGrid->SetSquarePossibleMoveOverlay(i);
+				makeSquarePossibleMove(i);
 			}
 		}
 	}
 
 	return isValid;
-}
-
-void MatchManager::notifyUpdate(MatchManager::UpdateType updateType) {
-	if (mOnUpdate != nullptr) mOnUpdate(updateType);
 }
