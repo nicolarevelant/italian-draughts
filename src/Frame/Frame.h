@@ -37,6 +37,8 @@ private:
 	Resources resources{DATA_PATH};
 	const wxArrayString developers = wxArrayString(1, {"Nicola Revelant <nicolarevelant44@gmail.com>"});
 	ChessboardGrid *grid;
+	int mGameDifficulty;
+	bool mIsPcFirstPlayer;
 
 	/**
 	 * Creates a new menu bar and associates events
@@ -61,7 +63,7 @@ private:
 	 * Update status bar
 	 * @param updateType Update type
 	 */
-	void onGameEvent(enum MatchManager::StateChangeType stateChangeType);
+	void onGameEvent(MatchManager::State state);
 
 	/**
 	 * Starts a new match

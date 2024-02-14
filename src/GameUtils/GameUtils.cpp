@@ -137,8 +137,7 @@ bool GameUtils::addMoveStep(MoveList &moves, const Disposition &disposition, int
 	if (source_value == PC_DAME) {
 		if (mid_value == PC_DAME || mid_value == PC_PAWN)
 			return false;
-	}
-	if (source_value == PLAYER_DAME) {
+	} else if (source_value == PLAYER_DAME) {
 		if (mid_value == PLAYER_DAME || mid_value == PLAYER_PAWN)
 			return false;
 	}
@@ -149,7 +148,7 @@ bool GameUtils::addMoveStep(MoveList &moves, const Disposition &disposition, int
 	copy[source_position] = EMPTY;
 	copy[position] = EMPTY;
 	copy[jump_position] = source_value;
-	score += (mid_value == PC_DAME || mid_value == PC_DAME ) ? DAME_SCORE : PAWN_SCORE;
+	score += (mid_value == PC_DAME || mid_value == PLAYER_DAME ) ? DAME_SCORE : PAWN_SCORE;
 
 	if (addMoveStep(moves, copy, jump_position, row_offset, false, score))
 		isValid = false;

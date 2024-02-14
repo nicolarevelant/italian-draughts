@@ -5,37 +5,27 @@
 #include <vector>
 #include <unistd.h>
 
-MatchManager::MatchManager() {
-	mIsPlaying = false;
-	mIsEnd = false;
-	mIsPcFirstPlayer = false;
-	//mOnStateChange(mIsPcFirstPlayer ? TURN_PC : TURN_PLAYER);
-}
-
 MatchManager::~MatchManager() {
 	for (GameUtils::Move *move: mMoves) {
 		delete move;
 	}
 }
 
-bool MatchManager::addEventListener(EventListener *listener) {
-	if (mIsPlaying || mIsEnd) return false;
+void MatchManager::addEventListener(EventListener *listener) {
 	mListeners.push_back(listener);
-	listener->onStateChange(mIsPcFirstPlayer ? TURN_PC : TURN_PLAYER);
-
-	return true;
 }
 
-bool MatchManager::removeEventListener(EventListener *listener) {
+void MatchManager::removeEventListener(EventListener *listener) {
 	std::erase(mListeners, listener);
-	return true;
 }
 
-void MatchManager::onChessboardSquareClick(int currentPos) {
-	if (mIsEnd) return;
+void MatchManager::squareClick(int currentPos) {
+	if (!mIsPlaying) return;
 
 	if (mSelectedPos == selectedNone) {
-		if ((mDisposition[currentPos] == GameUtils::PLAYER_PAWN || mDisposition[currentPos] == GameUtils::PLAYER_DAME)) {
+		if ((mDisposition[currentPos] == GameUtils::PLAYER_PAWN ||
+			mDisposition[currentPos] == GameUtils::PLAYER_DAME)) {
+
 			if (highlightPossibleMoves(currentPos)) {
 				selectSquare(currentPos);
 				mSelectedPos = currentPos;
@@ -47,7 +37,9 @@ void MatchManager::onChessboardSquareClick(int currentPos) {
 	}
 
 	// change selection
-	if ((mDisposition[currentPos] == GameUtils::PLAYER_PAWN || mDisposition[currentPos] == GameUtils::PLAYER_DAME)) {
+	if ((mDisposition[currentPos] == GameUtils::PLAYER_PAWN ||
+		mDisposition[currentPos] == GameUtils::PLAYER_DAME)) {
+
 		clearSquares(); // it clears selectedPos and possible moves
 		if (currentPos == mSelectedPos) {
 			mSelectedPos = selectedNone;
@@ -83,45 +75,32 @@ void MatchManager::onChessboardSquareClick(int currentPos) {
 
 	// legal move
 	mDisposition = move->disposition;
-	updateDisposition(&mDisposition, mIsPcFirstPlayer);
+	updateDisposition(&mDisposition);
 	mSelectedPos = selectedNone;
 
 	makePCMove();
 }
 
-bool MatchManager::newMatch() {
-	setDefaultLayout();
-	updateDisposition(&mDisposition, mIsPcFirstPlayer);
+bool MatchManager::newMatch(int newDifficulty, bool isPcFirstPlayer) {
+	if (newDifficulty < minGD || newDifficulty > maxGD)
+		return false;
+	mGameDifficulty = newDifficulty;
 
-	// deletes all moves before re-assignment
-	for (GameUtils::Move *move: mMoves)
-		delete move;
+	setDefaultLayout();
+	updateDisposition(&mDisposition);
 
 	mIsEnd = false;
-	if (mIsPcFirstPlayer) {
-		mMoves.clear();
+	mIsPlaying = true;
+	if (isPcFirstPlayer) {
 		makePCMove();
 	} else {
-		mIsPlaying = false;
+		for (GameUtils::Move *move: mMoves) {
+			delete move;
+		}
 		mMoves = GameUtils::findMoves(mDisposition, true);
 		changeState(TURN_PLAYER);
 	}
 
-	return true;
-}
-
-bool MatchManager::changeDifficulty(int newDifficulty) {
-	if (newDifficulty < minGD || newDifficulty > maxGD)
-		return false;
-
-	mGameDifficulty = newDifficulty;
-	newMatch();
-	return true;
-}
-
-bool MatchManager::flipFirstPlayer() {
-	mIsPcFirstPlayer = !mIsPcFirstPlayer;
-	newMatch();
 	return true;
 }
 
@@ -133,7 +112,11 @@ bool MatchManager::isPlaying() const {
 	return mIsPlaying;
 }
 
-void MatchManager::changeState(StateChangeType type) {
+bool MatchManager::isEnd() const {
+	return mIsEnd;
+}
+
+void MatchManager::changeState(State type) {
 	for (auto &listener : mListeners) {
 		listener->onStateChange(type);
 	}
@@ -157,15 +140,15 @@ void MatchManager::clearSquares() {
 	}
 }
 
-void MatchManager::updateDisposition(GameUtils::Disposition *newDisposition, bool isPcFirstPlayer) {
+void MatchManager::updateDisposition(GameUtils::Disposition *newDisposition) {
 	for (auto &listener : mListeners) {
-		listener->onUpdateDisposition(newDisposition, isPcFirstPlayer);
+		listener->onUpdateDisposition(newDisposition);
 	}
 }
 
 void MatchManager::makePCMove() {
 	changeState(TURN_PC);
-	sleep(5);
+	sleep(5); // TODO: test delay
 	auto *pcMove = GameUtils::calculateBestMove(mDisposition, mGameDifficulty);
 	if (pcMove == nullptr) {
 		// PC cannot do anything, player won
@@ -176,7 +159,7 @@ void MatchManager::makePCMove() {
 	}
 
 	mDisposition = pcMove->disposition;
-	updateDisposition(&mDisposition, mIsPcFirstPlayer);
+	updateDisposition(&mDisposition);
 	delete pcMove;
 
 	// deletes all moves before re-assignment

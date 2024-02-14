@@ -6,7 +6,7 @@ for creating this program. The structure is described below.
 Note:
 
 - X : Y means X is subclass of Y
-- X::Y means Y, that is declared inside X
+- X::Y means Y declared inside X
 
 ## Frame : wxFrame
 
@@ -16,20 +16,19 @@ It represents the window frame including menu bar and status bar.
 
 A 8x8 grid panel that represents a chessboard.
 
+### Chessboard::WorkerThread : wxThread
+
+This class is used to call MatchManager's methods asynchronously.
+
 ## MatchManager
 
-This class handle matches interacting with a ChessboardGrid
+This class handles 1 or more matches
 
 ## GameUtils
 
 This class provides a static method to find all possible moves from a specific
 pieces' disposition and a static method to calculate the best move the PC
 can make (Minimax algorithm)
-
-### GameUtils::WorkerThread : wxThread
-
-This class provides a simple way to calculate the best move for PC using a
-separate thread that calls the 'calculateBestMove' static method of GameAlgorithm
 
 ### GameUtils::Move
 
@@ -41,4 +40,4 @@ A class that represents a square in the chessboard.
 
 ## Resources
 
-A class the provides the ability to fetch colors from a particular theme.
+A class that provides the ability to fetch colors from a particular theme.

@@ -6,22 +6,22 @@
 
 #include "GameUtils/GameUtils.h"
 #include <functional>
+#include <atomic>
 
 #define DEF_MIN_GD 0
 #define DEF_MAX_GD 12
-#define DEFAULT_DIFFICULTY 3
 
 /**
- * This class handle 1 or more matches using a specific ChessboardGrid
+ * This class handles 1 or more matches
+ * Note: non-const methods are not thread-safe
+ *
+ * You can instantiate 2 or more objects to manage multiple games concurrently.
  */
 class MatchManager {
 public:
 	static const int selectedNone = -1, minGD = DEF_MIN_GD, maxGD = DEF_MAX_GD;
 
-	/**
-	 * Enum used to specify why MatchManager has called the update callback
-	 */
-	enum StateChangeType {
+	enum State {
 		TURN_PLAYER,
 		TURN_PC,
 		PLAYER_WON,
@@ -32,74 +32,80 @@ public:
 
 	class EventListener {
 		public:
-		virtual void onStateChange(enum StateChangeType type) = 0;
+		virtual void onStateChange(State type) = 0;
 		virtual void onSquareSelected(int index) = 0;
 		virtual void onSquarePossibleMove(int index) = 0;
 		virtual void onSquareClear() = 0;
-		virtual void onUpdateDisposition(GameUtils::Disposition *newDisposition, bool isPcFirstPlayer) = 0;
+
+		/**
+		 * Pointer ownership: caller
+		 */
+		virtual void onUpdateDisposition(const GameUtils::Disposition *newDisposition) = 0;
 	};
 
 	/**
-	 * Starts a new match using a chessboard grid
-	 * @param chessboard Chessboard grid used as interface between player and PC
-	 * @param focusColor Color used to highlight selected piece
-	 * @param possibleMoveColor Color used to highlight possible moves
+	 * Initialize the manager but you need to call newMatch() to start the game
 	 */
-	explicit MatchManager();
+	explicit MatchManager() = default;
 
 	virtual ~MatchManager();
 
-	/*
-	 * Add the event listener and notify a state change on the new listener
+	/**
+	 * Add a event listener, the pointer must not be freed
+	 * until the caller removes the listener with removeEventListener()
+	 */
+	void addEventListener(EventListener *listener);
+
+	/**
+	 * Remove a event listener
+	 */
+	void removeEventListener(EventListener *listener);
+
+	/**
+	 * Click on the specified square
+	 * 0 <= index <= 63
 	*/
-	bool addEventListener(EventListener *listener);
-	bool removeEventListener(EventListener *listener);
-
-	void onChessboardSquareClick(int index);
+	void squareClick(int index);
 
 	/**
-	 * Reset the current match
-	 * @return False when the algorithm thread is running
+	 * Start a new match or reset the current match
+	 * @return True if the specified difficulty is supported
 	 */
-	bool newMatch();
+	bool newMatch(int newDifficulty, bool isPcFirstPlayer);
 
 	/**
-	 * Reset match and change difficulty
-	 * @param newDifficulty The new difficulty
-	 * @return True if newDifficulty is between minGD and maxGD and no thread is in running
-	 */
-	bool changeDifficulty(int newDifficulty);
-
-	/**
-	 * Flip first player between PC and player
-	 * @return
-	 */
-	bool flipFirstPlayer();
-
-	/**
+	 * This method is thread safe
 	 * @return Current difficulty
 	 */
 	int getDifficulty() const;
 
 	/**
-	 * @return True if the player have moved at least 1 piece, and the game's not over
+	 * This method is thread safe
+	 * @return True if the game is started and is not over
 	 */
 	bool isPlaying() const;
+
+	/**
+	 * This method is thread safe
+	 * @return True if the game is over
+	 */
+	bool isEnd() const;
 
 private:
 	MatchManager(const MatchManager &); // prevents copy-constructor
 
 	GameUtils::Disposition mDisposition{};
 	GameUtils::MoveList mMoves{};
-	bool mIsEnd, mIsPlaying, mIsPcFirstPlayer;
-	int mGameDifficulty = DEFAULT_DIFFICULTY, mSelectedPos = selectedNone;
+	std::atomic<bool> mIsEnd = false, mIsPlaying = false;
+	std::atomic<int> mGameDifficulty;
+	int mSelectedPos = selectedNone;
 	std::vector<EventListener *> mListeners;
 
-	void changeState(enum StateChangeType type);
+	void changeState(State type);
 	void selectSquare(int index);
 	void makeSquarePossibleMove(int index);
 	void clearSquares();
-	void updateDisposition(GameUtils::Disposition *newDisposition, bool isPcFirstPlayer);
+	void updateDisposition(GameUtils::Disposition *newDisposition);
 
 	/**
 	 * Start the game algorithm to make a move
@@ -107,7 +113,7 @@ private:
 	void makePCMove();
 
 	/**
-	 * Resets m_disposition to the default disposition of the chessboard
+	 * Resets mDisposition to the default disposition of the chessboard
 	 */
 	void setDefaultLayout();
 

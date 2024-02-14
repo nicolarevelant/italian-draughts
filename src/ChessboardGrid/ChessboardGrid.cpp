@@ -63,13 +63,13 @@ bool ChessboardGrid::Create(const ImageProviderCB &images, const ColorProviderCB
 
 	Layout();
 
-	Bind(wxEVT_MENU, &ChessboardGrid::endStateChange, this, ST_CHNG_ID);
-	Bind(wxEVT_MENU, &ChessboardGrid::endSquareSelected, this, SQ_SEL_ID);
-	Bind(wxEVT_MENU, &ChessboardGrid::endSquarePossibleMove, this, SQ_POSS_MOVE_ID);
-	Bind(wxEVT_MENU, &ChessboardGrid::endSquareClear, this, SQ_CLEAR_ID);
-	Bind(wxEVT_MENU, &ChessboardGrid::endUpdateDisposition, this, UP_DISP_ID);
+	Bind(wxEVT_MENU, &ChessboardGrid::endStateChange, this, ST_CHNG_EVT_ID);
+	Bind(wxEVT_MENU, &ChessboardGrid::endSquareSelected, this, SQ_SEL_EVT_ID);
+	Bind(wxEVT_MENU, &ChessboardGrid::endSquarePossibleMove, this, SQ_POSS_MOVE_EVT_ID);
+	Bind(wxEVT_MENU, &ChessboardGrid::endSquareClear, this, SQ_CLEAR_EVT_ID);
+	Bind(wxEVT_MENU, &ChessboardGrid::endUpdateDisposition, this, UP_DISP_EVT_ID);
 
-	Bind(wxEVT_MENU, &ChessboardGrid::onThreadFinished, this, THREAD_FINISHED_ID);
+	Bind(wxEVT_MENU, &ChessboardGrid::onThreadFinished, this, THREAD_FINISHED_EVT_ID);
 
 	mMatchManager = new MatchManager();
 	mMatchManager->addEventListener(this);
@@ -78,44 +78,11 @@ bool ChessboardGrid::Create(const ImageProviderCB &images, const ColorProviderCB
 	return true;
 }
 
-// on another thread
-
-void ChessboardGrid::onStateChange(MatchManager::StateChangeType type) {
-	auto *evt = new wxCommandEvent(wxEVT_MENU, ST_CHNG_ID);
-	evt->SetInt(type);
-	QueueEvent(evt);
-}
-
-void ChessboardGrid::onSquareSelected(int index) {
-	auto *evt = new wxCommandEvent(wxEVT_MENU, SQ_SEL_ID);
-	evt->SetInt(index);
-	QueueEvent(evt);
-}
-
-void ChessboardGrid::onSquarePossibleMove(int index) {
-	auto *evt = new wxCommandEvent(wxEVT_MENU, SQ_POSS_MOVE_ID);
-	evt->SetInt(index);
-	QueueEvent(evt);
-}
-
-void ChessboardGrid::onSquareClear() {
-	QueueEvent(new wxCommandEvent(wxEVT_MENU, SQ_CLEAR_ID));
-}
-
-void ChessboardGrid::onUpdateDisposition(GameUtils::Disposition *newDisposition, bool isPcFirstPlayer) {
-	auto *evt = new wxCommandEvent(wxEVT_MENU, UP_DISP_ID);
-	evt->SetClientData(newDisposition);
-	evt->SetInt(isPcFirstPlayer ? 1 : 0);
-	QueueEvent(evt);
-}
-
-// end on another thread
-
 void ChessboardGrid::OnItemMouseClicked(wxMouseEvent &evt) {
 	if (mIsThreadRunning) return;
 
 	int currentPos = evt.GetId();
-	auto *thread = new WorkerThread(this, mMatchManager, currentPos, 1);
+	auto *thread = new WorkerThread(this, mMatchManager, currentPos, -1, false, THREAD_FINISHED_EVT_ID);
 	wxThreadError err = thread->Run();
 	if (err == wxTHREAD_NO_ERROR)
 		mIsThreadRunning = true;
@@ -128,9 +95,43 @@ void ChessboardGrid::onThreadFinished(wxCommandEvent &) {
 	mIsThreadRunning = false;
 }
 
+// begin EventListener callbacks
+
+void ChessboardGrid::onStateChange(MatchManager::State type) {
+	auto *evt = new wxCommandEvent(wxEVT_MENU, ST_CHNG_EVT_ID);
+	evt->SetInt(type);
+	QueueEvent(evt);
+}
+
+void ChessboardGrid::onSquareSelected(int index) {
+	auto *evt = new wxCommandEvent(wxEVT_MENU, SQ_SEL_EVT_ID);
+	evt->SetInt(index);
+	QueueEvent(evt);
+}
+
+void ChessboardGrid::onSquarePossibleMove(int index) {
+	auto *evt = new wxCommandEvent(wxEVT_MENU, SQ_POSS_MOVE_EVT_ID);
+	evt->SetInt(index);
+	QueueEvent(evt);
+}
+
+void ChessboardGrid::onSquareClear() {
+	QueueEvent(new wxCommandEvent(wxEVT_MENU, SQ_CLEAR_EVT_ID));
+}
+
+void ChessboardGrid::onUpdateDisposition(const GameUtils::Disposition *newDisposition) {
+	auto *evt = new wxCommandEvent(wxEVT_MENU, UP_DISP_EVT_ID);
+	auto *tmp = new GameUtils::Disposition();
+	std::copy(newDisposition->begin(), newDisposition->end(), tmp->begin());
+	evt->SetClientData(tmp);
+	QueueEvent(evt);
+}
+
+// end EventListener callbacks
+
 void ChessboardGrid::endStateChange(wxCommandEvent &evt) {
-	MatchManager::StateChangeType stateChangeType = static_cast<MatchManager::StateChangeType>(evt.GetInt());
-	if (mOnStateChange) mOnStateChange(stateChangeType);
+	MatchManager::State state = static_cast<MatchManager::State>(evt.GetInt());
+	if (mOnStateChange) mOnStateChange(state);
 }
 
 void ChessboardGrid::endSquareSelected(wxCommandEvent &evt) {
@@ -152,27 +153,27 @@ void ChessboardGrid::endSquareClear(wxCommandEvent &) {
 
 void ChessboardGrid::endUpdateDisposition(wxCommandEvent &evt) {
 	auto *disposition = static_cast<GameUtils::Disposition *>(evt.GetClientData());
-	bool isPcFirstPlayer = evt.GetInt() == 1;
 	for (int i = 0; i < 64; i++) {
-		mChessboard[i]->SetForegroundBitmap();
+		mChessboard[i]->SetForegroundBitmap(); // clear square
 		switch (disposition->at(i)) {
 			case GameUtils::EMPTY:
 				mChessboard[i]->SetBackgroundBitmap();
 				break;
 			case GameUtils::PC_PAWN:
-				mChessboard[i]->SetBackgroundBitmap(isPcFirstPlayer ? mFirstPawn : mSecondPawn);
+				mChessboard[i]->SetBackgroundBitmap(mIsPcFirstPlayer ? mFirstPawn : mSecondPawn);
 				break;
 			case GameUtils::PC_DAME:
-				mChessboard[i]->SetBackgroundBitmap(isPcFirstPlayer ? mFirstDame : mSecondDame);
+				mChessboard[i]->SetBackgroundBitmap(mIsPcFirstPlayer ? mFirstDame : mSecondDame);
 				break;
 			case GameUtils::PLAYER_PAWN:
-				mChessboard[i]->SetBackgroundBitmap(isPcFirstPlayer ? mSecondPawn : mFirstPawn);
+				mChessboard[i]->SetBackgroundBitmap(mIsPcFirstPlayer ? mSecondPawn : mFirstPawn);
 				break;
 			case GameUtils::PLAYER_DAME:
-				mChessboard[i]->SetBackgroundBitmap(isPcFirstPlayer ? mSecondDame : mFirstDame);
+				mChessboard[i]->SetBackgroundBitmap(mIsPcFirstPlayer ? mSecondDame : mFirstDame);
 				break;
 		}
 	}
+	delete disposition;
 	wxWindow::Refresh();
 }
 
@@ -180,61 +181,46 @@ void ChessboardGrid::setOnStateChangeCB(const StateChangeCB &listener) {
 	mOnStateChange = listener;
 }
 
-/**
- * Reset the current match
- * @return False when the algorithm thread is running
- */
-bool ChessboardGrid::newMatch() {
+bool ChessboardGrid::newMatch(int gameDifficulty, bool isPcFirstPlayer) {
 	if (mIsThreadRunning) return false;
-	return mMatchManager->newMatch();
-}
 
-/**
- * Reset match and change difficulty
- * @param newDifficulty The new difficulty
- * @return True if newDifficulty is between minGD and maxGD and no thread is in running
- */
-bool ChessboardGrid::changeDifficulty(int newDifficulty) {
-	if (mIsThreadRunning) return false;
-	return mMatchManager->changeDifficulty(newDifficulty);
-}
+	mIsPcFirstPlayer = isPcFirstPlayer;
 
-/**
- * Flip first player between PC and player
- * @return
- */
-bool ChessboardGrid::flipFirstPlayer() {
-	if (mIsThreadRunning) return false;
-	if (mMatchManager->flipFirstPlayer()) {
-		return true;
+	auto *thread = new WorkerThread(this, mMatchManager, -1, gameDifficulty, isPcFirstPlayer, THREAD_FINISHED_EVT_ID);
+	wxThreadError err = thread->Run();
+	if (err == wxTHREAD_NO_ERROR)
+		mIsThreadRunning = true;
+	else {
+		std::cerr << "Cannot execute thread" << std::endl;
 	}
-	return false;
+
+	return true;
 }
 
-/**
- * @return Current difficulty
- */
 int ChessboardGrid::getDifficulty() const {
 	return mMatchManager->getDifficulty();
 }
 
-/**
- * @return True if the player have moved at least 1 piece, and the game's not over
- */
 bool ChessboardGrid::isPlaying() const {
 	return mMatchManager->isPlaying();
 }
 
-ChessboardGrid::WorkerThread::WorkerThread(wxEvtHandler *evtHandler, MatchManager *matchManager, int index, int id) :
+ChessboardGrid::WorkerThread::WorkerThread(wxEvtHandler *evtHandler, MatchManager *matchManager, int sqClickIndex, int difficulty, bool isPcFirstPlayer, int id) :
 	wxThread(wxTHREAD_DETACHED) {
 	mEvtHandler = evtHandler;
 	mMatchManager = matchManager;
-	mIndex = index;
+	mSqClickIndex = sqClickIndex;
+	mGameDifficulty = difficulty;
+	mIsPcFirstPlayer = isPcFirstPlayer;
 	mThreadID = id;
 }
 
 void *ChessboardGrid::WorkerThread::Entry() {
-	mMatchManager->onChessboardSquareClick(mIndex);
-	wxQueueEvent(mEvtHandler, new wxCommandEvent(wxEVT_MENU, THREAD_FINISHED_ID));
+	if (mGameDifficulty == -1) // TODO: fix workaround
+		mMatchManager->squareClick(mSqClickIndex);
+	else
+		mMatchManager->newMatch(mGameDifficulty, mIsPcFirstPlayer);
+
+	wxQueueEvent(mEvtHandler, new wxCommandEvent(wxEVT_MENU, mThreadID));
 	return nullptr;
 }

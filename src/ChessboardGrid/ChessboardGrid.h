@@ -9,13 +9,13 @@
 #include <wx/wx.h>
 #include <functional>
 
-#define ST_CHNG_ID 1
-#define SQ_SEL_ID 2
-#define SQ_POSS_MOVE_ID 3
-#define SQ_CLEAR_ID 4
-#define UP_DISP_ID 5
+#define ST_CHNG_EVT_ID 1
+#define SQ_SEL_EVT_ID 2
+#define SQ_POSS_MOVE_EVT_ID 3
+#define SQ_CLEAR_EVT_ID 4
+#define UP_DISP_EVT_ID 5
 
-#define THREAD_FINISHED_ID 6
+#define THREAD_FINISHED_EVT_ID 20
 
 #define DEF_DARK_COLOR wxColour(32, 32, 32)
 #define DEF_LIGHT_COLOR wxColour(140, 140, 140)
@@ -27,20 +27,20 @@ class ChessboardGrid : public wxPanel, private MatchManager::EventListener {
 public:
 	typedef std::function<const wxBitmap &(const std::string &, const wxBitmap &)> ImageProviderCB;
 	typedef std::function<const wxColour &(const std::string &, const wxColour &)> ColorProviderCB;
-	typedef std::function<void(enum MatchManager::StateChangeType type)> StateChangeCB;
+	typedef std::function<void(enum MatchManager::State type)> StateChangeCB;
 
 	class WorkerThread : public wxThread {
 	public:
-		WorkerThread(wxEvtHandler *evtHandler, MatchManager *matchManager, int index, int id);
+		WorkerThread(wxEvtHandler *evtHandler, MatchManager *matchManager,
+			int sqClickIndex, int mGameDifficulty, bool isPcFirstPlayer, int id);
 
 	private:
 		MatchManager *mMatchManager;
-		int mIndex, mThreadID;
+		int mSqClickIndex, mGameDifficulty, mThreadID;
+		bool mIsPcFirstPlayer;
+		wxEvtHandler *mEvtHandler;
 
 		void *Entry() override;
-
-	protected:
-		wxEvtHandler *mEvtHandler;
 	};
 
 	ChessboardGrid();
@@ -65,32 +65,13 @@ public:
 	bool Create(const ImageProviderCB &images, const ColorProviderCB &colors, wxWindow *parent,
 	            wxWindowID winId = wxID_ANY, const wxPoint &pos = wxDefaultPosition);
 
-	void onStateChange(enum MatchManager::StateChangeType type);
-	void onSquareSelected(int index);
-	void onSquarePossibleMove(int index);
-	void onSquareClear();
-	void onUpdateDisposition(GameUtils::Disposition *newDisposition, bool isPcFirstPlayer);
-
 	void setOnStateChangeCB(const StateChangeCB &listener);
 
 	/**
 	 * Reset the current match
 	 * @return False when the algorithm thread is running
 	 */
-	bool newMatch();
-
-	/**
-	 * Reset match and change difficulty
-	 * @param newDifficulty The new difficulty
-	 * @return True if newDifficulty is between minGD and maxGD and no thread is in running
-	 */
-	bool changeDifficulty(int newDifficulty);
-
-	/**
-	 * Flip first player between PC and player
-	 * @return
-	 */
-	bool flipFirstPlayer();
+	bool newMatch(int gameDifficulty, bool isPcFirstPlayer);
 
 	/**
 	 * @return Current difficulty
@@ -98,7 +79,7 @@ public:
 	int getDifficulty() const;
 
 	/**
-	 * @return True if the player have moved at least 1 piece, and the game's not over
+	 * @return True if the game is started and is not over
 	 */
 	bool isPlaying() const;
 
@@ -111,10 +92,16 @@ private:
 	GameUtils::MoveList moves; // list of moves the player can do
 	MatchManager *mMatchManager;
 	StateChangeCB mOnStateChange;
-	bool mIsThreadRunning;
+	bool mIsThreadRunning, mIsPcFirstPlayer;
 
 	void OnItemMouseClicked(wxMouseEvent &evt);
 	void onThreadFinished(wxCommandEvent &evt);
+
+	void onStateChange(MatchManager::State type);
+	void onSquareSelected(int index);
+	void onSquarePossibleMove(int index);
+	void onSquareClear();
+	void onUpdateDisposition(const GameUtils::Disposition *newDisposition);
 
 	void endStateChange(wxCommandEvent &evt);
 

@@ -58,7 +58,10 @@ bool Frame::Create(wxWindow *parent, const std::string &theme) {
 	                     chessboardSize.GetHeight() + CHESSBOARD_MARGIN_V * 2));
 
 	grid->setOnStateChangeCB(std::bind(&Frame::onGameEvent, this, std::placeholders::_1));
-	grid->newMatch();
+
+	mGameDifficulty = 3;
+	mIsPcFirstPlayer = false;
+	grid->newMatch(mGameDifficulty, mIsPcFirstPlayer);
 
 	return true;
 }
@@ -120,8 +123,8 @@ const wxColour &Frame::getColor(const std::string &key, const wxColour &def) {
 
 // Events
 
-void Frame::onGameEvent(enum MatchManager::StateChangeType stateChangeType) {
-	switch (stateChangeType) {
+void Frame::onGameEvent(MatchManager::State state) {
+	switch (state) {
 		case MatchManager::TURN_PLAYER:
 			SetStatusText(wxString::Format(_("%s | Difficulty: %d"), _("Your turn"), grid->getDifficulty()));
 			break;
@@ -150,7 +153,7 @@ void Frame::newMatchClicked(wxCommandEvent &) {
 		if (dialog.ShowModal() != wxID_YES) return;
 	}
 
-	grid->newMatch();
+	grid->newMatch(mGameDifficulty, mIsPcFirstPlayer);
 }
 
 void Frame::closeFrame(wxCommandEvent &) {
@@ -171,7 +174,7 @@ void Frame::changeDifficultyClicked(wxCommandEvent &) {
 
 		long value;
 		if (dialog.GetValue().ToLong(&value) && value >= MatchManager::minGD && value <= MatchManager::maxGD &&
-		    grid->changeDifficulty(value)) {
+		    grid->newMatch(mGameDifficulty = value, mIsPcFirstPlayer)) {
 			return;
 		}
 	}
@@ -183,7 +186,7 @@ void Frame::flipFirstPlayer(wxCommandEvent &) {
 		if (dialog.ShowModal() != wxID_YES) return;
 	}
 
-	grid->flipFirstPlayer();
+	grid->newMatch(mGameDifficulty, mIsPcFirstPlayer = !mIsPcFirstPlayer);
 }
 
 void Frame::aboutClicked(wxCommandEvent &) {
