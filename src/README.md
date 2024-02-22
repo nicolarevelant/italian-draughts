@@ -16,7 +16,7 @@ It represents the window frame including menu bar and status bar.
 
 A 8x8 grid panel that represents a chessboard.
 
-### Chessboard::WorkerThread : wxThread
+### ChessboardGrid::WorkerThread : wxThread
 
 This class is used to call MatchManager's methods asynchronously.
 
