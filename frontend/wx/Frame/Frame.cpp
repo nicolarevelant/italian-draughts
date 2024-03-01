@@ -18,10 +18,10 @@
 #include "Frame.h"
 #include <functional>
 #include <wx/aboutdlg.h>
+#include "config.h"
+#include "logo.xpm"
 
-#include "logo/italian-draughts.xpm"
-
-Frame::Frame() = default;
+Frame::Frame() : resources(DATA_PATH) {}
 
 Frame::Frame(wxWindow *parent, const std::string &theme) : Frame() {
 	if (!Create(parent, theme)) {
@@ -206,7 +206,7 @@ void Frame::flipFirstPlayer(wxCommandEvent &) {
 void Frame::aboutClicked(wxCommandEvent &) {
 	wxAboutDialogInfo dialog;
 	dialog.SetName(wxFrame::GetTitle());
-	dialog.SetIcon(italianDraughtsLogo);
+	dialog.SetIcon(programLogo);
 	dialog.SetVersion(PROJECT_VERSION);
 	dialog.SetDescription(PROJECT_DESCRIPTION);
 	dialog.SetCopyright(PROJECT_COPYRIGHT);

@@ -15,7 +15,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include "GameUtils.h"
+#include "checkers/GameUtils.h"
 
 #include <algorithm>
 #include <climits>

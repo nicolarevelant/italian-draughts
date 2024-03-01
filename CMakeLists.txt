@@ -6,6 +6,10 @@ project(italian-draughts
 
 include(GNUInstallDirs)
 
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG -Wall -Wextra -Wpedantic -Werror")
+
 option(DOCS "Generate and install documentation" OFF)
 
 set(DATA_PATH "${CMAKE_INSTALL_FULL_DATADIR}/${PROJECT_NAME}" CACHE STRING "Application data path")
@@ -19,6 +23,8 @@ set(PROJECT_COPYRIGHT "Copyright (C) 2024 Nicola Revelant")
 set(PROJECT_LICENSE "GNU General Public License, version 3 or later")
 
 add_subdirectory(src)
+add_subdirectory(frontend)
+configure_file(config.h.in config.h)
 
 if (DOCS)
 	message("Install documentation: ON")
@@ -27,6 +33,5 @@ else ()
 	message("Install documentation: OFF")
 endif ()
 
-install(TARGETS ${PROJECT_NAME})
 install(DIRECTORY images DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}")
 install(DIRECTORY colors DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}")

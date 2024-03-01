@@ -16,7 +16,6 @@
 */
 
 #include "ChessboardGrid.h"
-#include "ProjectVariables.h"
 
 ChessboardGrid::ChessboardGrid() = default;
 

@@ -19,7 +19,7 @@
 #define CHESSBOARD_GRID_H
 
 #include "ChessboardSquare/ChessboardSquare.h"
-#include "MatchManager/MatchManager.h"
+#include "checkers/MatchManager.h"
 #include <wx/wx.h>
 #include <functional>
 

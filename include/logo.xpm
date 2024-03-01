@@ -1,5 +1,5 @@
 /* XPM */
-static const char *italianDraughtsLogo[] = {
+static const char *programLogo[] = {
 /* columns rows colors chars-per-pixel */
 "128 128 216 2 ",
 "   c None",

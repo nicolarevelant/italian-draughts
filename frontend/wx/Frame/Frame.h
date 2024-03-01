@@ -48,7 +48,7 @@ private:
 		TOGGLE_FIRST_PLAYER,
 	};
 
-	Resources resources{DATA_PATH};
+	Resources resources;
 	const wxArrayString developers = wxArrayString(1, {"Nicola Revelant <nicolarevelant44@gmail.com>"});
 	ChessboardGrid *grid;
 	int mGameDifficulty;

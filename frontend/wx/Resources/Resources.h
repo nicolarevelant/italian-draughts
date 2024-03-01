@@ -6,7 +6,6 @@
 
 #include "wx/wx.h"
 #include <bits/stdc++.h>
-#include "ProjectVariables.h"
 
 class Resources {
 public:

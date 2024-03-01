@@ -18,7 +18,7 @@
 #ifndef MATCH_MANAGER_H
 #define MATCH_MANAGER_H
 
-#include "GameUtils/GameUtils.h"
+#include "checkers/GameUtils.h"
 #include <functional>
 #include <atomic>
 

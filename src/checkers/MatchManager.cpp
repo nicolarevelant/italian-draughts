@@ -15,7 +15,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include "MatchManager.h"
+#include "checkers/MatchManager.h"
 #include <vector>
 #include <unistd.h>
 
