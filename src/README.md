@@ -1,28 +1,17 @@
-# Source code structure
+# libCheckers
 
-This directory contains various libraries (usually composed by 1 class)
-for creating this program. The structure is described below.
+Library used to play checkers against the computer.
+
+Currently the only checkers variant available is italian draughts.
 
 Note:
 
 - X : Y means X is subclass of Y
 - X::Y means Y declared inside X
 
-## Frame : wxFrame
-
-It represents the window frame including menu bar and status bar.
-
-## ChessboardGrid : wxPanel
-
-A 8x8 grid panel that represents a chessboard.
-
-### ChessboardGrid::WorkerThread : wxThread
-
-This class is used to call MatchManager's methods asynchronously.
-
 ## MatchManager
 
-This class handles 1 or more matches
+Start new matches with the specified difficulty
 
 ## GameUtils
 
@@ -34,10 +23,3 @@ can make (Minimax algorithm)
 
 It represents a move that can be done by the player or PC.
 
-## ChessboardSquare : wxWindow
-
-A class that represents a square in the chessboard.
-
-## Resources
-
-A class that provides the ability to fetch colors from a particular theme.
