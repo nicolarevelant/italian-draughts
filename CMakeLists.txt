@@ -19,7 +19,7 @@ message("Build type: ${CMAKE_BUILD_TYPE}")
 message("DATA_PATH: ${DATA_PATH}")
 
 set(PROJECT_PRETTY_NAME "Italian Draughts")
-set(PROJECT_COPYRIGHT "Copyright (C) 2024 Nicola Revelant")
+set(PROJECT_COPYRIGHT "Copyright (C) 2023-2024 Nicola Revelant")
 set(PROJECT_LICENSE "GNU General Public License, version 3 or later")
 
 add_subdirectory(src)
