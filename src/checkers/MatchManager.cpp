@@ -16,6 +16,7 @@
 */
 
 #include "checkers/MatchManager.h"
+#include <iostream>
 #include <vector>
 #include <unistd.h>
 
@@ -162,7 +163,10 @@ void MatchManager::updateDisposition(GameUtils::Disposition *newDisposition) {
 
 void MatchManager::makePCMove() {
 	changeState(TURN_PC);
+#ifdef DEBUG
+	std::cerr << "Waiting 5 seconds for debug..." << std::endl;
 	sleep(5); // TODO: test delay
+#endif
 	auto *pcMove = GameUtils::calculateBestMove(mDisposition, mGameDifficulty);
 	if (pcMove == nullptr) {
 		// PC cannot do anything, player won
